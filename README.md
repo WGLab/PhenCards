@@ -9,8 +9,9 @@ Got to localhost:5000 in your browser
 
 Additional note: use `pip3` rather than `pip` since most systems have `pip` as part of python 2. To keep the server persistant, use `nohup python3 app.py &` to spin up the server. 
 
-# External Resources Used
+# External Resources
 ICD10Data: https://www.icd10data.com   
 OMIM: https://www.ncbi.nlm.nih.gov/omim   
 Gene Ontology: http://geneontology.org  
 UniProt: https://www.uniprot.org   
+
