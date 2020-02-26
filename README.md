@@ -16,7 +16,7 @@ Got to localhost:5000 in your browser, now you can monitor the changes in browse
 Additional note: use `pip3` rather than `pip` since most systems have `pip` as part of python 2. To keep the server persistant, use `nohup python3 app.py &` to spin up the server.   
 
 ## sqlite database in Python
-If you would like to connect to the `XXX.db` files directly using Python, just follow the following instructions that help to access SQL file in Python:
+If you would like to connect to the `XXX.db` files directly using Python, just refer to the following example that helps to access SQL file in Python:
 ```
 import sqlite3  
 conn = sqlite3.connect("phenotype.db")  
@@ -26,6 +26,9 @@ c = conn.cursor()
 cursor = c.execute("SELECT DISTINCT DiseaseName FROM PHENBASE")
 ```
 Otherwise, if you have SQL Server, like Oracle or MySQL, you can also use those for opening db files.
+
+
+## Database Source Tutorial
 
 
 ## External Resources
