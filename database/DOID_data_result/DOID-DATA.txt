@@ -1,0 +1,525 @@
+DOID-ID	NAME
+0060478	Zika fever
+0060479	Shwachman-Diamond syndrome
+0060480	left ventricular noncompaction
+0060481	Goldberg-Shprintzen syndrome
+0060482	oculoauricular syndrome
+0060483	MEDNIK syndrome
+0060484	EAST syndrome
+0060485	Mowat-Wilson syndrome
+0060486	Perry syndrome
+0060488	Pitt-Hopkins syndrome
+0060490	Schimke immuno-osseous dysplasia
+0060491	SPOAN syndrome
+0060492	chicken egg allergy
+0060495	shellfish allergy
+0060496	respiratory allergy
+0060497	pollen allergy
+0060498	Timothy grass allergy
+0060499	autoimmune neuropathy
+0060500	drug allergy
+0060501	metal allergy
+0060502	gastrointestinal allergy
+0060503	fruit allergy
+0060504	apple allergy
+0060505	apricot allergy
+0060506	cherry allergy
+0060507	Indian plum allergy
+0060508	orange allergy
+0060509	melon allergy
+0060510	peach allergy
+0060511	plum allergy
+0060512	tomato allergy
+0060513	fish allergy
+0060514	Atlantic cod allergy
+0060515	Atlantic salmon allergy
+0060516	carp allergy
+0060517	zebrafish allergy
+0060518	rainbow trout allergy
+0060519	beta-lactam allergy
+0060520	penicillin allergy
+0060521	cow milk allergy
+0060522	goat milk allergy
+0060523	mollusc allergy
+0060524	crustacean allergy
+0060525	brown shrimp allergy
+0060526	crab allergy
+0060527	Indian prawn allergy
+0060528	tiger prawn allergy
+0060529	white shrimp allergy
+0060530	snail allergy
+0060531	horned turban snail allergy
+0060532	latex allergy
+0060534	hepatoid adenocarcinoma
+0060535	Warsaw breakage syndrome
+0060536	mitochondrial complex I deficiency
+0060537	mitochondrial complex II deficiency
+0060538	purpura fulminans
+0060539	Hermansky-Pudlak syndrome 1
+0060540	Hermansky-Pudlak syndrome 2
+0060541	Hermansky-Pudlak syndrome 3
+0060542	Hermansky-Pudlak syndrome 4
+0060543	Hermansky-Pudlak syndrome 5
+0060544	Hermansky-Pudlak syndrome 6
+0060545	Hermansky-Pudlak syndrome 7
+0060546	Hermansky-Pudlak syndrome 8
+0060547	Hermansky-Pudlak syndrome 9
+0060548	luminal breast carcinoma
+0060549	Barber-Say syndrome
+0060550	ablepharon macrostomia syndrome
+0060551	poikiloderma with neutropenia
+0060556	Kufor-Rakeb syndrome
+0060557	ataxia with oculomotor apraxia type 3
+0060558	lethal congenital contracture syndrome
+0060559	lethal congenital contracture syndrome 1
+0060560	lethal congenital contracture syndrome 2
+0060562	anomalous left coronary artery from the pulmonary artery
+0060563	Char syndrome
+0060564	spinal disease
+0060566	Holzgreve-Wagner-Rehder Syndrome
+0060567	erythema elevatum diutinum
+0060569	hypertrichotic osteochondrodysplasia Cantu type
+0060570	cardiac tuberculosis
+0060608	microcephalic osteodysplastic primordial dwarfism type I
+0060609	microcephalic osteodysplastic primordial dwarfism type II
+0060611	abdominal obesity-metabolic syndrome
+0060668	anencephaly
+0060671	cerebral cavernous malformation 3
+0060858	hypotonia-cystinuria syndrome
+0060861	microphthalmia with limb anomalies
+0060862	mal de Meleda
+0060886	osteopathia striata with cranial sclerosis
+0060887	ossification of the posterior longitudinal ligament of spine
+0060888	transient myeloproliferative syndrome
+0060889	prune belly syndrome
+0060890	ectopic Cushing syndrome
+0060896	Parkinson&apos;s disease 23
+0060897	Parkinson&apos;s disease 17
+0060898	Parkinson&apos;s disease 20
+0060900	Parkinson&apos;s disease 14
+0060901	Waldenstroem&apos;s macroglobulinemia
+0060902	Norman-Roberts syndrome
+0060903	thrombosis
+0060911	karyomegalic interstitial nephritis
+0070000	3-methylglutaconic aciduria type 8
+0070002	3-methylglutaconic aciduria type 9
+0070313	thiamine deficiency disease
+0070317	wet beriberi
+0070318	dry beriberi
+0070319	miliaria pustulosa
+0070320	miliaria profunda
+0070321	miliaria crystallina
+0070322	pediatric hepatocellular carcinoma
+0070323	childhood acute myeloid leukemia
+0070324	systemic Epstein-Barr virus-positive T-cell lymphoma of childhood
+0070325	malignant pediatric adrenal gland pheochromocytoma
+0070326	spitzoid melanoma
+0070327	melanoma in congenital melanocytic nevus
+0070328	adult hepatocellular carcinoma
+0070329	mitochondrial DNA depletion syndrome
+0070330	multiple mitochondrial dysfunctions syndrome
+0070331	mitochondrial DNA depletion syndrome 8b
+0070332	multiple mitochondrial dysfunctions syndrome 6
+0070333	breast implant-associated anaplastic large cell lymphoma
+0070334	vegetable allergy
+0070335	celery allergy
+0070337	epithelial recurrent erosion dystrophy
+0080108	myoglobinuria
+0080109	infantile myofibromatosis
+0080111	mitochondrial complex III deficiency nuclear type 1
+0080112	mitochondrial complex III deficiency nuclear type 3
+0080113	mitochondrial complex III deficiency nuclear type 4
+0080114	mitochondrial complex III deficiency nuclear type 5
+0080115	mitochondrial complex III deficiency nuclear type 6
+0080116	mitochondrial complex III deficiency nuclear type 7
+0080117	mitochondrial complex III deficiency nuclear type 8
+0080118	mitochondrial complex III deficiency nuclear type 9
+0080119	mitochondrial DNA depletion syndrome 1
+0080120	mitochondrial DNA depletion syndrome 2
+0080121	mitochondrial DNA depletion syndrome 3
+0080123	mitochondrial DNA depletion syndrome 4b
+0080124	mitochondrial DNA depletion syndrome 5
+0080125	mitochondrial DNA depletion syndrome 6
+0080126	mitochondrial DNA depletion syndrome 7
+0080127	mitochondrial DNA depletion syndrome 8a
+0080128	mitochondrial DNA depletion syndrome 9
+0080129	mitochondrial DNA depletion syndrome 11
+0080130	mitochondrial DNA depletion syndrome 12a
+0080131	mitochondrial DNA depletion syndrome 13
+0080132	Sengers syndrome
+0080133	multiple mitochondrial dysfunctions syndrome 1
+0080134	multiple mitochondrial dysfunctions syndrome 2
+0080135	multiple mitochondrial dysfunctions syndrome 3
+0080136	multiple mitochondrial dysfunctions syndrome 4
+0080137	multiple endocrine neoplasia type 4
+0080138	multiple congenital anomalies-hypotonia-seizures syndrome 1
+0080139	multiple congenital anomalies-hypotonia-seizures syndrome 2
+0080140	multiple congenital anomalies-hypotonia-seizures syndrome 3
+0080141	mosaic variegated aneuploidy syndrome 1
+0080142	mosaic variegated aneuploidy syndrome 2
+0080143	congenital fibrosis of the extraocular muscles
+0080144	childhood acute lymphocytic leukemia
+0080145	T-cell childhood acute lymphocytic leukemia
+0080146	B-cell childhood acute lymphoblastic leukemia
+0080147	lymphoblastic lymphoma
+0080148	T-cell childhood lymphoblastic lymphoma
+0080150	adrenocorticotropic hormone deficiency
+0080153	medium chain acyl-CoA dehydrogenase deficiency
+0080154	short chain acyl-CoA dehydrogenase deficiency
+0080155	very long chain acyl-CoA dehydrogenase deficiency
+0080156	X-linked adrenal hypoplasia congenita
+0080158	herpes simplex virus keratitis
+0080159	Cryptococcal meningitis
+0080160	Cytomegalovirus retinitis
+0080161	cutaneous candidiasis
+0080162	lupus nephritis
+0080163	otulipenia
+0080164	myeloid and lymphoid neoplasms with eosinophilia and abnormalities of PDGFRA, PDGFRB, and FGFR1
+0080165	myeloid and lymphoid neoplasms associated with PDGFRA rearrangement
+0080166	myeloid neoplasms associated with PDGFRB rearrangement
+0080167	myeloid and lymphoid neoplasms associated with FGFR1 abnormalities
+0080169	tricuspid atresia
+0080170	normophosphatemic familial tumoral calcinosis
+0080171	esophageal atresia/tracheoesophageal fistula
+0080172	thiopurine S-methyltransferase deficiency
+0080173	bladder exstrophy-epispadias-cloacal exstrophy complex
+0080174	bladder exstrophy
+0080176	meningococcal meningitis
+0080177	hepatic veno-occlusive disease
+0080178	mucositis
+0080179	haemophilus meningitis
+0080180	Zika virus congenital syndrome
+0080181	PHARC syndrome
+0080182	mixed fibrolamellar hepatocellular carcinoma
+0080183	medullary colon carcinoma
+0080184	mixed mucinous and nonmucinous bronchioloalveolar adenocarcinoma
+0080185	mucinous bronchioloalveolar adenocarcinoma
+0080186	nonmucinous bronchioloalveolar adenocarcinoma
+0080187	chronic neutrophilic leukemia
+0080188	chronic myelomonocytic leukemia
+0080189	malignant hemangioma
+0080190	malignant epithelioid hemangioendothelioma
+0080191	PTEN hamartoma tumor syndrome
+0080192	relapsed/refractory diffuse large B-cell lymphoma
+0080193	superior semicircular canal dehiscence
+0080194	Carey-Fineman-Ziter syndrome
+0080195	Marinesco-Sjogren syndrome
+0080196	mandibulofacial dysostosis, Guion-Almeida type
+0080197	congenital muscular dystrophy with cataracts and intellectual disability
+0080198	infantile histiocytoid cardiomyopathy
+0080199	colorectal carcinoma
+0080200	bilateral renal aplasia
+0080201	Peters plus syndrome
+0080202	adenoid cystic carcinoma
+0080204	renal hypoplasia
+0080205	CAKUT
+0080206	CAKUT1
+0080207	CAKUT2
+0080208	non-alcoholic fatty liver disease
+0080209	sideroblastic anemia with B-cell immunodeficiency, periodic fevers, and developmental delay
+0080210	primary mediastinal B-cell lymphoma
+0080211	nodal marginal zone lymphoma
+0080212	polycystic kidney disease 4
+0080213	punctate palmoplantar keratoderma type II
+0080214	punctate palmoplantar keratoderma type 1A
+0080215	early infantile epileptic encephalopathy 8
+0080216	duodenal atresia
+0080217	lysosomal and lipase deficiency
+0080218	primary spontaneous pneumothorax
+0080219	dystransthyretinemic hyperthyroxinemia
+0080220	major affective disorder 1
+0080221	major affective disorder 2
+0080222	pseudohypoparathyroidism type IB
+0080223	epidermolytic palmoplantar keratoderma
+0080224	autosomal dominant dystrophic epidermolysis bullosa
+0080225	amyotrophic lateral sclerosis type 23
+0080226	autosomal dominant mental retardation 56
+0080227	autosomal dominant mental retardation 55
+0080228	autosomal dominant mental retardation 53
+0080230	autosomal dominant mental retardation 54
+0080231	autosomal dominant mental retardation 52
+0080232	autosomal dominant mental retardation 51
+0080233	autosomal dominant mental retardation 50
+0080234	autosomal dominant mental retardation 49
+0080235	autosomal dominant mental retardation 48
+0080236	autosomal dominant mental retardation 45
+0080237	autosomal dominant mental retardation 46
+0080238	autosomal dominant mental retardation 47
+0080239	autosomal recessive mental retardation 61
+0080240	X-linked mental retardation 106
+0080241	syndromic X-linked mental retardation 35
+0080242	syndromic X-linked mental retardation Hough type
+0080243	amelogenesis imperfecta type 3B
+0080244	Galloway-Mowat syndrome 2
+0080245	Galloway-Mowat syndrome 3
+0080246	Galloway-Mowat syndrome 4
+0080247	Galloway-Mowat syndrome 5
+0080248	erythrokeratodermia variabilis et progressiva 2
+0080249	erythrokeratodermia variabilis et progressiva 3
+0080250	erythrokeratodermia variabilis et progressiva 4
+0080251	erythrokeratodermia variabilis et progressiva 5
+0080252	spastic ataxia 8
+0080253	Meckel syndrome 13
+0080254	orofaciodigital syndrome XVI
+0080255	Meier-Gorlin syndrome 8
+0080256	Perrault syndrome 6
+0080257	autosomal recessive congenital ichthyosis 13
+0080258	autosomal recessive congenital ichthyosis 14
+0080259	autosomal recessive spinocerebellar ataxia 25
+0080260	autosomal recessive spinocerebellar ataxia 26
+0080261	autosomal recessive nonsyndromic deafness 106
+0080262	autosomal recessive nonsyndromic deafness 107
+0080263	autosomal recessive nonsyndromic deafness 108
+0080264	exudative vitreoretinopathy 7
+0080265	nephrotic syndrome type 14
+0080266	primary ciliary dyskinesia 37
+0080267	autosomal dominant nonsyndromic deafness 71
+0080268	autosomal dominant nonsyndromic deafness 72
+0080269	autosomal dominant nonsyndromic deafness 73
+0080270	autosomal dominant nonsyndromic deafness 34
+0080271	nephrotic syndrome type 15
+0080272	nephrotic syndrome type 16
+0080273	polycystic kidney disease 5
+0080274	multiple mitochondrial dysfunctions syndrome 5
+0080275	Joubert syndrome 30
+0080276	Joubert syndrome 29
+0080277	Joubert syndrome 31
+0080278	Joubert syndrome 32
+0080279	Joubert syndrome 33
+0080280	gingival fibromatosis 5
+0080281	schizophrenia 19
+0080282	early infantile epileptic encephalopathy 56
+0080283	early infantile epileptic encephalopathy 55
+0080284	early infantile epileptic encephalopathy 57
+0080285	early infantile epileptic encephalopathy 58
+0080286	spinocerebellar ataxia 44
+0080287	spinocerebellar ataxia 45
+0080288	spinocerebellar ataxia 46
+0080289	orofaciodigital syndrome XVII
+0080290	familial erythrocytosis 5
+0080291	early infantile epileptic encephalopathy 59
+0080292	retinitis pigmentosa 81
+0080293	short-rib thoracic dysplasia 18 with polydactyly
+0080294	Charcot-Marie-Tooth disease dominant intermediate G
+0080295	short-rib thoracic dysplasia 19 with or without polydactyly
+0080296	hypomyelinating leukodystrophy 14
+0080297	Coffin-Siris syndrome 6
+0080298	complete generalized lipodystrophy
+0080299	partial lipodystrophy
+0080300	acquired generalized lipodystrophy
+0080301	atypical hemolytic-uremic syndrome
+0080302	mixed sleep apnea
+0080303	mucinous lung adenocarcinoma
+0080304	lung mucinous cystadenocarcinoma
+0080305	signet ring lung adenocarcinoma
+0080306	solid adenocarcinoma with mucin production
+0080307	myofibrillar myopathy
+0080308	myofibrillar myopathy 8
+0080309	fatal infantile hypertonic myofibrillar myopathy
+0080311	X-linked mental retardation with cerebellar hypoplasia and distinctive facial appearance
+0080312	neurodevelopmental disorder with midbrain and hindbrain malformations
+0080313	cleft palate-lateral synechia syndrome
+0080314	cone-rod dystrophy 14
+0080315	megalencephalic leukoencephalopathy with subcortical cysts
+0080316	megalencephalic leukoencephalopathy with subcortical cysts 1
+0080317	megalencephalic leukoencephalopathy with subcortical cysts 2B, remitting, with or without mental retardation
+0080318	megalencephalic leukoencephalopathy with subcortical cysts 2A
+0080319	X-linked immunodeficiency with magnesium defect, Epstein-Barr virus infection, and neoplasia
+0080320	peripheral nervous system benign neoplasm
+0080321	autonomic nervous system benign neoplasm
+0080322	polycystic kidney disease
+0080323	pancreatic squamous cell carcinoma
+0080324	tuberous sclerosis 1
+0080325	tuberous sclerosis 2
+0080326	familial hypertrophic cardiomyopathy
+0080327	multinucleated neurons, anhydramnios, renal dysplasia, cerebellar hypoplasia and hydranencephaly
+0080328	Culler-Jones syndrome
+0080329	cold-induced sweating syndrome 1
+0080330	cold-induced sweating syndrome 2
+0080331	cold-induced sweating syndrome 3
+0080332	bicuspid aortic valve disease
+0080333	aortic valve disease 1
+0080334	aortic valve disease 2
+0080335	mitochondrial DNA depletion syndrome 12b
+0080336	mitochondrial DNA depletion syndrome 14
+0080337	mitochondrial DNA depletion syndrome 15
+0080338	familial erythrocytosis 3
+0080339	familial erythrocytosis 4
+0080342	Simpson-Golabi-Behmel syndrome type 2
+0080343	autosomal recessive pyridoxine-refractory sideroblastic anemia 3
+0080344	blepharocheilodontic syndrome
+0080345	blepharocheilodontic syndrome 1
+0080346	blepharocheilodontic syndrome 2
+0080347	malignant pheochromocytoma
+0080348	Alzheimer&apos;s disease 1
+0080349	early infantile epileptic encephalopathy 39
+0080350	retinitis pigmentosa 77
+0080351	CLOVES syndrome
+0080352	X-linked chondrodysplasia punctata 2
+0080353	X-linked recessive hypophosphatemic rickets
+0080354	Phelan-McDermid syndrome
+0080355	hepatobiliary system cancer
+0080356	IgG4-related disease
+0080357	fatal infantile cardioencephalomyopathy due to cytochrome c oxidase deficiency 1
+0080358	fatal infantile cardioencephalomyopathy due to cytochrome c oxidase deficiency 2
+0080359	fatal infantile cardioencephalomyopathy due to cytochrome c oxidase deficiency 3
+0080360	fatal infantile cardioencephalomyopathy due to cytochrome c oxidase deficiency 4
+0080361	trimethylaminuria
+0080362	spondyloepiphyseal dysplasia tarda
+0080363	mitochondrial pyruvate carrier deficiency
+0080364	malignant adenoma
+0080365	endometrial hyperplasia
+0080366	desmoid tumor
+0080367	chronic eosinophilic leukemia
+0080368	sex cord-stromal benign neoplasm
+0080369	ovarian sex-cord stromal tumor
+0080370	ovarian sex cord-stromal benign neoplasm
+0080371	testicular sex cord-stromal benign neoplasm
+0080372	epithelioid inflammatory myofibroblastic sarcoma
+0080373	epididymis disease
+0080374	gastroesophageal cancer
+0080375	gastroesophageal adenocarcinoma
+0080376	trichorhinophalangeal syndrome type III
+0080377	peroxisomal biogenesis disorder
+0080378	obsolete Zellweger spectrum disorder
+0080488	mucolipidosis
+0080489	GM1 gangliosidosis type 3
+0080490	mucolipidosis type IV
+0080491	cerebral cavernous malformation 1
+0080492	leukocyte adhesion deficiency 2
+0080493	ovarian dysgenesis 1
+0080494	ovarian dysgenesis 2
+0080495	ovarian dysgenesis 3
+0080496	ovarian dysgenesis 4
+0080497	ovarian dysgenesis 5
+0080498	ovarian dysgenesis 6
+0080499	ovarian dysgenesis 7
+0080500	ovarian dysgenesis 8
+0080501	GM1 gangliosidosis type 2
+0080502	GM1 gangliosidosis type 1
+0080503	multiple congenital anomalies-hypotonia-seizures syndrome
+0080504	Parkinson&apos;s disease 22
+0080505	Cornelia de Lange syndrome 1
+0080506	Cornelia de Lange syndrome 2
+0080507	Cornelia de Lange syndrome 3
+0080508	Cornelia de Lange syndrome 4
+0080509	Cornelia de Lange syndrome 5
+0080510	epidermolysis bullosa simplex localized type
+0080511	epidermolysis bullosa simplex generalized type
+0080512	Meier-Gorlin syndrome 1
+0080513	Meier-Gorlin syndrome 2
+0080514	Meier-Gorlin syndrome 3
+0080515	Meier-Gorlin syndrome 4
+0080516	Meier-Gorlin syndrome 5
+0080517	Meier-Gorlin syndrome 6
+0080518	Meier-Gorlin syndrome 7
+0080519	PAPA syndrome
+0080520	Tn polyagglutination syndrome
+0080521	lung non-squamous non-small cell carcinoma
+0080522	thyroid gland anaplastic carcinoma
+0080523	adult-onset leukoencephalopathy with axonal spheroids and pigmented glia
+0080524	thyroid gland adenocarcinoma
+0080525	differentiated thyroid gland carcinoma
+0080526	bronchiectasis 1
+0080527	bronchiectasis 2
+0080528	bronchiectasis 3
+0080530	granular corneal dystrophy 1
+0080531	dedifferentiated liposarcoma
+0080532	Smarca4-deficient sarcoma of thorax
+0080533	Carney-Stratakis syndrome
+0080534	myxofibrosarcoma
+0080535	hypermanganesemia with dystonia
+0080536	hypermanganesemia with dystonia 1
+0080537	hypermanganesemia with dystonia 2
+0080538	Sweeney-Cox syndrome
+0080539	PEHO syndrome
+0080540	galactosialidosis
+0080541	hyperprolinemia
+0080542	hyperprolinemia type 1
+0080543	hyperprolinemia type 2
+0080544	hyper IgM syndrome
+0080545	hyper IgE syndrome
+0080546	non-alcoholic fatty liver
+0080547	non-alcoholic steatohepatitis
+0080548	LEOPARD syndrome 1
+0080549	LEOPARD syndrome 2
+0080550	LEOPARD syndrome 3
+0080551	Naxos disease
+0080577	polygenic disease
+0080578	digenic disease
+0080579	3-Methylcrotonyl-CoA carboxylase 1 deficiency
+0080580	3-Methylcrotonyl-CoA carboxylase 2 deficiency
+0080581	hyperekplexia 4
+0080582	hypotrichosis 14
+0080583	Wolfram syndrome, mitochondrial form
+0080584	autosomal dominant Wolfram syndrome
+0080585	Van Maldergem syndrome 1
+0080586	Van Maldergem syndrome 2
+0080587	congenital myasthenic syndrome 22
+0080588	agammaglobulinemia 5
+0080589	Klippel-Feil syndrome 1
+0080590	Klippel-Feil syndrome 2
+0080592	Klippel-Feil syndrome 3
+0080592	Klippel-Feil syndrome 4
+0080593	orofacial cleft 6
+0080594	hyper IgE recurrent infection syndrome 2
+0080595	hyper IgE recurrent infection syndrome 3
+0080596	hyper IgE recurrent infection syndrome 4
+0080597	Kleefstra syndrome
+0080598	Kleefstra syndrome 2
+0080599	Coronavirus infection
+0080600	COVID-19
+0080601	germ cell benign neoplasm
+0080602	benign teratoma
+0080603	ankylosing spondylitis 1
+0080604	ankylosing spondylitis 2
+0080605	ankylosing spondylitis 3
+0080606	anterior segment dysgenesis 1
+0080607	anterior segment dysgenesis 2
+0080608	anterior segment dysgenesis 3
+0080609	anterior segment dysgenesis 4
+0080610	anterior segment dysgenesis 5
+0080611	anterior segment dysgenesis 6
+0080612	anterior segment dysgenesis 7
+0080613	anterior segment dysgenesis 8
+0080614	oculocutaneous albinism type VI
+0080615	nephroma
+0080616	kidney cortex disease
+0080617	lymph node benign neoplasm
+0080618	lymph node carcinoma
+0080619	auditory system benign neoplasm
+0080620	familial glucocorticoid deficiency
+0080621	glucocorticoid deficiency 1
+0080622	peroxisome biogenesis disorder 2B
+0080623	Heimler syndrome 1
+0080624	Heimler syndrome 2
+0080625	severe congenital neutropenia 1
+0080626	corticosterone methyloxidase deficiency 1
+0080627	alopecia-mental retardation syndrome
+0080628	alopecia-mental retardation syndrome 1
+0080629	alopecia-mental retardation syndrome 2
+0080631	Elsahy-Waters syndrome
+0080632	Fazio-Londe disease
+0080633	developmental cardiac valvular defect
+0080634	nanophthalmos
+0080635	optic disc anomalies with retinal and/or macular dystrophy
+0080636	syndromic microphthalmia
+0080637	isolated microphthalmia
+0110048	Alzheimer&apos;s disease 15
+0110074	arrhythmogenic right ventricular dysplasia 5
+0110086	asphyxiating thoracic dystrophy 2
+0110087	asphyxiating thoracic dystrophy 3
+0110088	asphyxiating thoracic dystrophy 4
+0110089	asphyxiating thoracic dystrophy 5
+0110094	short-rib thoracic dysplasia 8 with or without polydactyly
+0110106	atrial heart septal defect 1
+0110122	Axenfeld-Rieger syndrome type 3
+0110132	Bardet-Biedl syndrome 10
+0110139	Bardet-Biedl syndrome 17
+0110146	Bartter disease type 4b
+0110147	Bartter disease type 5
+0110160	Charcot-Marie-Tooth disease axonal type 2T
+0110169	Charcot-Marie-Tooth disease axonal type 2P
+0110184	Charcot-Marie-Tooth disease type 4J
+0110219	Brugada syndrome 2
+0110303	autosomal dominant limb-girdle muscular dystrophy type 1H
