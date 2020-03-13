@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="jumbotron text-center">
+    <h1 class="display-4"><b><i class="material-icons" style="font-size: 40px">book</i>PhenCards</b></h1>
+	<p class="lead">PhenCards is a real-time phenotype-based information search engine.</p>
+</div>
+
+<div class="container">
+	<form action="{{ url_for('phen2Gene') }}" method="post" ENCTYPE="multipart/form-data" role="form" >
+		<hr class="my-4">
+
+		<!-- text box to enter HPO IDs -->
+		<div class="form-group" id="manual">
+			<span style="display: inline;">
+			<h3><i class="material-icons">book</i>Phenotype Names or Database IDs</h3>
+		    </span>
+			<textarea class="form-control" name="HPO_list" id="HPO_list" rows="4" placeholder="e.g. JOUBERT SYNDROME 30; JBTS30"></textarea>
+			<span class="form-text text-muted">Please enter your focused phenotype names / HPO ID.</span>
+		</div> 
+
+		<!-- text box to enter patient description -->
+		<div class="form-group" id="doc2hpo" style="display:none;">
+			<h3><i class="material-icons">assignment</i>Patient Description</h3>
+			<textarea class="form-control" name="doc2hpo_notes" id="doc2hpo_notes" rows="10" placeholder="He denies synophrys. Individual II-1 is a 10 year old boy. He was born at term with normal birth parameters and good APGAR scores (9/10/10). The neonatal period was uneventful, and he had normal motor development during early childhood: he began to look up at 3 months, sit by himself at 5 months, stand up at 11 months, walk at 13 months, and speak at 17 months. He attended a regular kindergarten, without any signs of difference in intelligence, compared to his peers. Starting at age 6, the parents observed ever increasing behavioral disturbance for the boy, manifesting in multiple aspects of life. For example, he can no longer wear clothes by himself, cannot obey instruction from parents/teachers, can no longer hold subjects tightly in hand, which were all things that he could do before 6 years of age. In addition, he no longer liked to play with others; instead, he just preferred to stay by himself, and he sometimes fell down when he walked on the stairs, which had rarely happened at age 5. The proband continued to deteriorate: at age 9, he could not say a single word and had no action or response to any instruction given in clinical exams. Additionally, rough facial features were noted with a flat nasal bridge, a synophrys (unibrow), a long and smooth philtrum, thick lips and an enlarged mouth. He also had rib edge eversion, and it was also discovered that he was profoundly deaf and had completely lost the ability to speak. He also had loss of bladder control. The diagnosis of severe intellectual disability was made, based on Wechsler Intelligence Scale examination. Brain MRI demonstrated cortical atrophy with enlargement of the subarachnoid spaces and ventricular dilatation (Figure 2). Brainstem evoked potentials showed moderate abnormalities. Electroencephalography (EEG) showed abnormal sleep EEG."></textarea> 
+			<span class="form-text text-muted">Please enter a patient description here.</span>
+		</div> 
+
+		<!-- weight model dropdown -->
+		<div class="form-group">
+			<h3><i class="material-icons">fitness_center</i>Input Type</h3>
+			<select class="form-control" name="weight_model" id="weight_model">
+				<option value="sk">Search by Phenotype Name (default) </option>
+                <option value="w">Search by HPO ID  </option>
+{#				<option value="w">w - weights HPO terms by information content  </option>#}
+{#				<option value="ic">ic - changes the information content weight calculation </option>#}
+{#				<option value="u">u - does not weight HPO term gene lists by information content </option>#}
+			</select>
+		</div>
+
+		<!-- submit and reset buttons -->
+		<div class="form-group">
+
+			{{ form.csrf_token }}
+
+				<button type="reset" class="btn btn-success" style="margin-right: 15px"><i class="material-icons" style="font-size: 16px">redo</i>Reset</button>
+				<button type="submit" class="btn btn-info"><i class="material-icons" style="font-size: 16px">send</i>Submit</button>
+		</div>    
+
+
+
+		<input type="hidden" value="<?php echo $_SERVER['REMOTE_ADDR']; ?>" name="ip" />
+		<input type="hidden" value="<?php echo GetHostByAddr($_SERVER['REMOTE_ADDR']); ?>" name="host" />
+	</form> 
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- toggle between manual HPO ids and using doc2hpo -->
+<script type="text/javascript">
+	$(function () {
+		$("#doc2hpo_check").click(function () {
+			if ($(this).is(":checked")) {
+				$("#doc2hpo").show();
+				$("#manual").hide();
+			} else {
+				$("#doc2hpo").hide();
+				$("#manual").show();
+			}
+		});
+	});
+</script>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="jumbotron text-center">
+	<h1 class="display-4"><i class="material-icons" style="font-size: 40px">book</i>PhenCards</h1>
+	<p class="lead">PhenCards is a real-time phenotype-based gene prioritization tool.</p>
+</div> 
+
+<!-- container -->
+<div class="container">
+	<h1>API Documentation</h1>
+	<br>
+
+	<h3>Resource URL</h3>
+	<p>To access the API, make a GET request to the following URL:</p>
+	<p class="text-primary">https://phen2gene.wglab.org/api</p>
+	<p>The resource will return the following response object:</p>
+	<pre>
+{
+  results: a list of genes ranked by association to the HPO ID(s),
+  errors: a list of error messages
+}
+	</pre>
+
+	<h3>Resource Information</h3>
+	<p>Response formats: JSON<br>
+	Requires authentication: No</p>
+	<br>
+
+	<h3>Parameters</h3>
+	<table class="table table-striped table-bordered table-sm">
+		<thead>
+			<tr>
+				<td><strong>Name</strong></td>
+				<td><strong>Required</strong></td>
+				<td><strong>Description</strong></td>
+				<td><strong>Default Value</strong></td>
+				<td><strong>Example</strong></td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>HPO_list</td>
+				<td>Yes</td>
+				<td>HPO ID(s) separated by a semicolon</td>
+				<td>None</td>
+				<td>HP:0002459 or HP:0002459;HP:0010522;HP:0001662</td>
+			</tr>
+			<tr>
+				<td>weight_model</td>
+				<td>No</td>
+				<td>Method to weigh gene scores</td>
+				<td>sk</td>
+				<td>sk (weighted by skewness), w (ontology-based information content), ic (information content by Sanchez), or u (unweighted)</td>
+			</tr>
+		</tbody>
+	</table>
+	<br>
+
+	<h3>Example Requests</h3>
+	<p><code>curl -i -H "Accept: application/json" -H "Content-Type: application/json" "https://phen2gene.wglab.org/api?HPO_list=HP:0002459"</code></p>
+	<p><code>curl -i -H "Accept: application/json" -H "Content-Type: application/json" "https://phen2gene.wglab.org/api?HPO_list=HP:0002459;HP:0010522;HP:0001662"</code></p>
+	<p><code>curl -i -H "Accept: application/json" -H "Content-Type: application/json" "https://phen2gene.wglab.org/api?HPO_list=HP:0002459;HP:0010522;HP:0001662&weight_model=sk"</code></p>
+	<br>
+
+	<h3>Example Response</h3>
+	<p>The following response is for the request <code>https://phen2gene.wglab.org/api?HPO_list=HP:0002459</code>. Only the first three genes and the last three genes are shown to save space.</p>
+	<code style=display:block;white-space:pre-wrap>
+{
+  "results": [
+    {
+      "Gene": "ALK",
+      "Rank": "1",
+      "Gene ID": "238",
+      "Score": "1.0",
+      "Status": "SeedGene"
+    },
+    {
+      "Gene": "ATP7A",
+      "Rank": "2",
+      "Gene ID": "538",
+      "Score": "0.815589",
+      "Status": "SeedGene"
+    },
+    {
+      "Gene": "TTR",
+      "Rank": "3",
+      "Gene ID": "7276",
+      "Score": "0.728405",
+      "Status": "SeedGene"
+    },
+    ...
+    {
+      "Gene": "PNKP",
+      "Rank": "12870",
+      "Gene ID": "11284",
+      "Score": "0.0",
+      "Status": "Predicted"
+    },
+    {
+      "Gene": "TCERG1",
+      "Rank": "12871",
+      "Gene ID": "10915",
+      "Score": "0.0",
+      "Status": "Predicted"
+    },
+    {
+      "Gene": "ZHX1",
+      "Rank": "12872",
+      "Gene ID": "11244",
+      "Score": "0.0",
+      "Status": "Predicted"
+    }
+  ],
+  "errors": [
+    "HP:0002459 (obsolete Dysautonomia) is obsolete, and replaced by HP:0012332.\nPhen2Gene gave the weight of HP:0012332 to HP:0002459 ."
+  ]
+}
+	</code>
+
+</div>	
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+	$(document).ready(function () {
+	  	$("#nav-home").removeClass("active");
+   		$("#nav-api").addClass("active");
+	});
+</script>
+{% endblock %}
