@@ -4,15 +4,12 @@ from collections import defaultdict
 import sqlite3
 from flask import Flask, Response, render_template, redirect, url_for, request, abort, flash
 from flask_cors import CORS
-from forms import PhenCardsForm, Phen2GeneForm
+from forms import Phen2GeneForm
 from config import Config
 from json2html import *
 import json
 import requests
-from lib.prioritize import gene_prioritization
 from lib.json import format_json_table
-from lib.weight_assignment import assign
-from lib.calculation import calc, calc_simple
 
 knowledgebase = "./lib/Knowledgebase/"
 
@@ -33,18 +30,37 @@ data = []
 # //////////////////////////////////////// start
 
 
-def get_results(phen_name: str, weight_model='u'):
+def get_results(phen_name: str, weight_model='pn'):
     global results
     phen_name = phen_name.strip()
     results = None
+
+    # if search by hpo id
+    if weight_model == 'hpo':
+        if phen_name == None:
+            return "No input detected."
+        # use phen_dict as final result
+        phen_dict = defaultdict(list)
+        cursor1 = c1.execute("SELECT * FROM PHENBASE WHERE [HPO-ID]='" + phen_name + "'")
+        for row in cursor1:
+            # index in database
+            idx = row[0]
+            phenName = row[1]
+            exDb = row[2]
+            HPOId = row[3]
+            HPOName = row[4]
+            phen_dict[idx].extend([HPOId, HPOName, phenName, exDb])
+        # print(phen_dict)
+
+        # output the JSON
+        return format_json_table(weight_model.lower(), phen_dict)
 
     # If no phenotype name available, exit the scripts.
     if phen_name == None:
         return "No input detected."
 
     phen_dict = defaultdict(list)
-    cursor1 = c1.execute("SELECT * FROM PHENBASE WHERE DiseaseName='" + phen_name + "'")
-    HPOSet = set()
+    cursor1 = c1.execute("SELECT * FROM PHENBASE WHERE DiseaseName LIKE'%" + phen_name + "%'")
     for row in cursor1:
         # index in database
         idx = row[0]
