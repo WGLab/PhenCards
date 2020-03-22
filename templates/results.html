@@ -3,8 +3,7 @@
 {% block content %}
 <div class="jumbotron text-center">
 	<h1 class="display-4"><i class="material-icons" style="font-size: 48px">assessment</i>Results </h1>
-    <h4 class="display-6">By default, only the top 1000 genes are displayed.</h4>
-    <p class="lead">Please export the results to see all the gene rankings.</p>
+    <p class="lead">Please export the results to see all the relative database results.</p>
 	<a href="{{ url_for('phen2Gene') }}"><button type="button" class="btn btn-success" style="margin-right: 15px"><i class="material-icons" style="font-size: 16px;">redo</i>Re-analyze</button></a>
 
 	<a data-toggle="modal" data-target="#export-data"><button type="button" class="btn btn-info"><i class="material-icons" style="font-size: 16px">cloud_download</i>Export</button></a>
@@ -25,6 +24,52 @@
 		</div>
 	</div>
 </div>
+{# new ///////////////////////////////////// start  #}
+<div class="container" >
+
+<table style="width:100%">
+  <tr>
+      <th><span style="color: darkblue; ">HPO Results</span></th>
+  </tr>
+</table>
+
+</div>
+<br />
+{# new ///////////////////////////////////// end  #}
+<div class="container" >
+
+	<!-- error/warning messages -->
+	<div>
+		<ul id="error-messages" role="alert">
+			{% for e in errors %}
+			<li>{{ e }}</li>
+			{% endfor %}
+		</ul>
+	</div>
+
+	<!-- make error/warning messages yellow if any exist -->
+	<script type="text/javascript">
+		$("#error-messages").each(function() {
+			if($(this).children().length > 0) {
+				$(this).addClass("alert alert-warning");
+			}
+		});
+	</script>
+
+	{{ html_table1|safe }}
+
+</div>
+
+<br />
+<div class="container" >
+
+<table style="width:100%">
+  <tr>
+      <th><span style="color: darkblue; ">OMIM Results (table to be updated)</span></th>
+  </tr>
+</table>
+</div>
+<br />
 
 <div class="container" >
 
@@ -46,19 +91,49 @@
 		});
 	</script>
 
-	{{ html_table|safe }}
+	{{ html_table2|safe }}
 
-</div>  
+</div>
+
+<br />
+<div class="container" >
+
+<table style="width:100%">
+  <tr>
+      <th><span style="color: darkblue; ">UMLS Results (table to be updated)</span></th>
+  </tr>
+</table>
+</div>
+<br />
+
+<div class="container" >
+
+	{{ html_table2|safe }}
+
+</div>
 {% endblock %}
 
 {% block scripts %}
 <!-- make nice table with multiple pages -->
 <script type="text/javascript">
 	$(document).ready(function () {
-	  	$('#results-table').DataTable({
+	  	$('#results-table1, results-table2').DataTable({
 	  		"order": [[ 1, "asc" ]],
-	  		"pageLength": 100,
-	  		"lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]]
+	  		"pageLength": 5,
+	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
+	  	});
+	});
+</script>
+{% endblock %}
+
+{% block scripts1 %}
+<!-- make nice table with multiple pages -->
+<script type="text/javascript">
+	$(document).ready(function () {
+	  	$('#results-table2').DataTable({
+	  		"order": [[ 1, "asc" ]],
+	  		"pageLength": 5,
+	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
 	  	});
 	});
 </script>

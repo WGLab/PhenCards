@@ -21,7 +21,8 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config.from_object(Config)
 
-results = None
+results1 = None
+results2 = None
 errors = None
 doc2hpo_error = None
 
@@ -31,41 +32,45 @@ data = []
 
 
 def get_results(phen_name: str, weight_model='pn'):
-    global results
+    global results1
+    global results2
     phen_name = phen_name.strip()
-    results = None
+    results1 = results2 = None
 
     # if search by hpo id
     if weight_model == 'hpo':
         if phen_name == None:
             return "No input detected."
         # use phen_dict as final result
-        phen_dict = defaultdict(list)
+        phen_dict1 = defaultdict(list)
+        phen_dict2 = defaultdict(list)
         cursor1 = c1.execute("SELECT * FROM PHENBASE WHERE [HPO-ID]='" + phen_name + "'")
         for row in cursor1:
             # index in database
             idx = row[0]
             phenName = row[1]
-            exDb = row[2]
+            OMIMID = row[2]
             HPOId = row[3]
             HPOName = row[4]
-            phen_dict[idx].extend([HPOId, HPOName, phenName, exDb])
+            phen_dict1[idx].extend([HPOId, HPOName, phenName, OMIMID])
+            phen_dict2[idx].extend([phenName, OMIMID])
         # print(phen_dict)
 
         # output the JSON
-        return format_json_table(weight_model.lower(), phen_dict)
+        return format_json_table(weight_model.lower(), phen_dict1, 'HPO'), format_json_table(weight_model.lower(), phen_dict1, 'OMIM')
 
     # If no phenotype name available, exit the scripts.
     if phen_name == None:
         return "No input detected."
 
-    phen_dict = defaultdict(list)
+    phen_dict1 = defaultdict(list)
+    phen_dict2 = defaultdict(list)
     cursor1 = c1.execute("SELECT * FROM PHENBASE WHERE DiseaseName LIKE'%" + phen_name + "%'")
     for row in cursor1:
         # index in database
         idx = row[0]
         phenName = row[1]
-        exDb = row[2]
+        OMIMID = row[2]
         HPOId = row[3]
         HPOName = row[4]
         # print(HPOId)
@@ -77,16 +82,20 @@ def get_results(phen_name: str, weight_model='pn'):
                 refDb = item[1] + ': ' + item[2]
                 refName = item[3]
         '''
-        phen_dict[idx].extend([phenName, exDb, HPOId, HPOName])
-    # print(phen_dict)
+        # add another table for the result page
+        phen_dict1[idx].extend([phenName, HPOId, HPOName])
+        phen_dict2[idx].extend([phenName, OMIMID])
 
-    # output the JSON
-    return format_json_table(weight_model.lower(), phen_dict)
+        # output the JSON
+
+
+    return format_json_table(weight_model.lower(), phen_dict1, 'HPO'), format_json_table(weight_model.lower(), phen_dict2, 'OMIM')
 
 
 @app.route('/', methods=["GET", "POST"])
 def phen2Gene():
-    global results
+    global results1
+    global results2
     global doc2hpo_error
     doc2hpo_error = None
     # * methods in form class?
@@ -149,7 +158,7 @@ def phen2Gene():
             if not HPO_list:
                 HPO_list = "JOUBERT SYNDROME 30; JBTS30"
 
-        results = get_results(HPO_list, weight_model)
+        results1, results2 = get_results(HPO_list, weight_model)
         return redirect(url_for('results_page'))
     return render_template('index.html', form=form)
 
@@ -167,13 +176,17 @@ def results_page():
         errors = set()
 
     try:
-        top_1000 = json.loads(results)[:1000]
+        top_1000_1 = json.loads(results1)[:1000]
     except:
-        top_1000 = results
+        top_1000_1 = results1
+    try:
+        top_1000_2 = json.loads(results2)[:1000]
+    except:
+        top_1000_2 = results2
 
-    html_table = json2html.convert(json=top_1000,
-                                   table_attributes="id=\"results-table\" class=\"table table-striped table-bordered table-sm\"")
-    return render_template('results.html', html_table=html_table, errors=errors)
+    html_table1 = json2html.convert(json=top_1000_1, table_attributes="id=\"results-table1\" class=\"table table-striped table-bordered table-sm\"")
+    html_table2 = json2html.convert(json=top_1000_2, table_attributes="id=\"results-table1\" class=\"table table-striped table-bordered table-sm\"")
+    return render_template('results.html', html_table1=html_table1, html_table2=html_table2, errors=errors)
 
 
 # page for API documentation
