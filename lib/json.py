@@ -92,6 +92,16 @@ def format_json_table(weight_model, gene_dict, type):
                         'OMIM ID': gene_dict[gene_item][1]
                     }
                     gene_info_lst.append(gene_info_dict)
+            elif type == 'ICD':
+                for gene_item in gene_dict.keys():
+                    # phen_dict3[idx].extend([ICD10ID, PARENTIDX, ABBREV, NAME])
+                    gene_info_dict = {
+                        'ICD-10 Name': gene_dict[gene_item][3],
+                        'ICD-10 ID': gene_dict[gene_item][0],
+                        'Abbreviation Name': gene_dict[gene_item][2],
+                        'Parent Index': gene_dict[gene_item][1]
+                    }
+                    gene_info_lst.append(gene_info_dict)
                                     
     json_fmt = json.dumps(gene_info_lst)
     return json_fmt

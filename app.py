@@ -14,7 +14,9 @@ from lib.json import format_json_table
 knowledgebase = "./lib/Knowledgebase/"
 
 conn = sqlite3.connect("./database/phenotype.db", check_same_thread=False)
+# connect to PHENBASE
 c1 = conn.cursor()
+# connect to ICD10BASE
 c2 = conn.cursor()
 
 app = Flask(__name__)
@@ -23,19 +25,23 @@ app.config.from_object(Config)
 
 results1 = None
 results2 = None
+results3 = None
 errors = None
 doc2hpo_error = None
 
 DOC2HPO_URL = "https://impact2.dbmi.columbia.edu/doc2hpo/parse/acdat"
 data = []
+
+
 # //////////////////////////////////////// start
 
 
 def get_results(phen_name: str, weight_model='pn'):
     global results1
     global results2
+    global results3
     phen_name = phen_name.strip()
-    results1 = results2 = None
+    results1 = results2 = results3 = None
 
     # if search by hpo id
     if weight_model == 'hpo':
@@ -57,7 +63,8 @@ def get_results(phen_name: str, weight_model='pn'):
         # print(phen_dict)
 
         # output the JSON
-        return format_json_table(weight_model.lower(), phen_dict1, 'HPO'), format_json_table(weight_model.lower(), phen_dict1, 'OMIM')
+        return format_json_table(weight_model.lower(), phen_dict1, 'HPO'), format_json_table(weight_model.lower(),
+                                                                                             phen_dict1, 'OMIM')
 
     # If no phenotype name available, exit the scripts.
     if phen_name == None:
@@ -65,6 +72,7 @@ def get_results(phen_name: str, weight_model='pn'):
 
     phen_dict1 = defaultdict(list)
     phen_dict2 = defaultdict(list)
+    phen_dict3 = defaultdict(list)
     cursor1 = c1.execute("SELECT * FROM PHENBASE WHERE DiseaseName LIKE'%" + phen_name + "%'")
     for row in cursor1:
         # index in database
@@ -85,17 +93,25 @@ def get_results(phen_name: str, weight_model='pn'):
         # add another table for the result page
         phen_dict1[idx].extend([phenName, HPOId, HPOName])
         phen_dict2[idx].extend([phenName, OMIMID])
-
+    cursor2 = c2.execute("SELECT * FROM ICD10BASE WHERE NAME LIKE'%" + phen_name + "%'")
+    for row in cursor2:
+        # index in database
+        idx = row[0]
+        ICD10ID = row[1]
+        PARENTIDX = row[2]
+        ABBREV = row[3]
+        NAME = row[4]
         # output the JSON
+        phen_dict3[idx].extend([ICD10ID, PARENTIDX, ABBREV, NAME])
 
-
-    return format_json_table(weight_model.lower(), phen_dict1, 'HPO'), format_json_table(weight_model.lower(), phen_dict2, 'OMIM')
+    return format_json_table(weight_model.lower(), phen_dict1, 'HPO'), format_json_table(weight_model.lower(), phen_dict2, 'OMIM'), format_json_table(weight_model.lower(), phen_dict3, 'ICD')
 
 
 @app.route('/', methods=["GET", "POST"])
 def phen2Gene():
     global results1
     global results2
+    global results3
     global doc2hpo_error
     doc2hpo_error = None
     # * methods in form class?
@@ -156,9 +172,9 @@ def phen2Gene():
             HPO_list = form.HPO_list.data
             # default HPO list
             if not HPO_list:
-                HPO_list = "JOUBERT SYNDROME 30; JBTS30"
+                HPO_list = "SYNDROME"
 
-        results1, results2 = get_results(HPO_list, weight_model)
+        results1, results2, results3 = get_results(HPO_list, weight_model)
         return redirect(url_for('results_page'))
     return render_template('index.html', form=form)
 
@@ -183,10 +199,18 @@ def results_page():
         top_1000_2 = json.loads(results2)[:1000]
     except:
         top_1000_2 = results2
+    try:
+        top_1000_3 = json.loads(results3)[:1000]
+    except:
+        top_1000_3 = results3
 
-    html_table1 = json2html.convert(json=top_1000_1, table_attributes="id=\"results-table1\" class=\"table table-striped table-bordered table-sm\"")
-    html_table2 = json2html.convert(json=top_1000_2, table_attributes="id=\"results-table1\" class=\"table table-striped table-bordered table-sm\"")
-    return render_template('results.html', html_table1=html_table1, html_table2=html_table2, errors=errors)
+    html_table1 = json2html.convert(json=top_1000_1,
+                                    table_attributes="id=\"results-table1\" class=\"table table-striped table-bordered table-sm\"")
+    html_table2 = json2html.convert(json=top_1000_2,
+                                    table_attributes="id=\"results-table2\" class=\"table table-striped table-bordered table-sm\"")
+    html_table3 = json2html.convert(json=top_1000_3,
+                                    table_attributes="id=\"results-table3\" class=\"table table-striped table-bordered table-sm\"")
+    return render_template('results.html', html_table1=html_table1, html_table2=html_table2, html_table3=html_table3, errors=errors)
 
 
 # page for API documentation
@@ -197,7 +221,7 @@ def instructions_page():
 
 @app.route('/download_json/')
 def download_json():
-    return Response(results, mimetype="application/json",
+    return Response(results1, mimetype="application/json",
                     headers={"Content-disposition":
                                  "attachment; filename=results.json"})
 
@@ -276,4 +300,4 @@ if __name__ == '__main__':
     app.run()
     # res = get_results("HP:0000707;HP:0007598;HP:0001156;HP:0012446", weight_model = 'u')
     # print(res[0:10])
-    # get_results('10q22.3q23.3 microdeletion syndrome')
+    # get_results('a')

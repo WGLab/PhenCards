@@ -65,7 +65,7 @@
 
 <table style="width:100%">
   <tr>
-      <th><span style="color: darkblue; ">OMIM Results (table to be updated)</span></th>
+      <th><span style="color: darkblue; ">OMIM Results</span></th>
   </tr>
 </table>
 </div>
@@ -100,7 +100,7 @@
 
 <table style="width:100%">
   <tr>
-      <th><span style="color: darkblue; ">UMLS Results (table to be updated)</span></th>
+      <th><span style="color: darkblue; ">ICD-10 Results</span></th>
   </tr>
 </table>
 </div>
@@ -108,7 +108,7 @@
 
 <div class="container" >
 
-	{{ html_table2|safe }}
+	{{ html_table3|safe }}
 
 </div>
 {% endblock %}
@@ -117,20 +117,7 @@
 <!-- make nice table with multiple pages -->
 <script type="text/javascript">
 	$(document).ready(function () {
-	  	$('#results-table1, results-table2').DataTable({
-	  		"order": [[ 1, "asc" ]],
-	  		"pageLength": 5,
-	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
-	  	});
-	});
-</script>
-{% endblock %}
-
-{% block scripts1 %}
-<!-- make nice table with multiple pages -->
-<script type="text/javascript">
-	$(document).ready(function () {
-	  	$('#results-table2').DataTable({
+	  	$('#results-table1, #results-table2, #results-table3').DataTable({
 	  		"order": [[ 1, "asc" ]],
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
