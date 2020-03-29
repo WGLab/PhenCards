@@ -73,25 +73,41 @@
 
 <div class="container" >
 
-	<!-- error/warning messages -->
-	<div>
-		<ul id="error-messages" role="alert">
-			{% for e in errors %}
-			<li>{{ e }}</li>
-			{% endfor %}
-		</ul>
-	</div>
+	{{ html_table2OMIM|safe }}
 
-	<!-- make error/warning messages yellow if any exist -->
-	<script type="text/javascript">
-		$("#error-messages").each(function() {
-			if($(this).children().length > 0) {
-				$(this).addClass("alert alert-warning");
-			}
-		});
-	</script>
+</div>
 
-	{{ html_table2|safe }}
+<br />
+<div class="container" >
+
+<table style="width:100%">
+  <tr>
+      <th><span style="color: darkblue; ">DECIPHER Results</span></th>
+  </tr>
+</table>
+</div>
+<br />
+
+<div class="container" >
+
+    {{ html_table2D|safe }}
+
+</div>
+
+<br />
+<div class="container" >
+
+<table style="width:100%">
+  <tr>
+      <th><span style="color: darkblue; ">ORPHA Results</span></th>
+  </tr>
+</table>
+</div>
+<br />
+
+<div class="container" >
+
+    {{ html_table2OR|safe }}
 
 </div>
 
@@ -117,7 +133,7 @@
 <!-- make nice table with multiple pages -->
 <script type="text/javascript">
 	$(document).ready(function () {
-	  	$('#results-table1, #results-table2, #results-table3').DataTable({
+	  	$('#results-table1, #results-table2OMIM, #results-table2D, #results-table2OR, #results-table3').DataTable({
 	  		"order": [[ 1, "asc" ]],
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]

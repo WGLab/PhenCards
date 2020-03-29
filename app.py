@@ -24,7 +24,9 @@ cors = CORS(app)
 app.config.from_object(Config)
 
 results1 = None
-results2 = None
+results2OMIM = None
+results2D = None
+results2OR = None
 results3 = None
 errors = None
 doc2hpo_error = None
@@ -38,10 +40,12 @@ data = []
 
 def get_results(phen_name: str, weight_model='pn'):
     global results1
-    global results2
+    global results2OMIM
+    global results2D
+    global results2OR
     global results3
     phen_name = phen_name.strip()
-    results1 = results2 = results3 = None
+    results1 = results2OMIM = results2D = results2OR = results3 = None
 
     # if search by hpo id
     if weight_model == 'hpo':
@@ -70,8 +74,12 @@ def get_results(phen_name: str, weight_model='pn'):
     if phen_name == None:
         return "No input detected."
 
+    # when searching by string:
     phen_dict1 = defaultdict(list)
     phen_dict2 = defaultdict(list)
+    phen_dict2_OMIM = defaultdict(list)
+    phen_dict2_DECIPHER = defaultdict(list)
+    phen_dict2_ORPHA = defaultdict(list)
     phen_dict3 = defaultdict(list)
     cursor1 = c1.execute("SELECT * FROM PHENBASE WHERE DiseaseName LIKE'%" + phen_name + "%'")
     for row in cursor1:
@@ -92,7 +100,13 @@ def get_results(phen_name: str, weight_model='pn'):
         '''
         # add another table for the result page
         phen_dict1[idx].extend([phenName, HPOId, HPOName])
-        phen_dict2[idx].extend([phenName, OMIMID])
+        if OMIMID[:4] == 'OMIM':
+            phen_dict2_OMIM[idx].extend([phenName, OMIMID, HPOId, HPOName])
+        elif OMIMID[:8] == 'DECIPHER':
+            phen_dict2_DECIPHER[idx].extend([phenName, OMIMID, HPOId, HPOName])
+        elif OMIMID[:5] == 'ORPHA':
+            phen_dict2_ORPHA[idx].extend([phenName, OMIMID, HPOId, HPOName])
+        phen_dict2[idx].extend([phenName, OMIMID, HPOId, HPOName])
     cursor2 = c2.execute("SELECT * FROM ICD10BASE WHERE NAME LIKE'%" + phen_name + "%'")
     for row in cursor2:
         # index in database
@@ -104,13 +118,16 @@ def get_results(phen_name: str, weight_model='pn'):
         # output the JSON
         phen_dict3[idx].extend([ICD10ID, PARENTIDX, ABBREV, NAME])
 
-    return format_json_table(weight_model.lower(), phen_dict1, 'HPO'), format_json_table(weight_model.lower(), phen_dict2, 'OMIM'), format_json_table(weight_model.lower(), phen_dict3, 'ICD')
+    return format_json_table(weight_model.lower(), phen_dict1, 'HPO'), format_json_table(weight_model.lower(), phen_dict2_OMIM, 'OMIM'), \
+           format_json_table(weight_model.lower(), phen_dict2_DECIPHER, 'DECIPHER'), format_json_table(weight_model.lower(), phen_dict2_ORPHA, 'ORPHA'), format_json_table(weight_model.lower(), phen_dict3, 'ICD')
 
 
 @app.route('/', methods=["GET", "POST"])
 def phen2Gene():
     global results1
-    global results2
+    global results2OMIM
+    global results2D
+    global results2OR
     global results3
     global doc2hpo_error
     doc2hpo_error = None
@@ -174,7 +191,7 @@ def phen2Gene():
             if not HPO_list:
                 HPO_list = "SYNDROME"
 
-        results1, results2, results3 = get_results(HPO_list, weight_model)
+        results1, results2OMIM, results2D, results2OR, results3 = get_results(HPO_list, weight_model)
         return redirect(url_for('results_page'))
     return render_template('index.html', form=form)
 
@@ -196,9 +213,17 @@ def results_page():
     except:
         top_1000_1 = results1
     try:
-        top_1000_2 = json.loads(results2)[:1000]
+        top_1000_2OMIM = json.loads(results2OMIM)[:1000]
     except:
-        top_1000_2 = results2
+        top_1000_2OMIM = results2OMIM
+    try:
+        top_1000_2D = json.loads(results2D)[:1000]
+    except:
+        top_1000_2D = results2D
+    try:
+        top_1000_2OR = json.loads(results2OR)[:1000]
+    except:
+        top_1000_2OR = results2OR
     try:
         top_1000_3 = json.loads(results3)[:1000]
     except:
@@ -206,11 +231,15 @@ def results_page():
 
     html_table1 = json2html.convert(json=top_1000_1,
                                     table_attributes="id=\"results-table1\" class=\"table table-striped table-bordered table-sm\"")
-    html_table2 = json2html.convert(json=top_1000_2,
-                                    table_attributes="id=\"results-table2\" class=\"table table-striped table-bordered table-sm\"")
+    html_table2OMIM = json2html.convert(json=top_1000_2OMIM,
+                                    table_attributes="id=\"results-table2OMIM\" class=\"table table-striped table-bordered table-sm\"")
+    html_table2D = json2html.convert(json=top_1000_2D,
+                                        table_attributes="id=\"results-table2D\" class=\"table table-striped table-bordered table-sm\"")
+    html_table2OR = json2html.convert(json=top_1000_2OR,
+                                        table_attributes="id=\"results-table2OR\" class=\"table table-striped table-bordered table-sm\"")
     html_table3 = json2html.convert(json=top_1000_3,
                                     table_attributes="id=\"results-table3\" class=\"table table-striped table-bordered table-sm\"")
-    return render_template('results.html', html_table1=html_table1, html_table2=html_table2, html_table3=html_table3, errors=errors)
+    return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM, html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3, errors=errors)
 
 
 # page for API documentation

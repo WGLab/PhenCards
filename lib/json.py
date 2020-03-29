@@ -85,11 +85,33 @@ def format_json_table(weight_model, gene_dict, type):
                     gene_info_lst.append(gene_info_dict)
             elif type == 'OMIM':
                 for gene_item in gene_dict.keys():
-                    # output_file.write(str(rank) + "\t" + gene_dict[gene_item][0] + "\t" + str(gene_item) + "\t" + str( np.round(gene_dict[gene_item][1] / highest_score, 6 ) ) + "\t" +gene_dict[gene_item][2] + "\n" )
-                    # phen_dict2[idx].extend([phenName, OMIMID])
+                    # phen_dict2[idx].extend([phenName, OMIMID, HPOId, HPOName])
                     gene_info_dict = {
                         'Phenotype Name': gene_dict[gene_item][0],
-                        'OMIM ID': gene_dict[gene_item][1]
+                        'OMIM ID': gene_dict[gene_item][1],
+                        'HPO ID': gene_dict[gene_item][2],
+                        'HPO Name': gene_dict[gene_item][3]
+                    }
+                    gene_info_lst.append(gene_info_dict)
+            elif type == 'DECIPHER':
+                for gene_item in gene_dict.keys():
+                    # phen_dict2[idx].extend([phenName, OMIMID, HPOId, HPOName])
+                    gene_info_dict = {
+                        'Phenotype Name': gene_dict[gene_item][0],
+                        'DECIPHER ID': gene_dict[gene_item][1],
+                        'HPO ID': gene_dict[gene_item][2],
+                        'HPO Name': gene_dict[gene_item][3]
+                    }
+                    gene_info_lst.append(gene_info_dict)
+
+            elif type == 'ORPHA':
+                for gene_item in gene_dict.keys():
+                    # phen_dict2[idx].extend([phenName, OMIMID, HPOId, HPOName])
+                    gene_info_dict = {
+                        'Phenotype Name': gene_dict[gene_item][0],
+                        'ORPHA ID': gene_dict[gene_item][1],
+                        'HPO ID': gene_dict[gene_item][2],
+                        'HPO Name': gene_dict[gene_item][3]
                     }
                     gene_info_lst.append(gene_info_dict)
             elif type == 'ICD':
