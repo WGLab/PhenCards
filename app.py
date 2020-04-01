@@ -216,6 +216,17 @@ def phen2Gene():
 @app.route('/results')
 def results_page():
     # only allow internal redirect to results page
+    def add_link(html_res):
+        html_lst = html_res.split("</td>")
+        for i in range(len(html_lst)):
+            item = html_lst[i]
+            if "<td>" in item:
+                idx = item.find("<td>")
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://en.wikipedia.org/w/index.php?cirrusUserTesting=glent_m0&search=' + item[(idx + 4):].replace(
+                    ' ', '%20') + '&title=Special%3ASearch&go=Go&ns0=1">' + item[(idx + 4):] + '</a>'
+        html_res = '</td>'.join(html_lst)
+        return html_res
+
     if not request.referrer:
         return redirect(url_for('phen2Gene'))
 
@@ -226,37 +237,41 @@ def results_page():
         errors = set()
 
     try:
-        top_1000_1 = json.loads(results1)[:1000]
+        top_100_1 = json.loads(results1)[:100]
     except:
-        top_1000_1 = results1
+        top_100_1 = results1
     try:
-        top_1000_2OMIM = json.loads(results2OMIM)[:1000]
+        top_100_2OMIM = json.loads(results2OMIM)[:100]
     except:
-        top_1000_2OMIM = results2OMIM
+        top_100_2OMIM = results2OMIM
     try:
-        top_1000_2D = json.loads(results2D)[:1000]
+        top_100_2D = json.loads(results2D)[:100]
     except:
-        top_1000_2D = results2D
+        top_100_2D = results2D
     try:
-        top_1000_2OR = json.loads(results2OR)[:1000]
+        top_100_2OR = json.loads(results2OR)[:100]
     except:
-        top_1000_2OR = results2OR
+        top_100_2OR = results2OR
     try:
-        top_1000_3 = json.loads(results3)[:1000]
+        top_100_3 = json.loads(results3)[:100]
     except:
-        top_1000_3 = results3
+        top_100_3 = results3
 
-    html_table1 = json2html.convert(json=top_1000_1,
+    html_table1 = json2html.convert(json=top_100_1,
                                     table_attributes="id=\"results-table1\" class=\"table table-striped table-bordered table-sm\"")
-    html_table2OMIM = json2html.convert(json=top_1000_2OMIM,
+    html_table1 = add_link(html_table1)
+    html_table2OMIM = json2html.convert(json=top_100_2OMIM,
                                         table_attributes="id=\"results-table2OMIM\" class=\"table table-striped table-bordered table-sm\"")
-    html_table2D = json2html.convert(json=top_1000_2D,
+    html_table2OMIM = add_link(html_table2OMIM)
+    html_table2D = json2html.convert(json=top_100_2D,
                                      table_attributes="id=\"results-table2D\" class=\"table table-striped table-bordered table-sm\"")
-    html_table2OR = json2html.convert(json=top_1000_2OR,
+    html_table2D = add_link(html_table2D)
+    html_table2OR = json2html.convert(json=top_100_2OR,
                                       table_attributes="id=\"results-table2OR\" class=\"table table-striped table-bordered table-sm\"")
-    html_table3 = json2html.convert(json=top_1000_3,
+    html_table2OR = add_link(html_table2OR)
+    html_table3 = json2html.convert(json=top_100_3,
                                     table_attributes="id=\"results-table3\" class=\"table table-striped table-bordered table-sm\"")
-
+    html_table3 = add_link(html_table3)
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
                            html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
                            errors=errors)
