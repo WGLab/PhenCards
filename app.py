@@ -215,15 +215,37 @@ def phen2Gene():
 
 @app.route('/results')
 def results_page():
+
     # only allow internal redirect to results page
+    # <wiki link> https://en.wikipedia.org/wiki/Waterhouse%E2%80%93Friderichsen_syndrome
+    # <ICD-10 ID link> https://www.icd10data.com/search?s=A391&codebook=icd10all
+    # <OMIM ID link> https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=248340
+    # <HPO ID link> https://hpo.jax.org/app/browse/search?q=HP:0000377&navFilter=all
+
     def add_link(html_res):
         html_lst = html_res.split("</td>")
         for i in range(len(html_lst)):
             item = html_lst[i]
-            if "<td>" in item:
+
+            if "<td>HP:" in item:
+                # find index of the <td>
+                idx = item.find("<td>HP:")
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):] + "&navFilter=all>" \
+                + item[(idx + 4):] + '</a>'
+
+            elif "<td>OMIM:" in item:
+                idx = item.find("<td>OMIM:")
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
+                + item[(idx+9):] + ">" + item[(idx + 4):] + '</a>'
+
+            elif "<td>" in item:
                 idx = item.find("<td>")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://en.wikipedia.org/w/index.php?cirrusUserTesting=glent_m0&search=' + item[(idx + 4):].replace(
-                    ' ', '%20') + '&title=Special%3ASearch&go=Go&ns0=1">' + item[(idx + 4):] + '</a>'
+                if item[idx+4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" and item[idx+5:].isdigit():
+                    html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx+4:] \
+                    + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
+                    continue
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://en.wikipedia.org/w/index.php?cirrusUserTesting=glent_m0&search=' + item[(idx + 4):].replace(' ', '%20') \
+                + '&title=Special%3ASearch&go=Go&ns0=1">' + item[(idx + 4):] + '</a>'
         html_res = '</td>'.join(html_lst)
         return html_res
 
