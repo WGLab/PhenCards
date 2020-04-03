@@ -48,3 +48,5 @@ OMIM: https://www.ncbi.nlm.nih.gov/omim
 Gene Ontology: http://geneontology.org  
 UniProt: https://www.uniprot.org   
   
+## How to deploy the Docker image on DigitalOcean
+[Documentation is here](DOCKER.md)
