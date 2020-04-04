@@ -221,8 +221,63 @@ def results_page():
     # <ICD-10 ID link> https://www.icd10data.com/search?s=A391&codebook=icd10all
     # <OMIM ID link> https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=248340
     # <HPO ID link> https://hpo.jax.org/app/browse/search?q=HP:0000377&navFilter=all
+    # <HPO string> https://hpo.jax.org/app/browse/search?q=DiGeorge%20syndrome&navFilter=all
+    def add_link_1(html_res):
+        html_lst = html_res.split("</td>")
+        for i in range(len(html_lst)):
+            item = html_lst[i]
 
-    def add_link(html_res):
+            if "<td>HP:" in item:
+                # find index of the <td>
+                idx = item.find("<td>HP:")
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):] + "&navFilter=all>" \
+                + item[(idx + 4):] + '</a>'
+
+            elif "<td>OMIM:" in item:
+                idx = item.find("<td>OMIM:")
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
+                + item[(idx+9):] + ">" + item[(idx + 4):] + '</a>'
+
+            elif "<td>" in item:
+                idx = item.find("<td>")
+                if item[idx+4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" and item[idx+5:].isdigit():
+                    html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx+4:] \
+                    + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
+                    continue
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):].replace(' ', '%20') \
+                + '&navFilter=all">' + item[(idx + 4):] + '</a>'
+        html_res = '</td>'.join(html_lst)
+        return html_res
+
+    # <OMIM link> https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=DiGeorge+syndrome
+    def add_link_2OMIM(html_res):
+        html_lst = html_res.split("</td>")
+        for i in range(len(html_lst)):
+            item = html_lst[i]
+
+            if "<td>HP:" in item:
+                # find index of the <td>
+                idx = item.find("<td>HP:")
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):] + "&navFilter=all>" \
+                + item[(idx + 4):] + '</a>'
+
+            elif "<td>OMIM:" in item:
+                idx = item.find("<td>OMIM:")
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
+                + item[(idx+9):] + ">" + item[(idx + 4):] + '</a>'
+
+            elif "<td>" in item:
+                idx = item.find("<td>")
+                if item[idx+4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" and item[idx+5:].isdigit():
+                    html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx+4:] \
+                    + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
+                    continue
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' + item[(idx + 4):].replace(' ', '+') \
+                + '>' + item[(idx + 4):] + '</a>'
+        html_res = '</td>'.join(html_lst)
+        return html_res
+
+    def add_link_2D(html_res):
         html_lst = html_res.split("</td>")
         for i in range(len(html_lst)):
             item = html_lst[i]
@@ -246,6 +301,34 @@ def results_page():
                     continue
                 html_lst[i] = item[:(idx + 4)] + '<a href=https://en.wikipedia.org/w/index.php?cirrusUserTesting=glent_m0&search=' + item[(idx + 4):].replace(' ', '%20') \
                 + '&title=Special%3ASearch&go=Go&ns0=1">' + item[(idx + 4):] + '</a>'
+        html_res = '</td>'.join(html_lst)
+        return html_res
+
+    # <ICD link> https://www.icd10data.com/search?s=waterhouse-friderchsen%20syndrome&codebook=icd10all
+    def add_link_3(html_res):
+        html_lst = html_res.split("</td>")
+        for i in range(len(html_lst)):
+            item = html_lst[i]
+
+            if "<td>HP:" in item:
+                # find index of the <td>
+                idx = item.find("<td>HP:")
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):] + "&navFilter=all>" \
+                + item[(idx + 4):] + '</a>'
+
+            elif "<td>OMIM:" in item:
+                idx = item.find("<td>OMIM:")
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
+                + item[(idx+9):] + ">" + item[(idx + 4):] + '</a>'
+
+            elif "<td>" in item:
+                idx = item.find("<td>")
+                if item[idx+4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" and item[idx+5:].isdigit():
+                    html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx+4:] \
+                    + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
+                    continue
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[(idx + 4):].replace(' ', '%20') \
+                + '&codebook=icd10all">' + item[(idx + 4):] + '</a>'
         html_res = '</td>'.join(html_lst)
         return html_res
 
@@ -281,19 +364,19 @@ def results_page():
 
     html_table1 = json2html.convert(json=top_100_1,
                                     table_attributes="id=\"results-table1\" class=\"table table-striped table-bordered table-sm\"")
-    html_table1 = add_link(html_table1)
+    html_table1 = add_link_1(html_table1)
     html_table2OMIM = json2html.convert(json=top_100_2OMIM,
                                         table_attributes="id=\"results-table2OMIM\" class=\"table table-striped table-bordered table-sm\"")
-    html_table2OMIM = add_link(html_table2OMIM)
+    html_table2OMIM = add_link_2OMIM(html_table2OMIM)
     html_table2D = json2html.convert(json=top_100_2D,
                                      table_attributes="id=\"results-table2D\" class=\"table table-striped table-bordered table-sm\"")
-    html_table2D = add_link(html_table2D)
+    html_table2D = add_link_2D(html_table2D)
     html_table2OR = json2html.convert(json=top_100_2OR,
                                       table_attributes="id=\"results-table2OR\" class=\"table table-striped table-bordered table-sm\"")
-    html_table2OR = add_link(html_table2OR)
+    html_table2OR = add_link_2D(html_table2OR)
     html_table3 = json2html.convert(json=top_100_3,
                                     table_attributes="id=\"results-table3\" class=\"table table-striped table-bordered table-sm\"")
-    html_table3 = add_link(html_table3)
+    html_table3 = add_link_3(html_table3)
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
                            html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
                            errors=errors)
