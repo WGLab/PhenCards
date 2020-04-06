@@ -1,3 +1,6 @@
+To create DigitalOcean Droplet:
+Create a droplet in NYC region 3, with 2G mem and 50G storage with CentOS 7.8, no other configuration, then install docker exactly as in https://docs.docker.com/install/linux/docker-ce/centos/.
+
 Make `Dockerfile` with this in it:
 ```
 FROM python:3.7-alpine
