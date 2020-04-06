@@ -17,7 +17,7 @@ Minimally, need flask and redis in `requirements.txt`.
 
 Then
 
-`curl -fsSL https://get.docker.com/rootless | sh` ([link to tutorial for this])(https://docs.docker.com/engine/security/rootless/)
+`curl -fsSL https://get.docker.com/rootless | sh` ([link to tutorial for this](https://docs.docker.com/engine/security/rootless/))
 
 Next
 `export XDG_RUNTIME_DIR=/run/user/`id -u``
