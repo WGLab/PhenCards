@@ -1,7 +1,7 @@
 To create DigitalOcean Droplet:
 Create a droplet in NYC region 3, with 2G mem and 50G storage with CentOS 7.8, no other configuration, then install docker exactly as in https://docs.docker.com/engine/install/centos/.
 
-After installing, make sure to do this postinstall step to add the docker group and individual users to the group.  https://docs.docker.com/engine/install/linux-postinstall/
+After installing, make sure to do this postinstall step to add the docker group and individual users to the group.  https://docs.docker.com/engine/install/linux-postinstall/ (e.g. `sudo usermod -aG docker dongx4`)
 
 Make `Dockerfile` with this in it:
 ```
