@@ -20,9 +20,12 @@ Then
 `curl -fsSL https://get.docker.com/rootless | sh` ([link to tutorial for this](https://docs.docker.com/engine/security/rootless/))
 
 Next
-`export XDG_RUNTIME_DIR=/run/user/`id -u``
-`export DOCKER_HOST=unix:///run/user/1002/docker.sock`
-`systemctl --user start docker`
+
+```
+export XDG_RUNTIME_DIR=/run/user/`id -u`
+export DOCKER_HOST=unix:///run/user/1002/docker.sock
+systemctl --user start docker
+```
 
 `docker build -t phencards --network=host .`
 
