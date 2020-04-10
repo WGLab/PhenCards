@@ -53,4 +53,4 @@ nohup docker run -d -p 5000:5000 phencards &
 
 This has been conveniently saved into a file: `bash runsite.sh`.
 
-To stop a docker container, check the container ID (something like `c954b6c89a4b081996ef34de6727317a1f270c20c6d3701823b30a59c6569505` when you `docker run`), then do `docker stop c954b6c89a4b081996ef34de6727317a1f270c20c6d3701823b30a59c6569505`.
+To stop a docker container, check the container ID (something like `8a2652352336` when you `docker ps`), then do `docker stop 8a2652352336`.
