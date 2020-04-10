@@ -6,7 +6,7 @@ To create DigitalOcean Droplet: Create a droplet in NYC region 3, with 2G mem an
 
 After installing, make sure to do this postinstall step to add the docker group and individual users to the group.  https://docs.docker.com/engine/install/linux-postinstall/ (e.g. `sudo usermod -aG docker dongx4`). This is to allow dongx4 to run docker.
 
-# docker 
+# run phencards in docker mode
 
 Make `Dockerfile` with this in it:
 ```
@@ -53,4 +53,14 @@ nohup docker run -d -p 5000:5000 phencards &
 
 This has been conveniently saved into a file: `bash runsite.sh`.
 
+Note that in phencards source code the port is hard coded as 5000, so if you want to start a server in port 5001, the command `docker run -d -p 5001:5000 phencards` should be used.
+
 To stop a docker container, check the container ID (something like `8a2652352336` when you `docker ps`), then do `docker stop 8a2652352336`.
+
+# docker pack image to tar
+
+describe procedure here
+
+# docker run a tar image in another server
+
+describe procedure here. `docker load --input phencards.tar` to load the file first, then `docker run -d -p 5000:5000 phencards`.
