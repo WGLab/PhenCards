@@ -1,7 +1,12 @@
-To create DigitalOcean Droplet:
-Create a droplet in NYC region 3, with 2G mem and 50G storage with CentOS 7.8, no other configuration, then install docker exactly as in https://docs.docker.com/engine/install/centos/.
+# droplet setup
 
-After installing, make sure to do this postinstall step to add the docker group and individual users to the group.  https://docs.docker.com/engine/install/linux-postinstall/ (e.g. `sudo usermod -aG docker dongx4`)
+The information below is for documentation purposes only. Users do not need to use it, since the server set up and docker set up are already done.
+
+To create DigitalOcean Droplet: Create a droplet in NYC region 3, with 2G mem and 50G storage with CentOS 7.8, no other configuration, then install docker exactly as in https://docs.docker.com/engine/install/centos/. (For CentOS 8, the instruction does not work if using yum, and install from source file instead)
+
+After installing, make sure to do this postinstall step to add the docker group and individual users to the group.  https://docs.docker.com/engine/install/linux-postinstall/ (e.g. `sudo usermod -aG docker dongx4`). This is to allow dongx4 to run docker.
+
+# docker 
 
 Make `Dockerfile` with this in it:
 ```
@@ -47,3 +52,5 @@ nohup docker run -d -p 5000:5000 phencards &
 ```
 
 This has been conveniently saved into a file: `bash runsite.sh`.
+
+To stop a docker container, check the container ID (something like `c954b6c89a4b081996ef34de6727317a1f270c20c6d3701823b30a59c6569505` when you `docker run`), then do `docker stop c954b6c89a4b081996ef34de6727317a1f270c20c6d3701823b30a59c6569505`.
