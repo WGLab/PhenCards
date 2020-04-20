@@ -224,7 +224,7 @@ def phen2Gene():
             HPO_list = form.HPO_list.data
             # default HPO list
             if not HPO_list:
-                HPO_list = "SYNDROME"
+                HPO_list = "cleft palate"
 
         results1, results2OMIM, results2D, results2OR, results3 = get_results(HPO_list, weight_model)
         return redirect(url_for('results_page'))

@@ -15,7 +15,7 @@
 			<span style="display: inline;">
 			<h3><i class="material-icons">book</i>Enter you want to search for here:</h3>
 		    </span>
-			<textarea class="form-control" name="HPO_list" id="HPO_list" rows="4" placeholder="e.g. SYNDROME (Search by Phenotype Name)"></textarea>
+			<textarea class="form-control" name="HPO_list" id="HPO_list" rows="4" placeholder="e.g. cleft palate (Search by Phenotype Name)"></textarea>
 			<span class="form-text text-muted">Please enter your focused phenotype names / external database ID.</span>
 		</div> 
 
@@ -26,22 +26,23 @@
 			<span class="form-text text-muted">Please enter which category are you searching for:</span>
 		</div> 
 
-		<!-- weight model dropdown -->
-		<div class="form-group">
-			<h3><i class="material-icons">fitness_center</i>Input Type</h3>
-			<select class="form-control" name="weight_model" id="weight_model">
-				<option value="pn">HPO Name/Phenotype/Concept Name (support partial string) </option>
-                <option value="hpo">ID Search (OMIM/HPO/ICD/UMLS,etc)  </option>
-			</select>
-		</div>
+{#		<!-- weight model dropdown -->#}
+{#		<div class="form-group">#}
+{#			<h3><i class="material-icons">fitness_center</i>Input Type</h3>#}
+{#			<select class="form-control" name="weight_model" id="weight_model">#}
+{#				<option value="pn">HPO Name/Phenotype/Concept Name (support partial string) </option>#}
+{#                <option value="hpo">ID Search (OMIM/HPO/ICD/UMLS,etc)  </option>#}
+{#			</select>#}
+{#		</div>#}
 
 		<!-- submit and reset buttons -->
 		<div class="form-group">
 
 			{{ form.csrf_token }}
 
-				<button type="reset" class="btn btn-success" style="margin-right: 15px"><i class="material-icons" style="font-size: 16px">redo</i>Reset</button>
-				<button type="submit" class="btn btn-info"><i class="material-icons" style="font-size: 16px">send</i>Search for </button>
+				<button type="reset" class="btn btn-success" style="margin-right: 16px"><i class="material-icons" style="font-size: 16px">redo</i>Reset</button>
+				<button type="submit" class="btn btn-info" name="weight_model" value="pn"><i class="material-icons" style="font-size: 16px">send</i>Search for Concept Name</button>
+                <button type="submit" class="btn btn-info" name="weight_model" value="hpo"><i class="material-icons" style="font-size: 16px">send</i>Search for Database ID</button>
 		</div>    
 
 

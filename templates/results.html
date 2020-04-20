@@ -24,18 +24,38 @@
 		</div>
 	</div>
 </div>
-{# new ///////////////////////////////////// start  #}
+{# header ///////////////////////////////////// start  #}
 <div class="container" >
-
-<table style="width:100%">
+<head>
+<style>
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 15px;
+  text-align: left;
+}
+table#t01 {
+  width: 100%;
+  background-color: #f1f1c1;
+}
+</style>
+</head>
+<table id="t01">
   <tr>
-      <th><span style="color: darkblue; ">HPO Results</span></th>
+      <th><span style="color: darkblue;">Aliases</span></th>
+      <th><span style="color: darkblue;">Related Gene</span></th>
+      <th><span style="color: darkblue;">Results in HPO Database</span></th>
+      <th><span style="color: darkblue;">Results in HPO Database</span></th>
+      <th><span style="color: darkblue;">Publications</span></th>
+
   </tr>
 </table>
 
 </div>
 <br />
-{# new ///////////////////////////////////// end  #}
+{# header ///////////////////////////////////// end  #}
 <div class="container" >
 
 	<!-- error/warning messages -->
