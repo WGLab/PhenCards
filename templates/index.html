@@ -37,13 +37,18 @@
 
 		<!-- submit and reset buttons -->
 		<div class="form-group">
-
+            {# design button#}
 			{{ form.csrf_token }}
+            <input type="radio" id="huey" name="weight_model" value="pn" checked>
+            <label for="huey">Search for Concept Name</label>
+            <input type="radio" id="dewey" name="weight_model" value="hpo">
+            <label for="dewey">Search for Database ID</label>
+            <br><br>
+            <button type="reset" class="btn btn-success" style="margin-right: 16px"><i class="material-icons" style="font-size: 16px">redo</i>Reset</button>
+            <button type="submit" class="btn btn-info"><i class="material-icons" style="font-size: 16px">send</i>Search</button>
+            {# <button type="submit" class="btn btn-info" name="weight_model" value="hpo"><i class="material-icons" style="font-size: 16px">send</i>Search for Database ID</button>#}
 
-				<button type="reset" class="btn btn-success" style="margin-right: 16px"><i class="material-icons" style="font-size: 16px">redo</i>Reset</button>
-				<button type="submit" class="btn btn-info" name="weight_model" value="pn"><i class="material-icons" style="font-size: 16px">send</i>Search for Concept Name</button>
-                <button type="submit" class="btn btn-info" name="weight_model" value="hpo"><i class="material-icons" style="font-size: 16px">send</i>Search for Database ID</button>
-		</div>    
+        </div>
 
 
 

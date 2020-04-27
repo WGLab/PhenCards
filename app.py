@@ -3,7 +3,7 @@
 from collections import defaultdict
 import sqlite3
 from flask import Flask, Response, render_template, redirect, url_for, request, abort, flash
-from flask_cors import CORS
+# from flask_cors import CORS
 from forms import Phen2GeneForm
 from config import Config
 from json2html import *
@@ -19,7 +19,7 @@ c1 = conn.cursor()
 c2 = conn.cursor()
 
 app = Flask(__name__)
-cors = CORS(app)
+# cors = CORS(app)
 app.config.from_object(Config)
 
 # results1 is used to store HPO related information, table 1 in result page
@@ -30,6 +30,9 @@ results2D = None
 results2OR = None
 # results3 is used to store ICD-10 information, table 5 in result page
 results3 = None
+
+# use API from phen2gene web app
+HPOID = 'HP:0000175'
 
 # errors and doc2hpo-error are for the errors storage
 errors = None
@@ -46,10 +49,12 @@ def get_results(phen_name: str, weight_model='pn'):
     global results2D
     global results2OR
     global results3
+    global HPOID
+    global GeneAPI_JSON
 
     phen_name = phen_name.strip()
     # initialize values
-    results1 = results2OMIM = results2D = results2OR = results3 = None
+    results1 = results2OMIM = results2D = results2OR = results3 = GeneAPI_JSON = None
 
     # (1) if search by hpo id
     if weight_model == 'hpo':
@@ -92,7 +97,7 @@ def get_results(phen_name: str, weight_model='pn'):
         # output the JSON
         return format_json_table(weight_model.lower(), phen_dict1, 'HPO'), format_json_table(weight_model.lower(), phen_dict2_OMIM, 'OMIM'), \
                format_json_table(weight_model.lower(), phen_dict2_DECIPHER, 'DECIPHER'), format_json_table(weight_model.lower(), phen_dict2_ORPHA, 'ORPHA'), \
-               format_json_table(weight_model.lower(), phen_dict3, 'ICD')
+               format_json_table(weight_model.lower(), phen_dict3, 'ICD'),
 
     # If no phenotype name available, exit the scripts.
     if phen_name is None:
@@ -137,7 +142,7 @@ def get_results(phen_name: str, weight_model='pn'):
         elif OMIMID[:5] == 'ORPHA':
             phen_dict2_ORPHA[idx].extend([phenName, OMIMID, HPOId, HPOName])
         phen_dict2[idx].extend([phenName, OMIMID, HPOId, HPOName])
-
+        HPOID = phen_dict1[idx][1]
     # use c2 to get information inside ICD10BASE
     cursor2 = c2.execute("SELECT * FROM ICD10BASE WHERE NAME LIKE'%" + phen_name + "%'")
     for row in cursor2:
@@ -164,6 +169,7 @@ def phen2Gene():
     global results2OR
     global results3
     global doc2hpo_error
+    global GeneAPI_JSON
     doc2hpo_error = None
 
     # methods in form class
@@ -407,6 +413,11 @@ def results_page():
         top_100_3 = json.loads(results3)[:100]
     except:
         top_100_3 = results3
+    GeneAPI_JSON = requests.get('https://phen2gene.wglab.org/api?HPO_list=' + HPOID + '&weight_model=sk', verify=False).json()['results'][:100]
+    try:
+        GeneAPI_JSON = json.loads(GeneAPI_JSON)[:100]
+    except:
+        GeneAPI_JSON = GeneAPI_JSON
 
     html_table1 = json2html.convert(json=top_100_1,
                                     table_attributes="id=\"results-table1\" class=\"table table-striped table-bordered table-sm\"")
@@ -423,9 +434,12 @@ def results_page():
     html_table3 = json2html.convert(json=top_100_3,
                                     table_attributes="id=\"results-table3\" class=\"table table-striped table-bordered table-sm\"")
     html_table3 = add_link_3(html_table3)
+    html_gene_api = json2html.convert(json=GeneAPI_JSON,
+                                    table_attributes="id=\"results-gene-api\" class=\"table table-striped table-bordered table-sm\"")
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
-                           html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
+                           html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3, html_gene_api=html_gene_api,
                            errors=errors)
+
 
 
 # page for API documentation
@@ -514,4 +528,4 @@ def hpo_info_from_phenopacket():
 if __name__ == '__main__':
     app.run()
     # print(res[0:10])
-    # get_results('a')
+    # get_results('cleft')

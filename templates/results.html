@@ -26,6 +26,7 @@
 </div>
 {# header ///////////////////////////////////// start  #}
 <div class="container" >
+
 <head>
 <style>
 table, th, td {
@@ -42,20 +43,95 @@ table#t01 {
 }
 </style>
 </head>
-<table id="t01">
-  <tr>
-      <th><span style="color: darkblue;">Aliases</span></th>
-      <th><span style="color: darkblue;">Related Gene</span></th>
-      <th><span style="color: darkblue;">Results in HPO Database</span></th>
-      <th><span style="color: darkblue;">Results in HPO Database</span></th>
-      <th><span style="color: darkblue;">Publications</span></th>
 
-  </tr>
+<table id="t01">
+    <tr>
+      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Aliases">Aliases</a></span></th>
+      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Ontological Structure">Ontological Structure</a></span></th>
+      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Diseases">Diseases</a></span></th>
+      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Genes">Genes</a></span></th>
+      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Pathway">Pathway</a></span></th>
+    </tr>
+    <tr>
+      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Drugs">Drugs</a></span></th>
+      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Literature">Literature</a></span></th>
+      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Companies & Foundations">Companies & Foundations</a></span></th>
+      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Clinical Trials">Clinical Trials</a></span></th>
+      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Images">Images</a></span></th>
+    </tr>
 </table>
 
 </div>
 <br />
 {# header ///////////////////////////////////// end  #}
+<br>
+<div class="container" id="Aliases">
+    <th><span style="color: #efa50e; "><b>Aliases</b></span></th>
+</div>
+<br>
+
+<br>
+<div class="container" id="Ontological Structure">
+    <th><span style="color: #efa50e; "><b>Ontological Structure</b></span></th>
+</div>
+<br>
+
+<br>
+<div class="container" id="Diseases">
+    <th><span style="color: #efa50e; "><b>Diseases</b></span></th>
+</div>
+<br>
+
+<br>
+<div class="container" id="Genes">
+    <tr><th><span style="color: #efa50e; "><b>Genes</b></span></th></tr>
+    <br><br>
+    <tr><th><span style="color: black; ">Here are the related genes referenced from <a href="https://phen2gene.wglab.org">Phen2Gene web application</a>:</span></th></tr>
+</div>
+<br>
+{# gene list return 04/26/2020 #}
+<div class="container" >
+
+	{{ html_gene_api|safe }}
+
+</div>
+<br>
+<div class="container" id="Pathway">
+    <th><span style="color: #efa50e; "><b>Pathway</b></span></th>
+</div>
+<br>
+
+<br>
+<div class="container" id="Drugs">
+    <th><span style="color: #efa50e; "><b>Drugs</b></span></th>
+</div>
+<br>
+
+<br>
+<div class="container" id="Literature">
+    <th><span style="color: #efa50e; "><b>Literature</b></span></th>
+</div>
+<br>
+
+<br>
+<div class="container" id="Companies & Foundations">
+    <th><span style="color: #efa50e; "><b>Companies & Foundations</b></span></th>
+</div>
+<br>
+
+<br>
+<div class="container" id="Clinical Trials">
+    <th><span style="color: #efa50e; "><b>Clinical Trials</b></span></th>
+</div>
+<br>
+
+<br>
+<div class="container" id="Images">
+    <th><span style="color: #efa50e; "><b>Images</b></span></th>
+</div>
+<br>
+
+
 <div class="container" >
 
 	<!-- error/warning messages -->
@@ -89,7 +165,7 @@ table#t01 {
   </tr>
 </table>
 </div>
-<br />
+<br>
 
 <div class="container" >
 
@@ -97,16 +173,11 @@ table#t01 {
 
 </div>
 
-<br />
+<br>
 <div class="container" >
-
-<table style="width:100%">
-  <tr>
-      <th><span style="color: darkblue; ">DECIPHER Results</span></th>
-  </tr>
-</table>
+    <th><span style="color: darkblue; "><b>DECIPHER Results</b></span></th>
 </div>
-<br />
+<br>
 
 <div class="container" >
 
@@ -153,7 +224,7 @@ table#t01 {
 <!-- make nice table with multiple pages -->
 <script type="text/javascript">
 	$(document).ready(function () {
-	  	$('#results-table1, #results-table2OMIM, #results-table2D, #results-table2OR, #results-table3').DataTable({
+	  	$('#results-table1, #results-table2OMIM, #results-table2D, #results-table2OR, #results-table3, #results-gene-api').DataTable({
 	  		"order": [[ 1, "asc" ]],
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
