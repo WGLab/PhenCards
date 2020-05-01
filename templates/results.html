@@ -30,32 +30,35 @@
 <head>
 <style>
 table, th, td {
-  border: 1px solid black;
+  border: 2px #4b873f;
   border-collapse: collapse;
 }
-th, td {
-  padding: 15px;
-  text-align: left;
+th {
+  padding: 2px;
+  text-align: center;
 }
 table#t01 {
+  border: 2px #5e5e5e;
   width: 100%;
-  background-color: #f1f1c1;
+  background-color: #ececec;
 }
 </style>
 </head>
 
 <table id="t01">
+    <b>Jump to one of these ten sections:</b>
+    <br><br>
     <tr>
-      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Aliases">Aliases</a></span></th>
-      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Ontological Structure">Ontological Structure</a></span></th>
-      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Diseases">Diseases</a></span></th>
-      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Genes">Genes</a></span></th>
-      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Pathway">Pathway</a></span></th>
+      <th width="20%"><span style="color: darkblue;"><a class="page-scroll scroll" href="#Aliases">Aliases</a></span></th>
+      <th width="20%"><span style="color: darkblue;"><a class="page-scroll scroll" href="#Related Terms">Related Terms</a></span></th>
+      <th width="20%"><span style="color: darkblue;"><a class="page-scroll scroll" href="#Diseases">Diseases</a></span></th>
+      <th width="20%"><span style="color: darkblue;"><a class="page-scroll scroll" href="#Genes">Genes</a></span></th>
+      <th width="20%"><span style="color: darkblue;"><a class="page-scroll scroll" href="#Pathway">Pathway</a></span></th>
     </tr>
     <tr>
       <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Drugs">Drugs</a></span></th>
       <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Literature">Literature</a></span></th>
-      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Companies & Foundations">Companies & Foundations</a></span></th>
+      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Companies & Foundations">Companies&Foundations</a></span></th>
       <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Clinical Trials">Clinical Trials</a></span></th>
       <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Images">Images</a></span></th>
     </tr>
@@ -67,12 +70,19 @@ table#t01 {
 <br>
 <div class="container" id="Aliases">
     <th><span style="color: #efa50e; "><b>Aliases</b></span></th>
+    <br><br>
+    <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="https://www.icd10data.com/">ICD-10 database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
+
 </div>
 <br>
+<div class="container" >
 
+	{{ html_table3|safe }}
+
+</div>
 <br>
-<div class="container" id="Ontological Structure">
-    <th><span style="color: #efa50e; "><b>Ontological Structure</b></span></th>
+<div class="container" id="Related Terms">
+    <th><span style="color: #efa50e; "><b>Related Terms</b></span></th>
 </div>
 <br>
 
@@ -156,17 +166,6 @@ table#t01 {
 
 </div>
 
-<br />
-<div class="container" >
-
-<table style="width:100%">
-  <tr>
-      <th><span style="color: darkblue; ">OMIM Results</span></th>
-  </tr>
-</table>
-</div>
-<br>
-
 <div class="container" >
 
 	{{ html_table2OMIM|safe }}
@@ -185,39 +184,12 @@ table#t01 {
 
 </div>
 
-<br />
-<div class="container" >
-
-<table style="width:100%">
-  <tr>
-      <th><span style="color: darkblue; ">ORPHA Results</span></th>
-  </tr>
-</table>
-</div>
-<br />
-
 <div class="container" >
 
     {{ html_table2OR|safe }}
 
 </div>
 
-<br />
-<div class="container" >
-
-<table style="width:100%">
-  <tr>
-      <th><span style="color: darkblue; ">ICD-10 Results</span></th>
-  </tr>
-</table>
-</div>
-<br />
-
-<div class="container" >
-
-	{{ html_table3|safe }}
-
-</div>
 {% endblock %}
 
 {% block scripts %}

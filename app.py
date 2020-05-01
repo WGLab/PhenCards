@@ -153,7 +153,8 @@ def get_results(phen_name: str, weight_model='pn'):
         ABBREV = row[3]
         NAME = row[4]
         # output the JSON
-        phen_dict3[idx].extend([ICD10ID, PARENTIDX, ABBREV, NAME])
+        if NAME.lower().startswith(phen_name.lower()):
+            phen_dict3[idx].extend([ICD10ID, PARENTIDX, ABBREV, NAME])
 
     # return results in json file, transfer dict into json format
     return format_json_table(weight_model.lower(), phen_dict1, 'HPO'), format_json_table(weight_model.lower(), phen_dict2_OMIM, 'OMIM'), \
