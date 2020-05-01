@@ -40,6 +40,9 @@ Next to create the image (replace `phencards` with your site's name):
 docker build -t phencards --network=host .
 ```
 
+If you want to build an image with a more specific tag use:
+`docker build -t phencards:test --network=host .`
+
 To save the image to a TAR file to transfer to the main server `142.93.205.155`:
 
 ```
@@ -63,6 +66,9 @@ docker run -d -p 5003:5000 phencards
 It should be at:
 
 `http://142.93.205.155:5003`
+
+If you want to run an image with a specific tag use:
+`docker run -d -p 5001:5000 phencards:test`.
 
 If you want to start a server in port 5001, the command `docker run -d -p 5001:5000 phencards` should be used.  This is because the first port value is the actual server port, the second one is _inside_ the actual docker container and should _always be_ 5000 unless you know specifically what ports you want to open in the docker container which can get more complex and requires further work.
 
