@@ -66,4 +66,4 @@ It should be at:
 
 If you want to start a server in port 5001, the command `docker run -d -p 5001:5000 phencards` should be used.  This is because the first port value is the actual server port, the second one is _inside_ the actual docker container and should _always be_ 5000 unless you know specifically what ports you want to open in the docker container which can get more complex and requires further work.
 
-To stop a docker container, check the container ID (something like `8a2652352336` when you `docker ps`), then do `docker stop 8a2652352336`. You can also use the shorthand name docker provides like "happy_platypus" or whatever name it assigns to the container.
+To stop a docker container, check the container ID (something like `8a2652352336` when you `docker ps`), then do `docker stop 8a2652352336`. You can also use the shorthand name docker provides like "happy_platypus" or whatever name it assigns to the container.  Like `docker kill happy_platypus`.
