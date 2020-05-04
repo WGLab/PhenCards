@@ -10,6 +10,7 @@ from json2html import *
 import json
 import requests
 from lib.json import format_json_table
+import API
 
 # connect to SQLite at phenotype db file
 conn = sqlite3.connect("./database/phenotype.db", check_same_thread=False)
@@ -32,7 +33,7 @@ results2OR = None
 results3 = None
 
 # use API from phen2gene web app
-HPOID = 'HP:0000175'
+HPOID = 'cleft palate'
 
 # errors and doc2hpo-error are for the errors storage
 errors = None
@@ -41,6 +42,7 @@ doc2hpo_error = None
 DOC2HPO_URL = "https://impact2.dbmi.columbia.edu/doc2hpo/parse/acdat"
 data = []
 
+HPO_list = ''
 
 # get_results is for the SQL query functions
 def get_results(phen_name: str, weight_model='pn'):
@@ -218,7 +220,7 @@ def phen2Gene():
                     negated_HPOs.add(i["hpoId"])
                 else:
                     HPO_set.add(i["hpoId"])
-
+            global HPO_list
             HPO_list = ""
             # only use non-negated HPO IDs
             for i in HPO_set.difference(negated_HPOs):
@@ -240,7 +242,7 @@ def phen2Gene():
 
 @app.route('/results')
 def results_page():
-
+    global HPO_list
     # only allow internal redirect to results page
     # <wiki link> https://en.wikipedia.org/wiki/Waterhouse%E2%80%93Friderichsen_syndrome
     # <ICD-10 ID link> https://www.icd10data.com/search?s=A391&codebook=icd10all
@@ -437,9 +439,10 @@ def results_page():
     html_table3 = add_link_3(html_table3)
     html_gene_api = json2html.convert(json=GeneAPI_JSON,
                                     table_attributes="id=\"results-gene-api\" class=\"table table-striped table-bordered table-sm\"")
+    reference = API.kegg_api_reference(HPO_list).replace('\n', '<br>')
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
                            html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3, html_gene_api=html_gene_api,
-                           errors=errors)
+                           errors=errors, text=reference)
 
 
 

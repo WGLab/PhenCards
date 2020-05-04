@@ -120,7 +120,13 @@ table#t01 {
 <br>
 <div class="container" id="Literature">
     <th><span style="color: #efa50e; "><b>Literature</b></span></th>
+    <br> <br>
+    {% autoescape false %}
+        {{text}}
+    {% endautoescape %}
+
 </div>
+
 <br>
 
 <br>
