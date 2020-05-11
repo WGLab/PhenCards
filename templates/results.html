@@ -72,12 +72,19 @@ table#t01 {
     <th><span style="color: #efa50e; "><b>Aliases</b></span></th>
     <br><br>
     <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="https://www.icd10data.com/">ICD-10 database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
-
+    {{ html_table3|safe }}
+    <br><br>
+    <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="https://hpo.jax.org/app/">HPO database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
+    {{ html_table1|safe }}
 </div>
 <br>
 <div class="container" >
 
-	{{ html_table3|safe }}
+
+
+
+
+
 
 </div>
 <br>
@@ -89,6 +96,13 @@ table#t01 {
 <br>
 <div class="container" id="Diseases">
     <th><span style="color: #efa50e; "><b>Diseases</b></span></th>
+    <br><br>
+    <tr><th><span style="color: black; ">Here are the diseases referenced from <a href="https://www.ncbi.nlm.nih.gov/omim/">OMIM database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
+    {{ html_table2OMIM|safe }}
+    {{ html_table2D|safe }}
+    <br><br>
+    <tr><th><span style="color: black; ">Here are the diseases referenced from <a href="https://www.orpha.net/consor/cgi-bin/index.php">ORPHA database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
+    {{ html_table2OR|safe }}
 </div>
 <br>
 
@@ -127,9 +141,6 @@ table#t01 {
 
 </div>
 
-<br>
-
-<br>
 <div class="container" id="Companies & Foundations">
     <th><span style="color: #efa50e; "><b>Companies & Foundations</b></span></th>
 </div>
@@ -168,31 +179,24 @@ table#t01 {
 		});
 	</script>
 
-	{{ html_table1|safe }}
+</div>
+
+<div class="container" >
+
+
+
+</div>
+
+
+<div class="container" >
+
+
 
 </div>
 
 <div class="container" >
 
-	{{ html_table2OMIM|safe }}
 
-</div>
-
-<br>
-<div class="container" >
-    <th><span style="color: darkblue; "><b>DECIPHER Results</b></span></th>
-</div>
-<br>
-
-<div class="container" >
-
-    {{ html_table2D|safe }}
-
-</div>
-
-<div class="container" >
-
-    {{ html_table2OR|safe }}
 
 </div>
 

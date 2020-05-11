@@ -44,6 +44,7 @@ data = []
 
 HPO_list = ''
 
+
 # get_results is for the SQL query functions
 def get_results(phen_name: str, weight_model='pn'):
     global results1
@@ -97,8 +98,10 @@ def get_results(phen_name: str, weight_model='pn'):
             # output the JSON
             phen_dict3[idx].extend([ICD10ID, PARENTIDX, ABBREV, NAME])
         # output the JSON
-        return format_json_table(weight_model.lower(), phen_dict1, 'HPO'), format_json_table(weight_model.lower(), phen_dict2_OMIM, 'OMIM'), \
-               format_json_table(weight_model.lower(), phen_dict2_DECIPHER, 'DECIPHER'), format_json_table(weight_model.lower(), phen_dict2_ORPHA, 'ORPHA'), \
+        return format_json_table(weight_model.lower(), phen_dict1, 'HPO'), format_json_table(weight_model.lower(),
+                                                                                             phen_dict2_OMIM, 'OMIM'), \
+               format_json_table(weight_model.lower(), phen_dict2_DECIPHER, 'DECIPHER'), format_json_table(
+            weight_model.lower(), phen_dict2_ORPHA, 'ORPHA'), \
                format_json_table(weight_model.lower(), phen_dict3, 'ICD'),
 
     # If no phenotype name available, exit the scripts.
@@ -115,7 +118,7 @@ def get_results(phen_name: str, weight_model='pn'):
     phen_dict3 = defaultdict(list)
 
     # use c1 to get data from PHENBASE
-    cursor1 = c1.execute("SELECT * FROM PHENBASE WHERE DiseaseName LIKE'%" + phen_name + "%'")
+    cursor1 = c1.execute("SELECT * FROM PHENBASE WHERE DiseaseName LIKE'" + phen_name + "%'")
     # parse data in cursor1 through analyzing each item in SQL return tuple
     for row in cursor1:
         # index in database
@@ -159,8 +162,10 @@ def get_results(phen_name: str, weight_model='pn'):
             phen_dict3[idx].extend([ICD10ID, PARENTIDX, ABBREV, NAME])
 
     # return results in json file, transfer dict into json format
-    return format_json_table(weight_model.lower(), phen_dict1, 'HPO'), format_json_table(weight_model.lower(), phen_dict2_OMIM, 'OMIM'), \
-           format_json_table(weight_model.lower(), phen_dict2_DECIPHER, 'DECIPHER'), format_json_table(weight_model.lower(), phen_dict2_ORPHA, 'ORPHA'), \
+    return format_json_table(weight_model.lower(), phen_dict1, 'HPO'), format_json_table(weight_model.lower(),
+                                                                                         phen_dict2_OMIM, 'OMIM'), \
+           format_json_table(weight_model.lower(), phen_dict2_DECIPHER, 'DECIPHER'), format_json_table(
+        weight_model.lower(), phen_dict2_ORPHA, 'ORPHA'), \
            format_json_table(weight_model.lower(), phen_dict3, 'ICD')
 
 
@@ -243,6 +248,7 @@ def phen2Gene():
 @app.route('/results')
 def results_page():
     global HPO_list
+
     # only allow internal redirect to results page
     # <wiki link> https://en.wikipedia.org/wiki/Waterhouse%E2%80%93Friderichsen_syndrome
     # <ICD-10 ID link> https://www.icd10data.com/search?s=A391&codebook=icd10all
@@ -257,22 +263,26 @@ def results_page():
             if "<td>HP:" in item:
                 # find index of the <td>
                 idx = item.find("<td>HP:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):] + "&navFilter=all>" \
-                + item[(idx + 4):] + '</a>'
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(
+                                                                                                                       idx + 4):] + "&navFilter=all>" \
+                              + item[(idx + 4):] + '</a>'
 
             elif "<td>OMIM:" in item:
                 idx = item.find("<td>OMIM:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
-                + item[(idx+9):] + ">" + item[(idx + 4):] + '</a>'
+                html_lst[i] = item[:(
+                            idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
+                              + item[(idx + 9):] + ">" + item[(idx + 4):] + '</a>'
 
             elif "<td>" in item:
                 idx = item.find("<td>")
-                if item[idx+4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" and item[idx+5:].isdigit():
-                    html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx+4:] \
-                    + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
+                if item[idx + 4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" and item[idx + 5:].isdigit():
+                    html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx + 4:] \
+                                  + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
                     continue
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):].replace(' ', '%20') \
-                + '&navFilter=all">' + item[(idx + 4):] + '</a>'
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(
+                                                                                                                       idx + 4):].replace(
+                    ' ', '%20') \
+                              + '&navFilter=all">' + item[(idx + 4):] + '</a>'
         html_res = '</td>'.join(html_lst)
         return html_res
 
@@ -285,22 +295,28 @@ def results_page():
             if "<td>HP:" in item:
                 # find index of the <td>
                 idx = item.find("<td>HP:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):] + "&navFilter=all>" \
-                + item[(idx + 4):] + '</a>'
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(
+                                                                                                                       idx + 4):] + "&navFilter=all>" \
+                              + item[(idx + 4):] + '</a>'
 
             elif "<td>OMIM:" in item:
                 idx = item.find("<td>OMIM:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
-                + item[(idx+9):] + ">" + item[(idx + 4):] + '</a>'
+                html_lst[i] = item[:(
+                            idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
+                              + item[(idx + 9):] + ">" + item[(idx + 4):] + '</a>'
 
             elif "<td>" in item:
                 idx = item.find("<td>")
-                if item[idx+4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" and item[idx+5:].isdigit():
-                    html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx+4:] \
-                    + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
+                if item[idx + 4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" and item[idx + 5:].isdigit():
+                    html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx + 4:] \
+                                  + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
                     continue
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' + item[(idx + 4):].replace(' ', '+') \
-                + '>' + item[(idx + 4):] + '</a>'
+                html_lst[i] = item[:(
+                            idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' + item[
+                                                                                                                                                          (
+                                                                                                                                                                      idx + 4):].replace(
+                    ' ', '+') \
+                              + '>' + item[(idx + 4):] + '</a>'
         html_res = '</td>'.join(html_lst)
         return html_res
 
@@ -312,22 +328,28 @@ def results_page():
             if "<td>HP:" in item:
                 # find index of the <td>
                 idx = item.find("<td>HP:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):] + "&navFilter=all>" \
-                + item[(idx + 4):] + '</a>'
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(
+                                                                                                                       idx + 4):] + "&navFilter=all>" \
+                              + item[(idx + 4):] + '</a>'
 
             elif "<td>OMIM:" in item:
                 idx = item.find("<td>OMIM:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
-                + item[(idx+9):] + ">" + item[(idx + 4):] + '</a>'
+                html_lst[i] = item[:(
+                            idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
+                              + item[(idx + 9):] + ">" + item[(idx + 4):] + '</a>'
 
             elif "<td>" in item:
                 idx = item.find("<td>")
-                if item[idx+4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" and item[idx+5:].isdigit():
-                    html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx+4:] \
-                    + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
+                if item[idx + 4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" and item[idx + 5:].isdigit():
+                    html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx + 4:] \
+                                  + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
                     continue
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://en.wikipedia.org/w/index.php?cirrusUserTesting=glent_m0&search=' + item[(idx + 4):].replace(' ', '%20') \
-                + '&title=Special%3ASearch&go=Go&ns0=1">' + item[(idx + 4):] + '</a>'
+                html_lst[i] = item[:(
+                            idx + 4)] + '<a href=https://en.wikipedia.org/w/index.php?cirrusUserTesting=glent_m0&search=' + item[
+                                                                                                                            (
+                                                                                                                                        idx + 4):].replace(
+                    ' ', '%20') \
+                              + '&title=Special%3ASearch&go=Go&ns0=1">' + item[(idx + 4):] + '</a>'
         html_res = '</td>'.join(html_lst)
         return html_res
 
@@ -340,22 +362,28 @@ def results_page():
             if "<td>HP:" in item:
                 # find index of the <td>
                 idx = item.find("<td>HP:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):] + "&navFilter=all>" \
-                + item[(idx + 4):] + '</a>'
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(
+                                                                                                                       idx + 4):] + "&navFilter=all>" \
+                              + item[(idx + 4):] + '</a>'
 
             elif "<td>OMIM:" in item:
                 idx = item.find("<td>OMIM:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
-                + item[(idx+9):] + ">" + item[(idx + 4):] + '</a>'
+                html_lst[i] = item[:(
+                            idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
+                              + item[(idx + 9):] + ">" + item[(idx + 4):] + '</a>'
 
             elif "<td>" in item:
                 idx = item.find("<td>")
-                if item[idx+4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" and item[idx+5:].isdigit():
-                    html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx+4:] \
-                    + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
+                if item[idx + 4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" and item[idx + 5:].isdigit():
+                    html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx + 4:] \
+                                  + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
                     continue
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://bioportal.bioontology.org/search?q=' + item[(idx + 4):].replace(' ', '%20') \
-                + '&ontologies=ORDO&include_properties=false&include_views=false&includeObsolete=false&require_definition=false&exact_match=false">' + item[(idx + 4):] + '</a>'
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://bioportal.bioontology.org/search?q=' + item[(
+                                                                                                                          idx + 4):].replace(
+                    ' ', '%20') \
+                              + '&ontologies=ORDO&include_properties=false&include_views=false&includeObsolete=false&require_definition=false&exact_match=false">' + item[
+                                                                                                                                                                     (
+                                                                                                                                                                                 idx + 4):] + '</a>'
         html_res = '</td>'.join(html_lst)
         return html_res
 
@@ -368,22 +396,26 @@ def results_page():
             if "<td>HP:" in item:
                 # find index of the <td>
                 idx = item.find("<td>HP:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):] + "&navFilter=all>" \
-                + item[(idx + 4):] + '</a>'
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(
+                                                                                                                       idx + 4):] + "&navFilter=all>" \
+                              + item[(idx + 4):] + '</a>'
 
             elif "<td>OMIM:" in item:
                 idx = item.find("<td>OMIM:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
-                + item[(idx+9):] + ">" + item[(idx + 4):] + '</a>'
+                html_lst[i] = item[:(
+                            idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
+                              + item[(idx + 9):] + ">" + item[(idx + 4):] + '</a>'
 
             elif "<td>" in item:
                 idx = item.find("<td>")
-                if item[idx+4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" and item[idx+5:].isdigit():
-                    html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx+4:] \
-                    + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
+                if item[idx + 4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" and item[idx + 5:].isdigit():
+                    html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx + 4:] \
+                                  + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
                     continue
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[(idx + 4):].replace(' ', '%20') \
-                + '&codebook=icd10all">' + item[(idx + 4):] + '</a>'
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[
+                                                                                                 (idx + 4):].replace(
+                    ' ', '%20') \
+                              + '&codebook=icd10all">' + item[(idx + 4):] + '</a>'
         html_res = '</td>'.join(html_lst)
         return html_res
 
@@ -416,7 +448,9 @@ def results_page():
         top_100_3 = json.loads(results3)[:100]
     except:
         top_100_3 = results3
-    GeneAPI_JSON = requests.get('https://phen2gene.wglab.org/api?HPO_list=' + HPOID + '&weight_model=sk', verify=False).json()['results'][:100]
+    GeneAPI_JSON = \
+    requests.get('https://phen2gene.wglab.org/api?HPO_list=' + HPOID + '&weight_model=sk', verify=False).json()[
+        'results'][:100]
     try:
         GeneAPI_JSON = json.loads(GeneAPI_JSON)[:100]
     except:
@@ -438,12 +472,12 @@ def results_page():
                                     table_attributes="id=\"results-table3\" class=\"table table-striped table-bordered table-sm\"")
     html_table3 = add_link_3(html_table3)
     html_gene_api = json2html.convert(json=GeneAPI_JSON,
-                                    table_attributes="id=\"results-gene-api\" class=\"table table-striped table-bordered table-sm\"")
+                                      table_attributes="id=\"results-gene-api\" class=\"table table-striped table-bordered table-sm\"")
     reference = API.kegg_api_reference(HPO_list).replace('\n', '<br>')
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
-                           html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3, html_gene_api=html_gene_api,
+                           html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
+                           html_gene_api=html_gene_api,
                            errors=errors, text=reference)
-
 
 
 # page for API documentation

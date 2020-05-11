@@ -26,7 +26,7 @@ def format_json_table(weight_model, gene_dict, type):
                 # output_file.write(str(rank) + "\t" + gene_dict[gene_item][0] + "\t" + str(gene_item) + "\t" + str( np.round(gene_dict[gene_item][1] / highest_score, 6 ) ) + "\t" +gene_dict[gene_item][2] + "\n" )
                 # phen_dict[idx].extend([phenName, HPOId, HPOName])
                 gene_info_dict = {
-                    'Phenotype Name': gene_dict[gene_item][0],
+                    'Phenotype Aliases': gene_dict[gene_item][0],
                     'HPO ID': gene_dict[gene_item][1],
                     'HPO Name': gene_dict[gene_item][2]
                 }
@@ -35,7 +35,7 @@ def format_json_table(weight_model, gene_dict, type):
             for gene_item in gene_dict.keys():
                 # phen_dict2[idx].extend([phenName, OMIMID, HPOId, HPOName])
                 gene_info_dict = {
-                    'Phenotype Name': gene_dict[gene_item][0],
+                    'Disease Name': gene_dict[gene_item][0],
                     'OMIM ID': gene_dict[gene_item][1],
                     'Relative HPO ID': gene_dict[gene_item][2],
                     'HPO Name': gene_dict[gene_item][3]
@@ -45,7 +45,7 @@ def format_json_table(weight_model, gene_dict, type):
             for gene_item in gene_dict.keys():
                 # phen_dict2[idx].extend([phenName, OMIMID, HPOId, HPOName])
                 gene_info_dict = {
-                    'Phenotype Name': gene_dict[gene_item][0],
+                    'Disease Name': gene_dict[gene_item][0],
                     'DECIPHER ID': gene_dict[gene_item][1],
                     'Relative HPO ID': gene_dict[gene_item][2],
                     'HPO Name': gene_dict[gene_item][3]
@@ -56,7 +56,7 @@ def format_json_table(weight_model, gene_dict, type):
             for gene_item in gene_dict.keys():
                 # phen_dict2[idx].extend([phenName, OMIMID, HPOId, HPOName])
                 gene_info_dict = {
-                    'Phenotype Name': gene_dict[gene_item][0],
+                    'Disease Name': gene_dict[gene_item][0],
                     'ORPHA ID': gene_dict[gene_item][1],
                     'Relative HPO ID': gene_dict[gene_item][2],
                     'HPO Name': gene_dict[gene_item][3]
