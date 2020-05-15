@@ -62,8 +62,10 @@ docker load --input phencards.tar
 Finally, to run the site via docker:
 
 ```
-docker run -d -p 5003:5000 phencards
+docker run -v -d -p 5003:5000 phencards
 ```
+
+Adding `-v` is important because if the run just fails you won't know why. 
 
 It should be at:
 
