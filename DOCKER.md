@@ -80,5 +80,5 @@ To stop a docker container, check the container ID (something like `8a2652352336
 
 ```
 docker container prune
-docker rmi `docker images | grep "<none>" | awk {'print $3'}`
+docker rmi -f `docker images | grep "<none>" | awk {'print $3'}`
 ```
