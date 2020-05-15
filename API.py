@@ -1,6 +1,7 @@
 # use kegg API to get data
 
 import requests
+from bs4 import BeautifulSoup
 
 
 # input is the phenotype name, output is list([reference w/ external links])
@@ -55,8 +56,16 @@ def kegg_api_drug(name):
 
 def apexbt_drugs_api(name):
     link = "https://www.tocris.com/search?keywords=" + name.replace(' ', '+')
-    string = requests.get(link, verify=False)
-    return string
+    html_doc = requests.get(link, verify=False).text
+    soup = BeautifulSoup(html_doc, 'html.parser')
+    drugs = []
+    for item in soup.find_all('a'):
+        item = str(item)
+        if item and item.startswith('<a class="search_link" data-brand="tocris"'):
+            idx = item.find('href="') + 6
+            item = item[:idx] + "https://www.tocris.com/" + item[idx:]
+            drugs.append(item)
+    return '\n'.join(drugs)
 
 
 # print(apexbt_drugs_api("cleft palate"))

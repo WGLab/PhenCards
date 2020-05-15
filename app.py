@@ -474,10 +474,11 @@ def results_page():
     html_gene_api = json2html.convert(json=GeneAPI_JSON,
                                       table_attributes="id=\"results-gene-api\" class=\"table table-striped table-bordered table-sm\"")
     reference = API.kegg_api_reference(HPO_list).replace('\n', '<br>')
+    drugs = API.apexbt_drugs_api(HPO_list).replace('\n', '<br>')
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
                            html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
                            html_gene_api=html_gene_api,
-                           errors=errors, text=reference)
+                           errors=errors, text1=reference, text2=drugs)
 
 
 # page for API documentation

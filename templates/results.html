@@ -128,6 +128,10 @@ table#t01 {
 <br>
 <div class="container" id="Drugs">
     <th><span style="color: #efa50e; "><b>Drugs</b></span></th>
+    <br> <br>
+    {% autoescape false %}
+        {{text2}}
+    {% endautoescape %}
 </div>
 <br>
 
@@ -136,7 +140,7 @@ table#t01 {
     <th><span style="color: #efa50e; "><b>Literature</b></span></th>
     <br> <br>
     {% autoescape false %}
-        {{text}}
+        {{text1}}
     {% endautoescape %}
 
 </div>
