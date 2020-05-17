@@ -71,11 +71,18 @@ table#t01 {
 <div class="container" id="Aliases">
     <th><span style="color: #efa50e; "><b>Aliases</b></span></th>
     <br><br>
+    <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="https://www.nlm.nih.gov/research/umls/index.html">UMLS database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
+    {{ html_umls|safe }}
+    <br><br>
+    <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="http://www.snomed.org/">SNOMED database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
+    {{ html_snomed|safe }}
+    <br><br>
     <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="https://www.icd10data.com/">ICD-10 database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
     {{ html_table3|safe }}
     <br><br>
     <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="https://hpo.jax.org/app/">HPO database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
     {{ html_table1|safe }}
+
 </div>
 <br>
 <div class="container" >
@@ -210,7 +217,7 @@ table#t01 {
 <!-- make nice table with multiple pages -->
 <script type="text/javascript">
 	$(document).ready(function () {
-	  	$('#results-table1, #results-table2OMIM, #results-table2D, #results-table2OR, #results-table3, #results-gene-api').DataTable({
+	  	$('#results-table1, #results-table2OMIM, #results-table2D, #results-table2OR, #results-table3, #results-gene-api, #results-umls, #results-snomed').DataTable({
 	  		"order": [[ 1, "asc" ]],
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]

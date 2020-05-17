@@ -72,7 +72,28 @@ def format_json_table(weight_model, gene_dict, type):
                     'Parent Index': gene_dict[gene_item][1]
                 }
                 gene_info_lst.append(gene_info_dict)
-                                    
+        elif type == 'UMLS':
+            for gene_item in gene_dict.keys():
+                # phen_dict_UMLS[idx].extend([CUI, LAT, LUI, CODE, STR])
+                gene_info_dict = {
+                    'Unique identifier for concept': gene_dict[gene_item][0],
+                    'Language of term': gene_dict[gene_item][1],
+                    'Unique identifier for term': gene_dict[gene_item][2],
+                    'Most useful source asserted identifier': gene_dict[gene_item][3],
+                    'Name string': gene_dict[gene_item][4]
+                }
+                gene_info_lst.append(gene_info_dict)
+
+        elif type == 'SNOMED':
+            for gene_item in gene_dict.keys():
+                # phen_dict_SNOMED[idx].extend([conceptId, languageCode, term])
+                gene_info_dict = {
+                    'Concept Id': gene_dict[gene_item][0],
+                    'Language Code': gene_dict[gene_item][1],
+                    'Term': gene_dict[gene_item][2]
+                }
+                gene_info_lst.append(gene_info_dict)
+
     json_fmt = json.dumps(gene_info_lst)
 
     return json_fmt

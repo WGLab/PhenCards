@@ -3,7 +3,6 @@
 from collections import defaultdict
 import sqlite3
 from flask import Flask, Response, render_template, redirect, url_for, request, abort, flash
-# from flask_cors import CORS
 from forms import Phen2GeneForm
 from config import Config
 from json2html import *
@@ -32,6 +31,10 @@ results2OR = None
 # results3 is used to store ICD-10 information, table 5 in result page
 results3 = None
 
+# store UMLS and SNOMED database
+resultsUMLS = None
+resultsSNOMED = None
+
 # use API from phen2gene web app
 HPOID = 'cleft palate'
 
@@ -52,6 +55,8 @@ def get_results(phen_name: str, weight_model='pn'):
     global results2D
     global results2OR
     global results3
+    global resultsUMLS
+    global resultsSNOMED
     global HPOID
     global GeneAPI_JSON
 
@@ -115,10 +120,12 @@ def get_results(phen_name: str, weight_model='pn'):
     phen_dict2_OMIM = defaultdict(list)
     phen_dict2_DECIPHER = defaultdict(list)
     phen_dict2_ORPHA = defaultdict(list)
+    phen_dict_UMLS = defaultdict(list)
+    phen_dict_SNOMED = defaultdict(list)
     phen_dict3 = defaultdict(list)
 
     # use c1 to get data from PHENBASE
-    cursor1 = c1.execute("SELECT * FROM PHENBASE WHERE DiseaseName LIKE'" + phen_name + "%'")
+    cursor1 = c1.execute("SELECT * FROM PHENBASE WHERE DiseaseName LIKE'%" + phen_name + "%'")
     # parse data in cursor1 through analyzing each item in SQL return tuple
     for row in cursor1:
         # index in database
@@ -158,14 +165,41 @@ def get_results(phen_name: str, weight_model='pn'):
         ABBREV = row[3]
         NAME = row[4]
         # output the JSON
-        if NAME.lower().startswith(phen_name.lower()):
-            phen_dict3[idx].extend([ICD10ID, PARENTIDX, ABBREV, NAME])
+        # if NAME.lower().startswith(phen_name.lower()):
+        phen_dict3[idx].extend([ICD10ID, PARENTIDX, ABBREV, NAME])
+
+    cursor2 = c2.execute("SELECT CUI, LAT, LUI, CODE, STR FROM UMLSBASE WHERE STR LIKE'%" + phen_name + "%'")
+    idx = 0
+    for row in cursor2:
+        # index in database
+        idx += 1
+        CUI = row[0]
+        LAT = row[1]
+        LUI = row[2]
+        CODE = row[3]
+        STR = row[4]
+        # output the JSON
+        # if NAME.lower().startswith(phen_name.lower()):
+        phen_dict_UMLS[idx].extend([CUI, LAT, LUI, CODE, STR])
+
+    cursor2 = c2.execute("SELECT id, conceptId, languageCode, term FROM SNOMEDBASE WHERE term LIKE'%" + phen_name + "%'")
+    for row in cursor2:
+        # index in database
+        idx = row[0]
+        conceptId = row[1]
+        languageCode = row[2]
+        term = row[3]
+        # output the JSON
+        # if NAME.lower().startswith(phen_name.lower()):
+        phen_dict_SNOMED[idx].extend([conceptId, languageCode, term])
 
     # return results in json file, transfer dict into json format
-    return format_json_table(weight_model.lower(), phen_dict1, 'HPO'), format_json_table(weight_model.lower(),
-                                                                                         phen_dict2_OMIM, 'OMIM'), \
-           format_json_table(weight_model.lower(), phen_dict2_DECIPHER, 'DECIPHER'), format_json_table(
-        weight_model.lower(), phen_dict2_ORPHA, 'ORPHA'), \
+    return format_json_table(weight_model.lower(), phen_dict1, 'HPO'), \
+           format_json_table(weight_model.lower(), phen_dict2_OMIM, 'OMIM'), \
+           format_json_table(weight_model.lower(), phen_dict2_DECIPHER, 'DECIPHER'),\
+           format_json_table(weight_model.lower(), phen_dict2_ORPHA, 'ORPHA'), \
+           format_json_table(weight_model.lower(), phen_dict_UMLS, 'UMLS'), \
+           format_json_table(weight_model.lower(), phen_dict_SNOMED, 'SNOMED'), \
            format_json_table(weight_model.lower(), phen_dict3, 'ICD')
 
 
@@ -176,6 +210,8 @@ def phen2Gene():
     global results2D
     global results2OR
     global results3
+    global resultsUMLS
+    global resultsSNOMED
     global doc2hpo_error
     global GeneAPI_JSON
     doc2hpo_error = None
@@ -240,7 +276,7 @@ def phen2Gene():
             if not HPO_list:
                 HPO_list = "cleft palate"
 
-        results1, results2OMIM, results2D, results2OR, results3 = get_results(HPO_list, weight_model)
+        results1, results2OMIM, results2D, results2OR, resultsUMLS, resultsSNOMED, results3 = get_results(HPO_list, weight_model)
         return redirect(url_for('results_page'))
     return render_template('index.html', form=form)
 
@@ -448,6 +484,14 @@ def results_page():
         top_100_3 = json.loads(results3)[:100]
     except:
         top_100_3 = results3
+    try:
+        top_100_UMLS = json.loads(resultsUMLS)[:100]
+    except:
+        top_100_UMLS = resultsUMLS
+    try:
+        top_100_SNOMED = json.loads(resultsSNOMED)[:100]
+    except:
+        top_100_SNOMED = resultsSNOMED
     GeneAPI_JSON = \
     requests.get('https://phen2gene.wglab.org/api?HPO_list=' + HPOID + '&weight_model=sk', verify=False).json()[
         'results'][:100]
@@ -473,11 +517,15 @@ def results_page():
     html_table3 = add_link_3(html_table3)
     html_gene_api = json2html.convert(json=GeneAPI_JSON,
                                       table_attributes="id=\"results-gene-api\" class=\"table table-striped table-bordered table-sm\"")
+    html_umls = json2html.convert(json=top_100_UMLS,
+                                      table_attributes="id=\"results-umls\" class=\"table table-striped table-bordered table-sm\"")
+    html_snomed = json2html.convert(json=top_100_SNOMED,
+                                  table_attributes="id=\"results-snomed\" class=\"table table-striped table-bordered table-sm\"")
     reference = API.kegg_api_reference(HPO_list).replace('\n', '<br>')
     drugs = API.apexbt_drugs_api(HPO_list).replace('\n', '<br>')
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
                            html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
-                           html_gene_api=html_gene_api,
+                           html_umls=html_umls, html_gene_api=html_gene_api, html_snomed=html_snomed,
                            errors=errors, text1=reference, text2=drugs)
 
 
