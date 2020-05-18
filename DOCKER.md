@@ -62,10 +62,19 @@ docker load --input phencards.tar
 Finally, to run the site via docker:
 
 ```
-docker run -v -d -p 5003:5000 phencards
+docker run -d -p 5003:5000 phencards
 ```
 
-Adding `-v` is important because if the run just fails you won't know why. 
+Adding `-d` runs it in the background.
+
+If you have a volume you want to attach with `-v`, make sure the code in your scripts expects the _Docker_ path.  In our case:
+
+```
+docker run -d -p 5003:5000 -v /media/database:/database phencards
+```
+
+This will mount the folder in the droplet where we've stored the database `/media/database` to the path in the Docker image phencards `/database`.  This way you don't need to build the database itself into the Docker image.
+
 
 It should be at:
 
