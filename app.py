@@ -12,7 +12,7 @@ from lib.json import format_json_table
 import API
 
 # connect to SQLite at phenotype db file
-conn = sqlite3.connect("./database/phenotype.db", check_same_thread=False)
+conn = sqlite3.connect("/database/phenotype.db", check_same_thread=False)
 # connect to PHENBASE
 c1 = conn.cursor()
 # connect to ICD10BASE
