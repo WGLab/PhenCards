@@ -1,7 +1,7 @@
 import json
 
 
-def format_json_table(weight_model, gene_dict, type):
+def format_json_table(gene_dict, type):
     gene_info_lst = []
     
     if len(gene_dict) > 0:
@@ -93,6 +93,11 @@ def format_json_table(weight_model, gene_dict, type):
                     'Term': gene_dict[gene_item][2]
                 }
                 gene_info_lst.append(gene_info_dict)
+
+        elif type == 'DRUG':
+            for item in gene_dict:
+                if item:
+                    gene_info_lst.append({'Drug': item})
 
     json_fmt = json.dumps(gene_info_lst)
 

@@ -103,11 +103,9 @@ def get_results(phen_name: str, weight_model='pn'):
             # output the JSON
             phen_dict3[idx].extend([ICD10ID, PARENTIDX, ABBREV, NAME])
         # output the JSON
-        return format_json_table(weight_model.lower(), phen_dict1, 'HPO'), format_json_table(weight_model.lower(),
-                                                                                             phen_dict2_OMIM, 'OMIM'), \
-               format_json_table(weight_model.lower(), phen_dict2_DECIPHER, 'DECIPHER'), format_json_table(
-            weight_model.lower(), phen_dict2_ORPHA, 'ORPHA'), \
-               format_json_table(weight_model.lower(), phen_dict3, 'ICD'),
+        return format_json_table(phen_dict1, 'HPO'), format_json_table(phen_dict2_OMIM, 'OMIM'), \
+               format_json_table(phen_dict2_DECIPHER, 'DECIPHER'), format_json_table(phen_dict2_ORPHA, 'ORPHA'), \
+               format_json_table(phen_dict3, 'ICD'),
 
     # If no phenotype name available, exit the scripts.
     if phen_name is None:
@@ -194,13 +192,13 @@ def get_results(phen_name: str, weight_model='pn'):
         phen_dict_SNOMED[idx].extend([conceptId, languageCode, term])
 
     # return results in json file, transfer dict into json format
-    return format_json_table(weight_model.lower(), phen_dict1, 'HPO'), \
-           format_json_table(weight_model.lower(), phen_dict2_OMIM, 'OMIM'), \
-           format_json_table(weight_model.lower(), phen_dict2_DECIPHER, 'DECIPHER'),\
-           format_json_table(weight_model.lower(), phen_dict2_ORPHA, 'ORPHA'), \
-           format_json_table(weight_model.lower(), phen_dict_UMLS, 'UMLS'), \
-           format_json_table(weight_model.lower(), phen_dict_SNOMED, 'SNOMED'), \
-           format_json_table(weight_model.lower(), phen_dict3, 'ICD')
+    return format_json_table(phen_dict1, 'HPO'), \
+           format_json_table(phen_dict2_OMIM, 'OMIM'), \
+           format_json_table(phen_dict2_DECIPHER, 'DECIPHER'),\
+           format_json_table(phen_dict2_ORPHA, 'ORPHA'), \
+           format_json_table(phen_dict_UMLS, 'UMLS'), \
+           format_json_table(phen_dict_SNOMED, 'SNOMED'), \
+           format_json_table(phen_dict3, 'ICD')
 
 
 @app.route('/', methods=["GET", "POST"])
@@ -299,8 +297,7 @@ def results_page():
             if "<td>HP:" in item:
                 # find index of the <td>
                 idx = item.find("<td>HP:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(
-                                                                                                                       idx + 4):] + "&navFilter=all>" \
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):] + "&navFilter=all>" \
                               + item[(idx + 4):] + '</a>'
 
             elif "<td>OMIM:" in item:
@@ -315,9 +312,7 @@ def results_page():
                     html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx + 4:] \
                                   + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
                     continue
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(
-                                                                                                                       idx + 4):].replace(
-                    ' ', '%20') \
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):].replace(' ', '%20') \
                               + '&navFilter=all">' + item[(idx + 4):] + '</a>'
         html_res = '</td>'.join(html_lst)
         return html_res
@@ -331,14 +326,12 @@ def results_page():
             if "<td>HP:" in item:
                 # find index of the <td>
                 idx = item.find("<td>HP:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(
-                                                                                                                       idx + 4):] + "&navFilter=all>" \
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):] + "&navFilter=all>" \
                               + item[(idx + 4):] + '</a>'
 
             elif "<td>OMIM:" in item:
                 idx = item.find("<td>OMIM:")
-                html_lst[i] = item[:(
-                            idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
                               + item[(idx + 9):] + ">" + item[(idx + 4):] + '</a>'
 
             elif "<td>" in item:
@@ -347,11 +340,7 @@ def results_page():
                     html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx + 4:] \
                                   + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
                     continue
-                html_lst[i] = item[:(
-                            idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' + item[
-                                                                                                                                                          (
-                                                                                                                                                                      idx + 4):].replace(
-                    ' ', '+') \
+                html_lst[i] = item[:( idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' + item[(idx + 4):].replace(' ', '+') \
                               + '>' + item[(idx + 4):] + '</a>'
         html_res = '</td>'.join(html_lst)
         return html_res
@@ -364,14 +353,12 @@ def results_page():
             if "<td>HP:" in item:
                 # find index of the <td>
                 idx = item.find("<td>HP:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(
-                                                                                                                       idx + 4):] + "&navFilter=all>" \
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):] + "&navFilter=all>" \
                               + item[(idx + 4):] + '</a>'
 
             elif "<td>OMIM:" in item:
                 idx = item.find("<td>OMIM:")
-                html_lst[i] = item[:(
-                            idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
                               + item[(idx + 9):] + ">" + item[(idx + 4):] + '</a>'
 
             elif "<td>" in item:
@@ -380,12 +367,8 @@ def results_page():
                     html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx + 4:] \
                                   + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
                     continue
-                html_lst[i] = item[:(
-                            idx + 4)] + '<a href=https://en.wikipedia.org/w/index.php?cirrusUserTesting=glent_m0&search=' + item[
-                                                                                                                            (
-                                                                                                                                        idx + 4):].replace(
-                    ' ', '%20') \
-                              + '&title=Special%3ASearch&go=Go&ns0=1">' + item[(idx + 4):] + '</a>'
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://en.wikipedia.org/w/index.php?cirrusUserTesting=glent_m0&search=' + item[(idx + 4):].replace(' ', '%20') + '&title=Special%3ASearch&go=Go&ns0=1">' \
+                              + item[(idx + 4):] + '</a>'
         html_res = '</td>'.join(html_lst)
         return html_res
 
@@ -398,14 +381,12 @@ def results_page():
             if "<td>HP:" in item:
                 # find index of the <td>
                 idx = item.find("<td>HP:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(
-                                                                                                                       idx + 4):] + "&navFilter=all>" \
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):] + "&navFilter=all>" \
                               + item[(idx + 4):] + '</a>'
 
             elif "<td>OMIM:" in item:
                 idx = item.find("<td>OMIM:")
-                html_lst[i] = item[:(
-                            idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
                               + item[(idx + 9):] + ">" + item[(idx + 4):] + '</a>'
 
             elif "<td>" in item:
@@ -414,12 +395,8 @@ def results_page():
                     html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx + 4:] \
                                   + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
                     continue
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://bioportal.bioontology.org/search?q=' + item[(
-                                                                                                                          idx + 4):].replace(
-                    ' ', '%20') \
-                              + '&ontologies=ORDO&include_properties=false&include_views=false&includeObsolete=false&require_definition=false&exact_match=false">' + item[
-                                                                                                                                                                     (
-                                                                                                                                                                                 idx + 4):] + '</a>'
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://bioportal.bioontology.org/search?q=' + item[(idx + 4):].replace(' ', '%20') \
+                              + '&ontologies=ORDO&include_properties=false&include_views=false&includeObsolete=false&require_definition=false&exact_match=false">' + item[(idx + 4):] + '</a>'
         html_res = '</td>'.join(html_lst)
         return html_res
 
@@ -492,9 +469,7 @@ def results_page():
         top_100_SNOMED = json.loads(resultsSNOMED)[:100]
     except:
         top_100_SNOMED = resultsSNOMED
-    GeneAPI_JSON = \
-    requests.get('https://phen2gene.wglab.org/api?HPO_list=' + HPOID + '&weight_model=sk', verify=False).json()[
-        'results'][:100]
+    GeneAPI_JSON = requests.get('https://phen2gene.wglab.org/api?HPO_list=' + HPOID + '&weight_model=sk', verify=False).json()['results'][:100]
     try:
         GeneAPI_JSON = json.loads(GeneAPI_JSON)[:100]
     except:
@@ -521,8 +496,12 @@ def results_page():
                                       table_attributes="id=\"results-umls\" class=\"table table-striped table-bordered table-sm\"")
     html_snomed = json2html.convert(json=top_100_SNOMED,
                                   table_attributes="id=\"results-snomed\" class=\"table table-striped table-bordered table-sm\"")
+
     reference = API.kegg_api_reference(HPO_list).replace('\n', '<br>')
-    drugs = API.apexbt_drugs_api(HPO_list).replace('\n', '<br>')
+
+    drugs_lst = API.tocris_drugs_api(HPO_list).split('\n')
+    drugs = format_json_table(drugs_lst, 'DRUG')
+    drugs = json2html.convert(json=drugs, table_attributes="id=\"results-drugs\" class=\"table table-striped table-bordered table-sm\"", escape=False)
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
                            html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
                            html_umls=html_umls, html_gene_api=html_gene_api, html_snomed=html_snomed,

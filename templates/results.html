@@ -135,12 +135,12 @@ table#t01 {
 <br>
 <div class="container" id="Drugs">
     <th><span style="color: #efa50e; "><b>Drugs</b></span></th>
-    <br> <br>
-    {% autoescape false %}
-        {{text2}}
-    {% endautoescape %}
 </div>
 <br>
+
+<div class="container" >
+    {{ text2|safe }}
+</div>
 
 <br>
 <div class="container" id="Literature">
@@ -217,7 +217,7 @@ table#t01 {
 <!-- make nice table with multiple pages -->
 <script type="text/javascript">
 	$(document).ready(function () {
-	  	$('#results-table1, #results-table2OMIM, #results-table2D, #results-table2OR, #results-table3, #results-gene-api, #results-umls, #results-snomed').DataTable({
+	  	$('#results-table1, #results-table2OMIM, #results-table2D, #results-table2OR, #results-table3, #results-gene-api, #results-umls, #results-snomed, #results-drugs').DataTable({
 	  		"order": [[ 1, "asc" ]],
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]

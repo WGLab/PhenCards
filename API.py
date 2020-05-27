@@ -54,7 +54,7 @@ def kegg_api_drug(name):
 # print(kegg_api_drug('cleft palate'))
 
 
-def apexbt_drugs_api(name):
+def tocris_drugs_api(name):
     link = "https://www.tocris.com/search?keywords=" + name.replace(' ', '+')
     html_doc = requests.get(link, verify=False).text
     soup = BeautifulSoup(html_doc, 'html.parser')
@@ -64,6 +64,22 @@ def apexbt_drugs_api(name):
         if item and item.startswith('<a class="search_link" data-brand="tocris"'):
             idx = item.find('href="') + 6
             item = item[:idx] + "https://www.tocris.com/" + item[idx:]
+            drugs.append(item)
+    return '\n'.join(drugs)
+
+
+# print(tocris_drugs_api("cleft palate"))
+
+def apexbt_drugs_api(name):
+    link = "https://www.apexbt.com/catalogsearch/result/?q=" + name.replace(' ', '+')
+    html_doc = requests.get(link, verify=False).text
+    soup = BeautifulSoup(html_doc, 'html.parser')
+    drugs = []
+    for item in soup.find_all('a'):
+        item = str(item)
+        if item and item.find('<div class="row product-item-info" data-container="product-grid">') != -1:
+            # idx = item.find('href="') + 6
+            # item = item[:idx] + "https://www.tocris.com/" + item[idx:]
             drugs.append(item)
     return '\n'.join(drugs)
 
