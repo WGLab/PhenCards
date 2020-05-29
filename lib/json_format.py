@@ -1,4 +1,3 @@
-import numpy as np 
 import json
 
 def write_list(output_path,case_name,weight_model,gene_dict):
@@ -47,9 +46,9 @@ def write_list(output_path,case_name,weight_model,gene_dict):
             for gene_item in gene_dict.keys():
                 if(rank == 1):
                     highest_score = gene_dict[gene_item][1]
-                #output_file.write(str(rank) + "\t" + gene_dict[gene_item][0] + "\t" + str(gene_item) + "\t" + str( np.round(gene_dict[gene_item][1] / highest_score, 6 ) ) + "\t" +gene_dict[gene_item][2] + "\n" )
+                #output_file.write(str(rank) + "\t" + gene_dict[gene_item][0] + "\t" + str(gene_item) + "\t" + str( round(gene_dict[gene_item][1] / highest_score, 6 ) ) + "\t" +gene_dict[gene_item][2] + "\n" )
                 gene_info_dict = {}
-                gene_info_dict[gene_dict[gene_item][0]] = {'Rank':str(rank) , 'gene_id':str(gene_item),'score':str(np.round(gene_dict[gene_item][1] / highest_score, 6 ) ), 'status':gene_dict[gene_item][2]}
+                gene_info_dict[gene_dict[gene_item][0]] = {'Rank':str(rank) , 'gene_id':str(gene_item),'score':str(round(gene_dict[gene_item][1] / highest_score, 6 ) ), 'status':gene_dict[gene_item][2]}
                 gene_info_lst.append(gene_info_dict)
                 rank += 1
                 

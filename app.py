@@ -469,7 +469,10 @@ def results_page():
         top_100_SNOMED = json.loads(resultsSNOMED)[:100]
     except:
         top_100_SNOMED = resultsSNOMED
-    GeneAPI_JSON = requests.get('https://phen2gene.wglab.org/api?HPO_list=' + HPOID + '&weight_model=sk', verify=False).json()['results'][:100]
+    try:
+        GeneAPI_JSON = requests.get('https://phen2gene.wglab.org/api?HPO_list=' + HPOID + '&weight_model=sk', verify=False).json()['results'][:100]
+    except:
+        pass
     try:
         GeneAPI_JSON = json.loads(GeneAPI_JSON)[:100]
     except:
