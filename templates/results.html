@@ -24,7 +24,7 @@
 		</div>
 	</div>
 </div>
-{# header ///////////////////////////////////// start  #}
+
 <div class="container" >
 
 <head>
@@ -66,7 +66,7 @@ table#t01 {
 
 </div>
 <br />
-{# header ///////////////////////////////////// end  #}
+
 <br>
 <div class="container" id="Aliases">
     <th><span style="color: #efa50e; "><b>Aliases</b></span></th>
@@ -86,11 +86,6 @@ table#t01 {
 </div>
 <br>
 <div class="container" >
-
-
-
-
-
 
 
 </div>
@@ -136,10 +131,23 @@ table#t01 {
 <div class="container" id="Drugs">
     <th><span style="color: #efa50e; "><b>Drugs</b></span></th>
 </div>
+{#<input type="radio" id="drugs" name="weight_model" value="hpo">#}
+{#<label for="dewey">Search for Drugs</label>#}
 <br>
 
 <div class="container" >
-    {{ text2|safe }}
+    <a id="nav-tocris" href="{{ url_for('generate_tocris_page') }}">
+        <img src="/static/tocris.png" width="200" height="180" alt="TOCRIS"/>
+    </a>
+    <a id="nav-apexbio" href="{{ url_for('generate_apexbio_page') }}">
+        <img src="/static/APEXBIO.png" width="200" height="100" alt="APEXBIO"/>
+    </a>
+    <a id="nav-wikidata" href="{{ url_for('generate_wikidata_page') }}">
+        <img src="/static/Wikidata.png" width="200" height="80" alt="Wikidata"/>
+    </a>
+    <a id="nav-snomed" href="{{ url_for('generate_snomed_page') }}">
+        <img src="/static/snomed.png" width="200" height="80" alt="SNOWMD"/>
+    </a>
 </div>
 
 <br>

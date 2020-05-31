@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+
+{#<h1>print</h1>#}
+
+<div class="container" >
+    <br><br>
+    Here are the related genes referenced from <a href="https://www.tocris.com/">tocris website</a>:
+	<br><br>
+    {{ tocris|safe }}
+
+</div>
+
+{% endblock %}

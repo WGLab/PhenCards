@@ -65,6 +65,7 @@ def tocris_drugs_api(name):
             idx = item.find('href="') + 6
             item = item[:idx] + "https://www.tocris.com/" + item[idx:]
             drugs.append(item)
+    print(drugs)
     return '\n'.join(drugs)
 
 

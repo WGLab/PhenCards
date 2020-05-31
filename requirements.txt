@@ -4,7 +4,7 @@ chardet>=3.0.4
 Click>=7.0
 flask>=1.1.1
 flask-Cors>=3.0.8
-flask-WTF>=0.14.2
+flask-WTF==0.14.3
 idna>=2.8
 itsdangerous>=1.1.0
 Jinja2>=2.10.1
@@ -13,6 +13,7 @@ MarkupSafe>=1.1.1
 requests>=2.22.0
 six>=1.12.0
 urllib3>=1.25.6
-Werkzeug>=0.15.6
+Werkzeug==0.16.1
 WTForms>=2.2.1
 sqlalchemy>=1.3.9
+flask_redis>=0.4.0

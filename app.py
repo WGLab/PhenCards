@@ -10,9 +10,9 @@ import json
 import requests
 from lib.json import format_json_table
 import API
-
+from flask_redis import FlaskRedis
 # connect to SQLite at phenotype db file
-conn = sqlite3.connect("/database/phenotype.db", check_same_thread=False)
+conn = sqlite3.connect("./database/phenotype.db", check_same_thread=False)
 # connect to PHENBASE
 c1 = conn.cursor()
 # connect to ICD10BASE
@@ -21,6 +21,7 @@ c2 = conn.cursor()
 app = Flask(__name__)
 # cors = CORS(app)
 app.config.from_object(Config)
+redis_client = FlaskRedis(app)
 
 # results1 is used to store HPO related information, table 1 in result page
 results1 = None
@@ -283,6 +284,9 @@ def phen2Gene():
 def results_page():
     global HPO_list
 
+    # if request.method == 'POST':
+    #     return redirect(url_for('index'))
+
     # only allow internal redirect to results page
     # <wiki link> https://en.wikipedia.org/wiki/Waterhouse%E2%80%93Friderichsen_syndrome
     # <ICD-10 ID link> https://www.icd10data.com/search?s=A391&codebook=icd10all
@@ -302,8 +306,7 @@ def results_page():
 
             elif "<td>OMIM:" in item:
                 idx = item.find("<td>OMIM:")
-                html_lst[i] = item[:(
-                            idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
                               + item[(idx + 9):] + ">" + item[(idx + 4):] + '</a>'
 
             elif "<td>" in item:
@@ -415,8 +418,7 @@ def results_page():
 
             elif "<td>OMIM:" in item:
                 idx = item.find("<td>OMIM:")
-                html_lst[i] = item[:(
-                            idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
                               + item[(idx + 9):] + ">" + item[(idx + 4):] + '</a>'
 
             elif "<td>" in item:
@@ -425,9 +427,7 @@ def results_page():
                     html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx + 4:] \
                                   + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
                     continue
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[
-                                                                                                 (idx + 4):].replace(
-                    ' ', '%20') \
+                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[(idx + 4):].replace(' ', '%20') \
                               + '&codebook=icd10all">' + item[(idx + 4):] + '</a>'
         html_res = '</td>'.join(html_lst)
         return html_res
@@ -502,19 +502,50 @@ def results_page():
 
     reference = API.kegg_api_reference(HPO_list).replace('\n', '<br>')
 
-    drugs_lst = API.tocris_drugs_api(HPO_list).split('\n')
-    drugs = format_json_table(drugs_lst, 'DRUG')
-    drugs = json2html.convert(json=drugs, table_attributes="id=\"results-drugs\" class=\"table table-striped table-bordered table-sm\"", escape=False)
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
                            html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
                            html_umls=html_umls, html_gene_api=html_gene_api, html_snomed=html_snomed,
-                           errors=errors, text1=reference, text2=drugs)
+                           errors=errors, text1=reference)
 
 
-# page for API documentation
-@app.route('/docs')
+# return independent page for drugs information
+@app.route('/tocris')
 def instructions_page():
-    return render_template('instructions.html')
+    drugs_lst = API.tocris_drugs_api('cleft palate').split('\n')
+    drugs = format_json_table(drugs_lst, 'DRUG')
+    drugs = json2html.convert(json=drugs,
+                              table_attributes="id=\"results-drugs\" class=\"table table-striped table-bordered table-sm\"",
+                              escape=False)
+    return render_template('tocris.html', tocris=drugs)
+
+
+@app.route('/tocris')
+def generate_tocris_page():
+    drugs_lst = API.tocris_drugs_api(HPO_list).split('\n')
+    drugs = format_json_table(drugs_lst, 'DRUG')
+    drugs = json2html.convert(json=drugs,
+                              table_attributes="id=\"results-drugs\" class=\"table table-striped table-bordered table-sm\"",
+                              escape=False)
+    # print(drugs)
+    return render_template('tocris.html', tocris=drugs)
+
+
+@app.route('/apexbio')
+def generate_apexbio_page():
+    link = "https://www.apexbt.com/catalogsearch/result/?q=" + HPO_list.replace(' ', '+')
+    # print(link)
+    return redirect(link)
+
+
+@app.route('/wikidata')
+def generate_wikidata_page():
+    link ="https://www.wikidata.org/w/index.php?search=drugs+for+" + HPO_list.replace(' ', '+')
+    return redirect(link)
+
+
+@app.route('/snomed')
+def generate_snomed_page():
+    return redirect("http://www.snomed.org/")
 
 
 @app.route('/download_json/')
@@ -595,6 +626,7 @@ def hpo_info_from_phenopacket():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.jinja_env.auto_reload = True
+    app.run(debug=True)
     # print(res[0:10])
     # get_results('cleft')
