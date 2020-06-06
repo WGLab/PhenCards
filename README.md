@@ -39,8 +39,11 @@ Otherwise, if you have SQL Server, like Oracle or MySQL, you can also use those 
 | 5  | UMLS  | https://download.nlm.nih.gov/umls/kss/2019AB/umls-2019AB-full.zip  |  If `account`/`password` is needed, use the following: `zhouy6`/`Zyy.1234WGlab` |  Need account information for download permission, around 4GB; here is a useful tool to download using cluster: https://askubuntu.com/questions/29079/how-do-i-provide-a-username-and-password-to-wget|
 | 6  | MeSH  | ftp://nlmpubs.nlm.nih.gov/online/mesh/MESH_FILES/xmlmesh/desc2020.gz  |    No permission required| Use the link to download  |
 |  7 | DOID  |  http://purl.obolibrary.org/obo/doid.owl | No permission required  |  This is an HTML format file, need attention for parsing |
-
-
+  
+## Development Logic
+Front-end files include `templates/index.html`, which is used to transfer input parameters from user; `templates/results.html`, which is used to generate result page with external links to other result pages inside `templates` folder. Another important part is `templetes/templete.html`, which is used for generate the overall templete of the whole front-end, other htmls are inheritated from this one. 
+  
+Back-end files include `API.py`, which is used to connect with APIs and return certain formated data sttructures; `app.py` which is the high-level framework built based on Flask; `forms.py`, `lib/json.py`, and `lib/json_format.py` are used for generate certain format we need for the presentation to users. 
 
 ## External Resources
 ICD10Data: https://www.icd10data.com   
