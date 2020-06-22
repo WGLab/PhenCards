@@ -68,45 +68,13 @@ table#t01 {
 <br />
 
 <br>
-<div class="container" id="Aliases">
-    <th><span style="color: #efa50e; "><b>Aliases</b></span></th>
-    <br><br>
-    <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="https://www.nlm.nih.gov/research/umls/index.html">UMLS database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
-    {{ html_umls|safe }}
-    <br><br>
-    <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="http://www.snomed.org/">SNOMED database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
-    {{ html_snomed|safe }}
-    <br><br>
-    <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="https://www.icd10data.com/">ICD-10 database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
-    {{ html_table3|safe }}
+<div class="container" id="Patient results">
+    <th><span style="color: #efa50e; "><b>HPO terms</b></span></th>
     <br><br>
     <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="https://hpo.jax.org/app/">HPO database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
-    {{ html_table1|safe }}
+    {{ patient_table|safe }}
 
 </div>
-<br>
-<div class="container" >
-
-
-</div>
-<br>
-<div class="container" id="Related Terms">
-    <th><span style="color: #efa50e; "><b>Related Terms</b></span></th>
-</div>
-<br>
-
-<br>
-<div class="container" id="Diseases">
-    <th><span style="color: #efa50e; "><b>Diseases</b></span></th>
-    <br><br>
-    <tr><th><span style="color: black; ">Here are the diseases referenced from <a href="https://www.ncbi.nlm.nih.gov/omim/">OMIM database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
-    {{ html_table2OMIM|safe }}
-    {{ html_table2D|safe }}
-    <br><br>
-    <tr><th><span style="color: black; ">Here are the diseases referenced from <a href="https://www.orpha.net/consor/cgi-bin/index.php">ORPHA database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
-    {{ html_table2OR|safe }}
-</div>
-<br>
 
 <br>
 <div class="container" id="Genes">
@@ -149,34 +117,6 @@ table#t01 {
         <img src="/static/snomed.png" width="200" height="80" alt="SNOWMD"/>
     </a>
 </div>
-
-<br>
-<div class="container" id="Literature">
-    <th><span style="color: #efa50e; "><b>Literature</b></span></th>
-    <br> <br>
-    {% autoescape false %}
-        {{text1}}
-    {% endautoescape %}
-
-</div>
-
-<div class="container" id="Companies & Foundations">
-    <th><span style="color: #efa50e; "><b>Companies & Foundations</b></span></th>
-</div>
-<br>
-
-<br>
-<div class="container" id="Clinical Trials">
-    <th><span style="color: #efa50e; "><b>Clinical Trials</b></span></th>
-</div>
-<br>
-
-<br>
-<div class="container" id="Images">
-    <th><span style="color: #efa50e; "><b>Images</b></span></th>
-</div>
-<br>
-
 
 <div class="container" >
 

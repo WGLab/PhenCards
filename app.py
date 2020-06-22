@@ -3,16 +3,17 @@
 from collections import defaultdict
 import sqlite3
 from flask import Flask, Response, render_template, redirect, url_for, request, abort, flash
-from forms import Phen2GeneForm
+from forms import PhenCardsForm
 from config import Config
 from json2html import *
+import sys
 import json
 import requests
 from lib.json import format_json_table
 import API
 from flask_redis import FlaskRedis
 # connect to SQLite at phenotype db file
-conn = sqlite3.connect("./database/phenotype.db", check_same_thread=False)
+conn = sqlite3.connect("/media/database/phenotype.db", check_same_thread=False)
 # connect to PHENBASE
 c1 = conn.cursor()
 # connect to ICD10BASE
@@ -43,14 +44,14 @@ HPOID = 'cleft palate'
 errors = None
 doc2hpo_error = None
 
-DOC2HPO_URL = "https://impact2.dbmi.columbia.edu/doc2hpo/parse/acdat"
+DOC2HPO_URL = "http://doc2hpo.wglab.org/parse/acdat" #"http://impact2.dbmi.columbia.edu/doc2hpo/parse/acdat" # can return to HTTPS when Columbia renews SSL cert and fixes site permanently
 data = []
 
 HPO_list = ''
 
 
 # get_results is for the SQL query functions
-def get_results(phen_name: str, weight_model='pn'):
+def get_results(phen_name: str, search_method='string', HPO_list=['cleft_palate']):
     global results1
     global results2OMIM
     global results2D
@@ -65,8 +66,8 @@ def get_results(phen_name: str, weight_model='pn'):
     # initialize values
     results1 = results2OMIM = results2D = results2OR = results3 = GeneAPI_JSON = None
 
-    # (1) if search by hpo id
-    if weight_model == 'hpo':
+    # (1) database id search
+    if search_method == 'hpo':
         if not phen_name.isdigit():
             phen_name = '0'
         # use phen_dict as final result
@@ -124,7 +125,7 @@ def get_results(phen_name: str, weight_model='pn'):
     phen_dict3 = defaultdict(list)
 
     # use c1 to get data from PHENBASE
-    cursor1 = c1.execute("SELECT * FROM PHENBASE WHERE DiseaseName LIKE'%" + phen_name + "%'")
+    cursor1 = c1.execute("SELECT * FROM PHENBASE WHERE DiseaseName LIKE'%" + phen_name + "%'") # where shawn searches DB, replace with elasticsearch
     # parse data in cursor1 through analyzing each item in SQL return tuple
     for row in cursor1:
         # index in database
@@ -214,12 +215,12 @@ def phen2Gene():
     global doc2hpo_error
     global GeneAPI_JSON
     doc2hpo_error = None
-
+    search_method = "string"
+    phen_name = "cleft_palate" # default string
     # methods in form class
-    form = Phen2GeneForm()
+    form = PhenCardsForm()
     # validate_on_submit() method
     if form.validate_on_submit():
-        weight_model = form.weight_model.data
         doc2hpo_check = form.doc2hpo_check.data
         doc2hpo_notes = form.doc2hpo_notes.data
 
@@ -228,57 +229,79 @@ def phen2Gene():
 
             # default doc2hpo text
             if not doc2hpo_notes:
-                doc2hpo_notes = ""
+                doc2hpo_notes = "Individual II-1 is a 10 year old boy. He does not have synophrys. He was born at term with normal birth parameters and good APGAR scores (9/10/10). The neonatal period was uneventful, and he had normal motor development during early childhood: he began to look up at 3 months, sit by himself at 5 months, stand up at 11 months, walk at 13 months, and speak at 17 months. He attended a regular kindergarten, without any signs of difference in intelligence, compared to his peers. Starting at age 6, the parents observed ever increasing behavioral disturbance for the boy, manifesting in multiple aspects of life. For example, he can no longer wear clothes by himself, cannot obey instruction from parents/teachers, can no longer hold subjects tightly in hand, which were all things that he could do before 6 years of age. In addition, he no longer liked to play with others; instead, he just preferred to stay by himself, and he sometimes fell down when he walked on the stairs, which had rarely happened at age 5. The proband continued to deteriorate: at age 9, he could not say a single word and had no action or response to any instruction given in clinical exams. Additionally, rough facial features were noted with a flat nasal bridge, a synophrys (unibrow), a long and smooth philtrum, thick lips and an enlarged mouth. He also had rib edge eversion, and it was also discovered that he was profoundly deaf and had completely lost the ability to speak. He also had loss of bladder control. The diagnosis of severe intellectual disability was made, based on Wechsler Intelligence Scale examination. Brain MRI demonstrated cortical atrophy with enlargement of the subarachnoid spaces and ventricular dilatation (Figure 2). Brainstem evoked potentials showed moderate abnormalities. Electroencephalography (EEG) showed abnormal sleep EEG."
 
             # data to be sent to api 
             data = {
                 "note": doc2hpo_notes,
                 "negex": True  # default true for now
             }
-
             r = requests.post(url=DOC2HPO_URL, json=data)
             # r = requests.post(url = 'http://127.0.0.1:8000/doc2hpo/parse/acdat', json = data)
 
             # check if doc2hpo request is successful
             # if status code of response starts with 2, it is successful, otherwise something is wrong with doc2hpo
-
+            print ("hi", r.status_code, file=sys.stderr)
             if int(str(r.status_code)[:1]) != 2:
                 r = requests.post(url='http://127.0.0.1:8000/doc2hpo/parse/acdat', json=data)
                 if int(str(r.status_code)[:1]) != 2:
                     doc2hpo_error = "Doc2Hpo service is temporarily unavailable and cannot process clinical notes. Please manually input HPO terms instead."
                     flash(doc2hpo_error)
                     return redirect(url_for('phen2Gene'))
-
+            
             res = r.json()
-            res = res["hmName2Id"]
+            print ("results", res, file=sys.stderr)
+            res = res["hmName2Id"] # where hpo term result is grabbed
 
             HPO_set = set()
+            HPO_nset = set()
             negated_HPOs = set()
+            negated_names = set()
 
             for i in res:
                 if i["negated"]:
                     negated_HPOs.add(i["hpoId"])
+                    negated_names.add(i["hpoName"])
                 else:
                     HPO_set.add(i["hpoId"])
+                    HPO_nset.add(i["hpoName"])
             global HPO_list
-            HPO_list = ""
+            global HPO_names
+            HPO_list = []
+            HPO_names = []
             # only use non-negated HPO IDs
             for i in HPO_set.difference(negated_HPOs):
-                HPO_list += i + ";"
-            # remove last semicolon
-            HPO_list = HPO_list[:-1]
+                HPO_list.append(i)
+            for i in HPO_nset.difference(negated_names):
+                HPO_names.append(i)
 
         # get manually entered HPO IDs
         else:
-            HPO_list = form.HPO_list.data
+            if form.phenname.data:
+                phen_name = form.phenname.data
             # default HPO list
-            if not HPO_list:
-                HPO_list = "cleft palate"
 
-        results1, results2OMIM, results2D, results2OR, resultsUMLS, resultsSNOMED, results3 = get_results(HPO_list, weight_model)
+        results1, results2OMIM, results2D, results2OR, resultsUMLS, resultsSNOMED, results3 = get_results(phen_name, search_method, HPO_list)
+        if doc2hpo_check: # runs doc2hpo instead of string match
+            return redirect(url_for('patient_page'))
         return redirect(url_for('results_page'))
     return render_template('index.html', form=form)
 
+@app.route('/patient')
+def patient_page():
+    global HPO_list
+    phen_dict = defaultdict(list)
+    for i, (HPOId, HPOName) in enumerate(zip(HPO_list, HPO_names)):
+        phen_dict[i].extend([HPOId, HPOName])
+    results = format_json_table(phen_dict, 'patient')
+    try:
+        top_100 = json.loads(results)[:100]
+    except:
+        top_100 = results
+    patient_table = json2html.convert(json=top_100,
+                                    table_attributes="id=\"results-table1\" class=\"table table-striped table-bordered table-sm\"")
+    return render_template('patient.html', patient_table=patient_table)
+    
 
 @app.route('/results')
 def results_page():
@@ -521,7 +544,7 @@ def instructions_page():
 
 @app.route('/tocris')
 def generate_tocris_page():
-    drugs_lst = API.tocris_drugs_api(HPO_list).split('\n')
+    drugs_lst = API.tocris_drugs_api(HPO_names)
     drugs = format_json_table(drugs_lst, 'DRUG')
     drugs = json2html.convert(json=drugs,
                               table_attributes="id=\"results-drugs\" class=\"table table-striped table-bordered table-sm\"",
@@ -532,14 +555,14 @@ def generate_tocris_page():
 
 @app.route('/apexbio')
 def generate_apexbio_page():
-    link = "https://www.apexbt.com/catalogsearch/result/?q=" + HPO_list.replace(' ', '+')
+    link = "https://www.apexbt.com/catalogsearch/result/?q=" + "+".join(HPO_names)
     # print(link)
     return redirect(link)
 
 
 @app.route('/wikidata')
 def generate_wikidata_page():
-    link ="https://www.wikidata.org/w/index.php?search=drugs+for+" + HPO_list.replace(' ', '+')
+    link ="https://www.wikidata.org/w/index.php?search=drugs+for+" + "+".join(HPO_names)
     return redirect(link)
 
 
