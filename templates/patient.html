@@ -81,14 +81,18 @@ table#t01 {
     <tr><th><span style="color: #efa50e; "><b>Genes</b></span></th></tr>
     <br><br>
     <tr><th><span style="color: black; ">Here are the related genes referenced from <a href="https://phen2gene.wglab.org">Phen2Gene web application</a>:</span></th></tr>
+    {{ phen2gene_table|safe }}
+</div>
+<br>
+
+<div class="container" id="Clinical Trials">
+    <tr><th><span style="color: #efa50e; "><b>Clinical Trials</b></span></th></tr>
+    <br><br>
+    <tr><th><span style="color: black; ">Here are the potential clinical trials based on the HPO terms outputted from these notes:</span></th></tr>
+    {{ clinical_table|safe }}
 </div>
 <br>
 {# gene list return 04/26/2020 #}
-<div class="container" >
-
-	{{ html_gene_api|safe }}
-
-</div>
 <br>
 <div class="container" id="Pathway">
     <th><span style="color: #efa50e; "><b>Pathway</b></span></th>
@@ -165,8 +169,14 @@ table#t01 {
 <!-- make nice table with multiple pages -->
 <script type="text/javascript">
 	$(document).ready(function () {
-	  	$('#results-table1, #results-table2OMIM, #results-table2D, #results-table2OR, #results-table3, #results-gene-api, #results-umls, #results-snomed, #results-drugs').DataTable({
+	  	//$('#results-table1, #results-table2OMIM, #results-table2D, #results-table2OR, #results-table3, #results-gene-api, #results-umls, #results-snomed, #results-drugs').DataTable({
+	  	$('#doc2hpo-results, #phen2gene-api').DataTable({
 	  		"order": [[ 1, "asc" ]],
+	  		"pageLength": 5,
+	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
+	  	});
+	  	$('#clinical-results').DataTable({
+	  		"order": [[ 0, "asc" ]],
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
 	  	});

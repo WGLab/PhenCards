@@ -291,6 +291,8 @@ def phen2Gene():
 def patient_page():
     global HPO_list
     phen_dict = defaultdict(list)
+    HPOidstring=";".join(HPO_list)
+    HPOquery="+OR+".join([s.replace(" ", "+") for s in HPO_names])
     for i, (HPOId, HPOName) in enumerate(zip(HPO_list, HPO_names)):
         phen_dict[i].extend([HPOId, HPOName])
     results = format_json_table(phen_dict, 'patient')
@@ -299,8 +301,22 @@ def patient_page():
     except:
         top_100 = results
     patient_table = json2html.convert(json=top_100,
-                                    table_attributes="id=\"results-table1\" class=\"table table-striped table-bordered table-sm\"")
-    return render_template('patient.html', patient_table=patient_table)
+                                    table_attributes="id=\"doc2hpo-results\" class=\"table table-striped table-bordered table-sm\"")
+    try:
+        GeneAPI_JSON = requests.get('https://phen2gene.wglab.org/api?HPO_list=' + HPOidstring + '&weight_model=sk', verify=False).json()['results'][:1000]
+        phen2gene_table = json2html.convert(json=GeneAPI_JSON,
+                                      table_attributes="id=\"phen2gene-api\" class=\"table table-striped table-bordered table-sm\"")
+    except:
+        phen2gene_table = ''
+
+    try:
+        TrialsAPI_JSON = requests.get('https://clinicaltrials.gov/api/query/study_fields?expr='+ HPOquery +'&fields=NCTId%2CBriefTitle%2CCondition&min_rnk=1&max_rnk=1000&fmt=json', verify=False).json()['StudyFieldsResponse']['StudyFields']
+        print(HPOquery, file=sys.stderr)
+        clinical_table = json2html.convert(json=TrialsAPI_JSON,
+                                      table_attributes="id=\"clinical-results\" class=\"table table-striped table-bordered table-sm\"")
+    except:
+        clinical_table = ''
+    return render_template('patient.html', patient_table=patient_table, phen2gene_table=phen2gene_table, clinical_table=clinical_table)
     
 
 @app.route('/results')
@@ -501,6 +517,14 @@ def results_page():
     except:
         GeneAPI_JSON = GeneAPI_JSON
 
+    try:
+        TrialsAPI_JSON = requests.get('https://clinicaltrials.gov/api/query/study_fields?expr='+ HPOquery +'&fields=NCTId%2CBriefTitle%2CCondition&min_rnk=1&max_rnk=1000&fmt=json', verify=False).json()['StudyFieldsResponse']['StudyFields']
+        print(HPOquery, file=sys.stderr)
+        clinical_table = json2html.convert(json=TrialsAPI_JSON,
+                                      table_attributes="id=\"clinical-results\" class=\"table table-striped table-bordered table-sm\"")
+    except:
+        clinical_table = ''
+
     html_table1 = json2html.convert(json=top_100_1,
                                     table_attributes="id=\"results-table1\" class=\"table table-striped table-bordered table-sm\"")
     html_table1 = add_link_1(html_table1)
@@ -523,12 +547,12 @@ def results_page():
     html_snomed = json2html.convert(json=top_100_SNOMED,
                                   table_attributes="id=\"results-snomed\" class=\"table table-striped table-bordered table-sm\"")
 
-    reference = API.kegg_api_reference(HPO_list).replace('\n', '<br>')
+    #reference = '<br>'.join(API.kegg_api_reference(HPO_list))
 
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
                            html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
-                           html_umls=html_umls, html_gene_api=html_gene_api, html_snomed=html_snomed,
-                           errors=errors, text1=reference)
+                           html_umls=html_umls, html_gene_api=html_gene_api, html_snomed=html_snomed, clinical_table=clinical_table,
+                           errors=errors) #text1=reference)
 
 
 # return independent page for drugs information
@@ -650,6 +674,6 @@ def hpo_info_from_phenopacket():
 
 if __name__ == '__main__':
     app.jinja_env.auto_reload = True
-    app.run(debug=True)
+    app.run(debug=True, port=5005)
     # print(res[0:10])
     # get_results('cleft')
