@@ -154,7 +154,7 @@ def get_results(phen_name: str, search_method='string', HPO_list=['cleft_palate'
         elif OMIMID[:5] == 'ORPHA':
             phen_dict2_ORPHA[idx].extend([phenName, OMIMID, HPOId, HPOName])
         phen_dict2[idx].extend([phenName, OMIMID, HPOId, HPOName])
-        HPOID = phen_dict1[idx][1]
+        HPOID = phen_dict1[idx][1] # this is wrong.  this should not be here.
     # use c2 to get information inside ICD10BASE
     cursor2 = c2.execute("SELECT * FROM ICD10BASE WHERE NAME LIKE'%" + phen_name + "%'")
     for row in cursor2:
@@ -204,7 +204,7 @@ def get_results(phen_name: str, search_method='string', HPO_list=['cleft_palate'
 
 
 @app.route('/', methods=["GET", "POST"])
-def phen2Gene():
+def phencards():
     global results1
     global results2OMIM
     global results2D
@@ -214,6 +214,10 @@ def phen2Gene():
     global resultsSNOMED
     global doc2hpo_error
     global GeneAPI_JSON
+    global HPO_list
+    global HPO_names
+    HPO_list = []
+    HPO_names = []
     doc2hpo_error = None
     search_method = "string"
     phen_name = "cleft_palate" # default string
@@ -247,7 +251,7 @@ def phen2Gene():
                 if int(str(r.status_code)[:1]) != 2:
                     doc2hpo_error = "Doc2Hpo service is temporarily unavailable and cannot process clinical notes. Please manually input HPO terms instead."
                     flash(doc2hpo_error)
-                    return redirect(url_for('phen2Gene'))
+                    return redirect(url_for('phencards'))
             
             res = r.json()
             print ("results", res, file=sys.stderr)
@@ -265,10 +269,6 @@ def phen2Gene():
                 else:
                     HPO_set.add(i["hpoId"])
                     HPO_nset.add(i["hpoName"])
-            global HPO_list
-            global HPO_names
-            HPO_list = []
-            HPO_names = []
             # only use non-negated HPO IDs
             for i in HPO_set.difference(negated_HPOs):
                 HPO_list.append(i)
@@ -284,6 +284,7 @@ def phen2Gene():
         results1, results2OMIM, results2D, results2OR, resultsUMLS, resultsSNOMED, results3 = get_results(phen_name, search_method, HPO_list)
         if doc2hpo_check: # runs doc2hpo instead of string match
             return redirect(url_for('patient_page'))
+        HPO_list = [phen_name]
         return redirect(url_for('results_page'))
     return render_template('index.html', form=form)
 
@@ -322,6 +323,7 @@ def patient_page():
 @app.route('/results')
 def results_page():
     global HPO_list
+    phenname = HPO_list[0]
 
     # if request.method == 'POST':
     #     return redirect(url_for('index'))
@@ -472,7 +474,7 @@ def results_page():
         return html_res
 
     if not request.referrer:
-        return redirect(url_for('phen2Gene'))
+        return redirect(url_for('phencards'))
 
     global errors
 
@@ -518,8 +520,7 @@ def results_page():
         GeneAPI_JSON = GeneAPI_JSON
 
     try:
-        TrialsAPI_JSON = requests.get('https://clinicaltrials.gov/api/query/study_fields?expr='+ HPOquery +'&fields=NCTId%2CBriefTitle%2CCondition&min_rnk=1&max_rnk=1000&fmt=json', verify=False).json()['StudyFieldsResponse']['StudyFields']
-        print(HPOquery, file=sys.stderr)
+        TrialsAPI_JSON = requests.get('https://clinicaltrials.gov/api/query/study_fields?expr='+ phenname +'&fields=NCTId%2CBriefTitle%2CCondition&min_rnk=1&max_rnk=1000&fmt=json', verify=False).json()['StudyFieldsResponse']['StudyFields']
         clinical_table = json2html.convert(json=TrialsAPI_JSON,
                                       table_attributes="id=\"clinical-results\" class=\"table table-striped table-bordered table-sm\"")
     except:
@@ -547,18 +548,22 @@ def results_page():
     html_snomed = json2html.convert(json=top_100_SNOMED,
                                   table_attributes="id=\"results-snomed\" class=\"table table-striped table-bordered table-sm\"")
 
-    #reference = '<br>'.join(API.kegg_api_reference(HPO_list))
+    API.api_reference(HPO_list[0])
+    try:
+        reference = API.api_reference(phenname).replace("\n",'<br>')
+    except:
+        reference = '<br>'
 
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
                            html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
                            html_umls=html_umls, html_gene_api=html_gene_api, html_snomed=html_snomed, clinical_table=clinical_table,
-                           errors=errors) #text1=reference)
+                           errors=errors, text1=reference)
 
 
 # return independent page for drugs information
 @app.route('/tocris')
 def instructions_page():
-    drugs_lst = API.tocris_drugs_api('cleft palate').split('\n')
+    drugs_lst = API.tocris_drugs_api('cleft palate').split('\n') # replace default with HPO_list[0]
     drugs = format_json_table(drugs_lst, 'DRUG')
     drugs = json2html.convert(json=drugs,
                               table_attributes="id=\"results-drugs\" class=\"table table-striped table-bordered table-sm\"",

@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 
 # input is the phenotype name, output is list([reference w/ external links])
-def kegg_api_reference(name):
+def api_reference(name):
     link = "http://rest.kegg.jp/find/disease/" + name.replace(' ', '+')
     # get the ID
     kegg_id = requests.get(link, verify=False).text[:9]

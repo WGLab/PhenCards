@@ -3,7 +3,7 @@ from wtforms import StringField, BooleanField
 from wtforms.validators import DataRequired
 
 class PhenCardsForm(FlaskForm):
-    phenname = StringField('phennames')
+    phenname = StringField('phenname')
     doc2hpo_check = BooleanField('doc2hpo_check')
     doc2hpo_notes = StringField('doc2hpo_notes')
 
