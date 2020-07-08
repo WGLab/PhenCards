@@ -583,31 +583,18 @@ def generate_pathway_page():
             if re.search("hsa", line):
                 paths[line.strip().split("\t")[1]].append(dname)
     # generate temporary images then os remove using @after_this_request decorator in flask under app route (/results/pathway)
-    files = {}
+    dispath = {}
     print (paths)
-    for i, temp in enumerate(paths):
-        print(temp, file=sys.stderr)
-        img_data = img_data=requests.get('http://rest.kegg.jp/get/'+temp+'/image', verify=False, stream=True)
-        tf = tempfile.NamedTemporaryFile(dir='static',suffix=".png", delete=False)
-        name=tf.name.rsplit("/",1)[-1]
-        files[name]=paths[temp]
-        g.files = files
-        with open(tf.name,'wb') as f:
-            img_data.raw.decode_content = True
-            shutil.copyfileobj(img_data.raw, f)
+    for i, pid in enumerate(paths):
+        link='https://www.genome.jp/dbget-bin/www_bget?'+pid
+        reqname=requests.get('http://rest.kegg.jp/get/'+pid, verify=False, stream=True)
+        for line in reqname.text.splitlines():
+            if re.search("NAME\s*", line):
+                name=re.split("\w*\s*",line,1)[-1].split("-")[0]
+        dispath[name]=[paths[pid],link]
+        g.dispath = dispath
 
-    # @after_this_request
-    # def cleanup(response):
-        # files = g.get('files', {})
-        # for name in files:
-            # print (name)
-            # try:
-                # os.remove('static/'+name)
-            # except:
-                # print ("couldn't remove tmp file", file=sys.stderr)
-        # return response
-
-    return render_template('pathways.html', files=files)
+    return render_template('pathways.html', dispath=dispath)
 
 # return independent page for drugs information
 
