@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 import sqlite3
-from flask import Flask, Response, render_template, redirect, url_for, request, abort, flash
+from flask import Flask, Response, render_template, redirect, url_for, request, abort, flash, session, after_this_request, g
 from forms import PhenCardsForm
 from config import Config
 from json2html import *
@@ -12,6 +12,11 @@ import requests
 from lib.json import format_json_table
 import API
 from flask_redis import FlaskRedis
+import shutil
+import tempfile
+import weakref
+import re
+import os
 # connect to SQLite at phenotype db file
 conn = sqlite3.connect("/media/database/phenotype.db", check_same_thread=False)
 # connect to PHENBASE
@@ -554,21 +559,57 @@ def results_page():
     except:
         reference = '<br>'
 
+    session['phenname']=phenname
+
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
                            html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
                            html_umls=html_umls, html_gene_api=html_gene_api, html_snomed=html_snomed, clinical_table=clinical_table,
                            errors=errors, text1=reference)
 
 
+# pathway results
+
+
+@app.route('/results/pathway')
+def generate_pathway_page():
+    phenname=session.pop('phenname')
+    phenname=phenname.replace("_", "+").replace(" ","+")
+    diseases=requests.get('http://rest.kegg.jp/find/disease/'+phenname, verify=False, stream=True)
+    diseases=[x.split("\t") for x in diseases.text.strip().split("\n")]
+    paths = defaultdict(list)
+    for did, dname in diseases:
+        path=requests.get('http://rest.kegg.jp/link/pathway/'+did, verify=False, stream=True)
+        for line in path.text.splitlines():
+            if re.search("hsa", line):
+                paths[line.strip().split("\t")[1]].append(dname)
+    # generate temporary images then os remove using @after_this_request decorator in flask under app route (/results/pathway)
+    files = {}
+    print (paths)
+    for i, temp in enumerate(paths):
+        print(temp, file=sys.stderr)
+        img_data = img_data=requests.get('http://rest.kegg.jp/get/'+temp+'/image', verify=False, stream=True)
+        tf = tempfile.NamedTemporaryFile(dir='static',suffix=".png", delete=False)
+        name=tf.name.rsplit("/",1)[-1]
+        files[name]=paths[temp]
+        g.files = files
+        with open(tf.name,'wb') as f:
+            img_data.raw.decode_content = True
+            shutil.copyfileobj(img_data.raw, f)
+
+    # @after_this_request
+    # def cleanup(response):
+        # files = g.get('files', {})
+        # for name in files:
+            # print (name)
+            # try:
+                # os.remove('static/'+name)
+            # except:
+                # print ("couldn't remove tmp file", file=sys.stderr)
+        # return response
+
+    return render_template('pathways.html', files=files)
+
 # return independent page for drugs information
-@app.route('/tocris')
-def instructions_page():
-    drugs_lst = API.tocris_drugs_api('cleft palate').split('\n') # replace default with HPO_list[0]
-    drugs = format_json_table(drugs_lst, 'DRUG')
-    drugs = json2html.convert(json=drugs,
-                              table_attributes="id=\"results-drugs\" class=\"table table-striped table-bordered table-sm\"",
-                              escape=False)
-    return render_template('tocris.html', tocris=drugs)
 
 
 @app.route('/tocris')
@@ -580,7 +621,6 @@ def generate_tocris_page():
                               escape=False)
     # print(drugs)
     return render_template('tocris.html', tocris=drugs)
-
 
 @app.route('/apexbio')
 def generate_apexbio_page():
