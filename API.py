@@ -2,7 +2,7 @@
 
 import requests
 from bs4 import BeautifulSoup
-
+import sys
 
 # input is the phenotype name, output is list([reference w/ external links])
 def api_reference(name):
@@ -54,8 +54,8 @@ def kegg_api_drug(name):
 # print(kegg_api_drug('cleft palate'))
 
 
-def tocris_drugs_api(name):
-    link = "https://www.tocris.com/search?keywords=" + name.replace(' ', '+')
+def tocris_drugs_api(query):
+    link = "https://www.tocris.com/search?keywords=" + query
     html_doc = requests.get(link, verify=False).text
     soup = BeautifulSoup(html_doc, 'html.parser')
     drugs = []
@@ -63,10 +63,9 @@ def tocris_drugs_api(name):
         item = str(item)
         if item and item.startswith('<a class="search_link" data-brand="tocris"'):
             idx = item.find('href="') + 6
-            item = item[:idx] + "https://www.tocris.com/" + item[idx:]
+            item = item[:idx] + "https://www.tocris.com/" + item[idx+1:] #+1 removes extra slash
             drugs.append(item)
-    print(drugs)
-    return '\n'.join(drugs)
+    return (drugs)
 
 
 # print(tocris_drugs_api("cleft palate"))

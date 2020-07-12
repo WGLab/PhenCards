@@ -594,21 +594,22 @@ def generate_pathway_page():
 
 @app.route('/clinical')
 def generate_clinical_page():
-    phenname=session.pop('HPOquery')
+    HPOquery=session.pop('HPOquery')
     try:
-        clinicaljson = requests.get('https://clinicaltrials.gov/api/query/study_fields?expr='+ phenname +'&fields=NCTId%2CBriefTitle%2CCondition%2CInterventionName&min_rnk=1&max_rnk=1000&fmt=json', verify=False).json()['StudyFieldsResponse']
+        clinicaljson = requests.get('https://clinicaltrials.gov/api/query/study_fields?expr='+ HPOquery +'&fields=NCTId%2CBriefTitle%2CCondition%2CInterventionName&min_rnk=1&max_rnk=1000&fmt=json', verify=False).json()['StudyFieldsResponse']
     except:
         clinicaljson = {}
     return render_template('clinical.html', clinicaljson=clinicaljson)
 
 @app.route('/tocris')
 def generate_tocris_page():
-    drugs_lst = API.tocris_drugs_api(HPO_names)
+    HPOquery=session.pop('HPOquery')
+    drugs_lst = API.tocris_drugs_api(HPOquery)
+    print(drugs_lst,file=sys.stderr)
     drugs = format_json_table(drugs_lst, 'DRUG')
     drugs = json2html.convert(json=drugs,
                               table_attributes="id=\"results-drugs\" class=\"table table-striped table-bordered table-sm\"",
                               escape=False)
-    # print(drugs)
     return render_template('tocris.html', tocris=drugs)
 
 @app.route('/apexbio')
