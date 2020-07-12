@@ -640,6 +640,14 @@ def generate_cohd_page():
         else:
             results[domain] = []
 
+@app.route('/clinical')
+def generate_clinical_page():
+    phenname=session.pop('HPOquery')
+    try:
+        clinicaljson = requests.get('https://clinicaltrials.gov/api/query/study_fields?expr='+ phenname +'&fields=NCTId%2CBriefTitle%2CCondition%2CInterventionName&min_rnk=1&max_rnk=1000&fmt=json', verify=False).json()['StudyFieldsResponse']
+    except:
+        clinicaljson = {}
+    return render_template('clinical.html', clinicaljson=clinicaljson)
 
     conditions = results['Condition']
     drugs = results['Drug']
