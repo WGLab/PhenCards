@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+
+{#<h1>print</h1>#}
+
+<div class="container" >
+    <br><br>
+    <tr><th><span style="color: black; ">Here are the potential clinical trials based on the HPO terms outputted from these notes:</span></th></tr>
+    <br>
+    {% if clinicaljson %}
+        Version: {{clinicaljson["DataVrs"]}}
+        {% set study = clinicaljson["StudyFields"] %}
+        <table id="clinical-table" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+            <td>Rank</td>
+            <td>CT ID</td>
+            <td>Title of Study</td>
+            <td>Intervention Name</td>
+            <td>Condition</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for field in study %}
+                <tr>
+                    <td>{{field["Rank"]}}</td>
+                    <td><a href={{ ''.join(['https://clinicaltrials.gov/ct2/show/',field["NCTId"][0]]) }}>{{field["NCTId"][0]}}</a></td>
+                    <td>{{field["BriefTitle"][0]}}</td>
+                    <td>{{"\n".join(field["Condition"])}}</td>
+                    <td>{{"\n".join(field["InterventionName"])}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the search term.
+    {% endif %}
+
+</div>
+
+<!-- make nice table with multiple pages -->
+<script type="text/javascript">
+        $(document).ready(function () {
+                $('#clinical-table').DataTable({
+                        "order": [[ 0, "asc" ]],
+                        "pageLength": 5,
+                        "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
+                });
+        });
+
+</script>
+
+{% endblock %}
+                  
