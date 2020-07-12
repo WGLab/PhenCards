@@ -171,10 +171,11 @@ table#t01 {
 <br>
 
 <div class="container" id="Clinical Trials">
-    <tr><th><span style="color: #efa50e; "><b>Clinical Trials</b></span></th></tr>
-    <br><br>
-    <tr><th><span style="color: black; ">Here are the potential clinical trials based on the HPO terms outputted from these notes:</span></th></tr>
-	{{ clinical_table|safe }}
+    <br>
+    <a id="nav-clinical" href={{ url_for('generate_clinical_page') }}>
+        <img src="/static/clinical.png" alt="Clinical Trials"/>
+    </a>
+
 </div>
 <br>
 
@@ -237,7 +238,7 @@ table#t01 {
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
 	  	});
-	  	$('#clinical-results').DataTable({
+	  	$('#clinical-table').DataTable({
 	  		"order": [[ 0, "asc" ]],
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]

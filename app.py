@@ -299,6 +299,7 @@ def patient_page():
     phen_dict = defaultdict(list)
     HPOidstring=";".join(HPO_list)
     HPOquery="+OR+".join([s.replace(" ", "+") for s in HPO_names])
+    print(HPOquery, file=sys.stderr)
     for i, (HPOId, HPOName) in enumerate(zip(HPO_list, HPO_names)):
         phen_dict[i].extend([HPOId, HPOName])
     results = format_json_table(phen_dict, 'patient')
@@ -315,14 +316,8 @@ def patient_page():
     except:
         phen2gene_table = ''
 
-    try:
-        TrialsAPI_JSON = requests.get('https://clinicaltrials.gov/api/query/study_fields?expr='+ HPOquery +'&fields=NCTId%2CBriefTitle%2CCondition&min_rnk=1&max_rnk=1000&fmt=json', verify=False).json()['StudyFieldsResponse']['StudyFields']
-        print(HPOquery, file=sys.stderr)
-        clinical_table = json2html.convert(json=TrialsAPI_JSON,
-                                      table_attributes="id=\"clinical-results\" class=\"table table-striped table-bordered table-sm\"")
-    except:
-        clinical_table = ''
-    return render_template('patient.html', patient_table=patient_table, phen2gene_table=phen2gene_table, clinical_table=clinical_table)
+    session['HPOquery']=HPOquery
+    return render_template('patient.html', patient_table=patient_table, phen2gene_table=phen2gene_table)
     
 
 @app.route('/results')
@@ -524,13 +519,6 @@ def results_page():
     except:
         GeneAPI_JSON = GeneAPI_JSON
 
-    try:
-        TrialsAPI_JSON = requests.get('https://clinicaltrials.gov/api/query/study_fields?expr='+ phenname +'&fields=NCTId%2CBriefTitle%2CCondition&min_rnk=1&max_rnk=1000&fmt=json', verify=False).json()['StudyFieldsResponse']['StudyFields']
-        clinical_table = json2html.convert(json=TrialsAPI_JSON,
-                                      table_attributes="id=\"clinical-results\" class=\"table table-striped table-bordered table-sm\"")
-    except:
-        clinical_table = ''
-
     html_table1 = json2html.convert(json=top_100_1,
                                     table_attributes="id=\"results-table1\" class=\"table table-striped table-bordered table-sm\"")
     html_table1 = add_link_1(html_table1)
@@ -560,17 +548,18 @@ def results_page():
         reference = '<br>'
 
     session['phenname']=phenname
+    session['HPOquery']=phenname
 
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
                            html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
-                           html_umls=html_umls, html_gene_api=html_gene_api, html_snomed=html_snomed, clinical_table=clinical_table,
+                           html_umls=html_umls, html_gene_api=html_gene_api, html_snomed=html_snomed,
                            errors=errors, text1=reference)
 
 
 # pathway results
 
 
-@app.route('/results/pathway')
+@app.route('/pathway')
 def generate_pathway_page():
     phenname=session.pop('phenname')
     phenname=phenname.replace("_", "+").replace(" ","+")
@@ -598,6 +587,14 @@ def generate_pathway_page():
 
 # return independent page for drugs information
 
+@app.route('/clinical')
+def generate_clinical_page():
+    phenname=session.pop('HPOquery')
+    try:
+        clinicaljson = requests.get('https://clinicaltrials.gov/api/query/study_fields?expr='+ phenname +'&fields=NCTId%2CBriefTitle%2CCondition%2CInterventionName&min_rnk=1&max_rnk=1000&fmt=json', verify=False).json()['StudyFieldsResponse']
+    except:
+        clinicaljson = {}
+    return render_template('clinical.html', clinicaljson=clinicaljson)
 
 @app.route('/tocris')
 def generate_tocris_page():
