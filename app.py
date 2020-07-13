@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 import sqlite3
-from flask import Flask, Response, render_template, redirect, url_for, request, abort, flash, session, after_this_request, g
+from flask import Flask, Response, render_template, redirect, url_for, request, abort, flash, session, after_this_request, g, app
 from forms import PhenCardsForm
 from config import Config
 from json2html import *
@@ -17,6 +17,8 @@ import tempfile
 import weakref
 import re
 import os
+from datetime import timedelta
+
 # connect to SQLite at phenotype db file
 conn = sqlite3.connect("/media/database/phenotype.db", check_same_thread=False)
 # connect to PHENBASE
@@ -54,6 +56,10 @@ data = []
 
 HPO_list = ''
 
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(hours=24)
 
 # get_results is for the SQL query functions
 def get_results(phen_name: str, search_method='string', HPO_list=['cleft_palate']):
@@ -552,8 +558,7 @@ def results_page():
     except:
         reference = '<br>'
 
-    session['phenname']=phenname
-    session['HPOquery']=phenname
+    session['HPOquery']=phenname.replace("_", "+").replace(" ","+")
 
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
                            html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
@@ -566,7 +571,7 @@ def results_page():
 
 @app.route('/pathway')
 def generate_pathway_page():
-    phenname=session.pop('phenname')
+    phenname=session['phenname']
     phenname=phenname.replace("_", "+").replace(" ","+")
     diseases=requests.get('http://rest.kegg.jp/find/disease/'+phenname, verify=False, stream=True)
     diseases=[x.split("\t") for x in diseases.text.strip().split("\n")]
@@ -594,7 +599,7 @@ def generate_pathway_page():
 
 @app.route('/clinical')
 def generate_clinical_page():
-    HPOquery=session.pop('HPOquery')
+    HPOquery=session['HPOquery']
     try:
         clinicaljson = requests.get('https://clinicaltrials.gov/api/query/study_fields?expr='+ HPOquery +'&fields=NCTId%2CBriefTitle%2CCondition%2CInterventionName&min_rnk=1&max_rnk=1000&fmt=json', verify=False).json()['StudyFieldsResponse']
     except:
@@ -603,7 +608,7 @@ def generate_clinical_page():
 
 @app.route('/tocris')
 def generate_tocris_page():
-    HPOquery=session.pop('HPOquery')
+    HPOquery=session['HPOquery']
     drugs_lst = API.tocris_drugs_api(HPOquery)
     print(drugs_lst,file=sys.stderr)
     drugs = format_json_table(drugs_lst, 'DRUG')
@@ -614,9 +619,10 @@ def generate_tocris_page():
 
 @app.route('/apexbio')
 def generate_apexbio_page():
-    link = "https://www.apexbt.com/catalogsearch/result/?q=" + "+".join(HPO_names)
-    # print(link)
-    return redirect(link)
+    HPOquery=session['HPOquery']
+    drugs_lst = API.apexbt_drugs_api(HPOquery)
+    print(drugs_lst,file=sys.stderr)
+    return render_template('apexbio.html', apex=drugs_lst)
 
 
 @app.route('/wikidata')

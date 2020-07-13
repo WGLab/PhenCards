@@ -65,23 +65,24 @@ def tocris_drugs_api(query):
             idx = item.find('href="') + 6
             item = item[:idx] + "https://www.tocris.com/" + item[idx+1:] #+1 removes extra slash
             drugs.append(item)
-    return (drugs)
+    return drugs
 
 
 # print(tocris_drugs_api("cleft palate"))
 
-def apexbt_drugs_api(name):
-    link = "https://www.apexbt.com/catalogsearch/result/?q=" + name.replace(' ', '+')
+def apexbt_drugs_api(query):
+    link = "https://www.apexbt.com/catalogsearch/result/?q=" + query
     html_doc = requests.get(link, verify=False).text
     soup = BeautifulSoup(html_doc, 'html.parser')
     drugs = []
     for item in soup.find_all('a'):
         item = str(item)
-        if item and item.find('<div class="row product-item-info" data-container="product-grid">') != -1:
-            # idx = item.find('href="') + 6
-            # item = item[:idx] + "https://www.tocris.com/" + item[idx:]
-            drugs.append(item)
-    return '\n'.join(drugs)
+        if item and item.startswith('<a href="https://www.apexbt.com/') and '<span class="product-list-name"' in item:
+            link=item.split("\"")[1]
+            drug=item.split("<span class=\"product-list-name\">")[1].split("<")[0]
+            drugs.append([link,drug])
+            
+    return drugs
 
 
 # print(apexbt_drugs_api("cleft palate"))
