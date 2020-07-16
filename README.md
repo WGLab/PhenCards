@@ -28,6 +28,15 @@ cursor = c.execute("SELECT DISTINCT DiseaseName FROM PHENBASE")
 ```
 Otherwise, if you have SQL Server, like Oracle or MySQL, you can also use those for opening db files.
 
+## Elastic-search for autocompletion
+The autocompletion feature is achieved by using elastic-search-7.8.0  on the backend and implemented using jquery-ui (`esQuery.js`) on the frondend.
+Install and start elastic-search first: `path-to-elastic-search/bin/elasticsearch`, and then modified and executed `index_db.py` to index the database documents.
+To avoid CORS issue, adding the follwing two lines in `path-to-elastic-search/config/elasticsearch.yml`
+```
+http.cors.enabled : true
+http.cors.allow-origin : "*"
+```
+More details can be found in https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters.html
 
 ## Database Source Tutorial
 | INDEX | EXTERNAL-DATABASE-NAME  | SOURCE-LINK  | INSTRUCTIONS  |  COMMENTS |
