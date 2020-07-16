@@ -4,6 +4,7 @@ from wtforms.validators import DataRequired
 
 class PhenCardsForm(FlaskForm):
     phenname = StringField('phenname')
+    typeahead = StringField('typeahead')
     doc2hpo_check = BooleanField('doc2hpo_check')
     doc2hpo_notes = StringField('doc2hpo_notes')
 

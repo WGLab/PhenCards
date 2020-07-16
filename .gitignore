@@ -1,3 +1,7 @@
 
 *.db
 *.db
+/.phencard
+/.vscode
+*.pyc
+__pycache__/
