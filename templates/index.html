@@ -26,7 +26,14 @@
                     <li class="nav-item">
                         <a class="nav-link" id="doc2hpo-tab" href="#doc2hpo">Patient notes</a>
                     </li>
+                    <!-- tab for autocompletion integration -->
+                    <li class="nav-item">
+                        <a class="nav-link" id="auto-tab" href="#auto">Autocompletion (BETA)</a>
+                    </li>
                 </ul>
+
+                
+
                 <br>
 
                 <!-- text box to enter HPO IDs -->
@@ -36,6 +43,15 @@
 		    </span>
 			<textarea class="form-control" name="phenname" id="phenname" rows="4" placeholder="e.g. cleft palate (Search by Phenotype Name)"></textarea>
 			<span class="form-text text-muted">Please enter your focused phenotype names / external database ID.</span>
+        </div> 
+        
+       <!-- text box to enter patient description -->
+		<div class="form-group" id="auto" style="display:none;">
+            <h3><i class="material-icons">book</i>Enter you want to search for here:</h3>
+            {{ form.csrf_token }}
+			<!-- <textarea class="form-control" name="phenname" id="phenname" rows="4" placeholder="e.g. cleft palate (Search by Phenotype Name)"></textarea> -->
+            <input id="typeahead" class="form-control autocomplete" rows="4" placeholder="cleft palate">
+            <span class="form-text text-muted">Please enter your focused phenotype names / external database ID.</span>
 		</div> 
 
 		<!-- text box to enter patient description -->
@@ -45,18 +61,8 @@
 			<span class="form-text text-muted">Please enter which category are you searching for:</span>
 		</div> 
 
-{#		<!-- weight model dropdown -->#}
-{#		<div class="form-group">#}
-{#			<h3><i class="material-icons">fitness_center</i>Input Type</h3>#}
-{#			<select class="form-control" name="weight_model" id="weight_model">#}
-{#				<option value="pn">HPO Name/Phenotype/Concept Name (support partial string) </option>#}
-{#                <option value="hpo">ID Search (OMIM/HPO/ICD/UMLS,etc)  </option>#}
-{#			</select>#}
-{#		</div>#}
-
 		<!-- submit and reset buttons -->
 		<div class="form-group">
-            {# design button#}
 			{{ form.csrf_token }}
             <input type="radio" id="huey" name="weight_model" value="pn" checked>
             <label for="huey">Search for Concept Name &nbsp;</label>
@@ -65,14 +71,7 @@
             <br><br>
             <button type="reset" class="btn btn-success" style="margin-right: 16px"><i class="material-icons" style="font-size: 16px">redo</i>Reset</button>
             <button type="submit" class="btn btn-info"><i class="material-icons" style="font-size: 16px">send</i>Search</button>
-            {# <button type="submit" class="btn btn-info" name="weight_model" value="hpo"><i class="material-icons" style="font-size: 16px">send</i>Search for Database ID</button>#}
-
         </div>
-
-
-
-		<input type="hidden" value="<?php echo $_SERVER['REMOTE_ADDR']; ?>" name="ip" />
-		<input type="hidden" value="<?php echo GetHostByAddr($_SERVER['REMOTE_ADDR']); ?>" name="host" />
 	</form> 
 </div>
 {% endblock %}
@@ -84,11 +83,26 @@
     // clicked on manual tab
     $('#manual-tab').on('click', function (e) {
         e.preventDefault();
-        $("#manual").show();
+        $("#auto").hide();
         $("#doc2hpo").hide();
+        $("#manual").show();
         $("#doc2hpo-tab").removeClass("active");
+        $("#auto-tab").removeClass("active");
         $("#manual-tab").addClass("active");
 
+        // uncheck doc2hpo checkbox
+        $( "#doc2hpo_check" ).prop("checked", false);
+    });
+
+    // clicked on autocompletion tab
+    $('#auto-tab').on('click', function (e) {
+        e.preventDefault();
+        $("#manual").hide();
+        $("#doc2hpo").hide();
+        $("#auto").show();
+        $("#doc2hpo-tab").removeClass("active");
+        $("#manual-tab").removeClass("active");
+        $("#auto-tab").addClass("active");
         // uncheck doc2hpo checkbox
         $( "#doc2hpo_check" ).prop("checked", false);
     });
@@ -96,13 +110,17 @@
     // clicked on doc2hpo tab
     $('#doc2hpo-tab').on('click', function (e) {
         e.preventDefault();
-        $("#doc2hpo").show();
         $("#manual").hide();
+        $("#auto").hide();
+        $("#doc2hpo").show();
         $("#manual-tab").removeClass("active");
+        $("#auto-tab").removeClass("active");
         $("#doc2hpo-tab").addClass("active");
 
         // check doc2hpo checkbox
         $( "#doc2hpo_check" ).prop("checked", true);
     });
+
+
 </script>
 {% endblock %}
