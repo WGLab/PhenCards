@@ -18,7 +18,7 @@ import weakref
 import re
 import os
 # connect to SQLite at phenotype db file
-conn = sqlite3.connect("/Users/cl3720/python-workspace/Project_PhenCards/database/phenotype.db", check_same_thread=False)
+conn = sqlite3.connect("/media/database/phenotype.db", check_same_thread=False)
 # connect to PHENBASE
 c1 = conn.cursor()
 # connect to ICD10BASE
