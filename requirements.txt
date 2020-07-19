@@ -2,6 +2,7 @@ bs4>=0.0.1
 certifi>=2019.9.11
 chardet>=3.0.4
 Click>=7.0
+elasticsearch>=7.0.4
 flask>=1.1.1
 flask-Cors>=3.0.8
 flask-WTF==0.14.3
