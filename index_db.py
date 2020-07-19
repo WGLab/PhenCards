@@ -6,7 +6,7 @@ import os
 
 es = Elasticsearch(['localhost:9200'], timeout=60, retry_on_timeout=True)
 
-def index_doid(INDEX_NAME='doid',path_to_txt='pathto/DOID-DATA.txt'):
+def index_doid(INDEX_NAME='doid',path_to_txt='/media/database/DOID_data_result/DOID-DATA.txt'):
     request_body = {
         "settings": {},
         "mappings": {
@@ -40,7 +40,7 @@ def index_doid(INDEX_NAME='doid',path_to_txt='pathto/DOID-DATA.txt'):
                 if len(es_data) > 0:
                     helpers.bulk(es, es_data, stats_only=False)    
 
-def index_msh(INDEX_NAME='msh',path_to_txt='/pathto/MSH-DATA.txt'):
+def index_msh(INDEX_NAME='msh',path_to_txt='/media/database/MSH_data_result/MSH-DATA.txt'):
     request_body = {
         "settings": {},
         "mappings": {
@@ -74,7 +74,7 @@ def index_msh(INDEX_NAME='msh',path_to_txt='/pathto/MSH-DATA.txt'):
                 if len(es_data) > 0:
                     helpers.bulk(es, es_data, stats_only=False)
 
-def index_icd10(INDEX_NAME='icd10',path_to_txt='pathto/ICD10-DATA.txt'):
+def index_icd10(INDEX_NAME='icd10',path_to_txt='/media/database/ICD10_data_result/ICD10-DATA.txt'):
     request_body = {
         "settings": {},
         "mappings": {
@@ -112,7 +112,7 @@ def index_icd10(INDEX_NAME='icd10',path_to_txt='pathto/ICD10-DATA.txt'):
                 if len(es_data) > 0:
                     helpers.bulk(es, es_data, stats_only=False)        
 
-def index_umls(INDEX_NAME='umls',path_to_txt='pathto/UMLS-DATA.txt'):
+def index_umls(INDEX_NAME='umls',path_to_txt='/media/database/UMLS-DATA.txt'):
     request_body = {
         "settings": {},
         "mappings": {
@@ -146,7 +146,7 @@ def index_umls(INDEX_NAME='umls',path_to_txt='pathto/UMLS-DATA.txt'):
                 if len(es_data) > 0:
                     helpers.bulk(es, es_data, stats_only=False)    
 
-def index_autosuggest(INDEX_NAME='autosuggest',path_to_txt='pathto/ICD10-DATA.txt'):
+def index_autosuggest(INDEX_NAME='autosuggest',path_to_txt='/media/database/ICD10_data_result/ICD10-DATA.txt'):
     request_body = {
         "settings": {
             "analysis": {
