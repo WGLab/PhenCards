@@ -282,8 +282,13 @@ def phencards():
 
         # get manually entered HPO IDs
         else:
+            
             if form.phenname.data:
                 phen_name = form.phenname.data
+
+            # use autophenname in case there is an input.
+            if form.typeahead.data:
+                phen_name = form.typeahead.data
             # default HPO list
 
         results1, results2OMIM, results2D, results2OR, resultsUMLS, resultsSNOMED, results3 = get_results(phen_name, search_method, HPO_list)
