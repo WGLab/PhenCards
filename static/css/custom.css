@@ -1,0 +1,25 @@
+hr {
+    height:2px;
+    border-width:0;
+    color:gray;
+    background-color:gray
+}
+.innerbar {
+    height:1px;
+    border-width:0;
+    color:white;
+    background-color:gray;
+}
+.navbar {
+  overflow: hidden;
+  background-color: #555;
+  position: fixed;
+  width: 100%;
+}
+nav li {
+  padding: 4px;
+}
+.verticaltable {
+  border-right: 2px solid;
+  padding: 8px;
+}
