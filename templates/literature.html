@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+
+{#<h1>print</h1>#}
+
+<div class="container" >
+    <br><br>
+    <tr><th><span style="color: black; ">Here are the Pubmed results (max 5k) using MeSH terms based on this query:</span></th></tr>
+    <br>
+    {% if pubmed %}
+        <table id="pubmed-table" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+            <td>Pubmed ID</td>
+            <td>Publication Information</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for id in pubmed %}
+                <tr>
+                    <td><a href={{ ''.join(['https://pubmed.ncbi.nlm.nih.gov/',id]) }}>PMID: {{id}}</a></td>
+                    <td>{{pubmed[id]}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the search term.
+    {% endif %}
+
+</div>
+
+<!-- make nice table with multiple pages -->
+<script type="text/javascript">
+        $(document).ready(function () {
+                $('#pubmed-table').DataTable({
+                        "order": [[ 0, "asc" ]],
+                        "pageLength": 5,
+                        "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
+                });
+        });
+
+</script>
+
+{% endblock %}
+                  

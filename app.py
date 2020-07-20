@@ -18,6 +18,8 @@ import weakref
 import re
 import os
 from datetime import timedelta
+import xml.etree.ElementTree as ET
+
 
 # connect to SQLite at phenotype db file
 conn = sqlite3.connect("/media/database/phenotype.db", check_same_thread=False)
@@ -605,6 +607,60 @@ def generate_clinical_page():
     except:
         clinicaljson = {}
     return render_template('clinical.html', clinicaljson=clinicaljson)
+
+@app.route('/literature')
+def generate_literature_page():
+    pubmed={}
+    HPOquery=session['HPOquery']
+    rsearch=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term="+HPOquery+"&retmax=5000&sort=relevance")
+    root=ET.fromstring(rsearch.text)
+    ids=[]
+    for i in root.iter("Id"):
+        ids.append(i.text)
+    l=len(ids)
+    for i in range(0,l,250):
+        if l < i + 250:
+            query=ids[i:l] 
+        else:
+            query=ids[i:i+250] 
+        query=",".join(query)
+        rsum=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id="+query+"&retmode=text&rettype=abstract")
+        root=ET.fromstring(rsum.text)
+        title=pages=first=authors=pubdate=doi=volume=issue=''
+        for doc in root.iter("DocSum"):
+            id1 = doc.find("Id").text
+            for child in doc.iter("Item"):
+                if child.attrib['Name'] == "AuthorList":
+                    if child:
+                        g = child[0]
+                        first=g.text
+                if child.attrib['Name'] == "LastAuthor":
+                    authors=child.text
+                if child.attrib['Name'] == "Title":
+                    title=child.text
+                if child.attrib['Name'] == "Source":
+                    journal=child.text
+                if child.attrib['Name'] == "PubDate":
+                    pubdate=child.text
+                if child.attrib['Name'] == "Volume":
+                    if child.text:
+                        volume = ";"+child.text
+                if child.attrib['Name'] == "Issue":
+                    if child.text:
+                        issue="("+child.text+")"
+                if child.attrib['Name'] == "Pages":
+                    if child.text:
+                        pages=":"+child.text
+                if child.attrib['Name'] == "DOI":
+                    doi="doi:"+child.text
+            if authors and first != authors:
+                authors = first + " .. " + authors
+            else:
+                authors = first
+            if title:
+                publication = title + " " + authors + ". " + journal + " " + pubdate + volume + issue + pages + ". " + doi
+            pubmed[id1]=publication
+    return render_template('literature.html', pubmed=pubmed)
 
 @app.route('/tocris')
 def generate_tocris_page():
