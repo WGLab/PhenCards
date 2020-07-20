@@ -125,7 +125,7 @@ table#t01 {
 <div class="container" id="Pathway">
     <th><span style="color: #efa50e; "><b>Pathway</b></span></th>
     <br>
-    <a id="nav-pathway" href="{{ url_for('generate_pathway_page') }}" style="font-size: 30px">
+    <a id="nav-pathway" href="{{ url_for('generate_pathway_page') }}" style="font-size: 35px">
         KEGG
     </a>
 
@@ -141,17 +141,14 @@ table#t01 {
 <br>
 
 <div class="container" >
-    <a id="nav-tocris" href="{{ url_for('generate_tocris_page') }}">
-        <img src="/static/tocris.png" width="200" height="180" alt="TOCRIS"/>
+    <a id="nav-tocris" href="{{ url_for('generate_tocris_page') }}" style="font-size: 35px">
+        Tocris
     </a>
-    <a id="nav-apexbio" href="{{ url_for('generate_apexbio_page') }}">
-        <img src="/static/APEXBIO.png" width="200" height="100" alt="APEXBIO"/>
+    <a id="nav-apexbio" href="{{ url_for('generate_apexbio_page') }}" style="font-size: 35px">
+        APExBio
     </a>
-    <a id="nav-wikidata" href="{{ url_for('generate_wikidata_page') }}">
-        <img src="/static/Wikidata.png" width="200" height="80" alt="Wikidata"/>
-    </a>
-    <a id="nav-snomed" href="{{ url_for('generate_snomed_page') }}">
-        <img src="/static/snomed.png" width="200" height="80" alt="SNOWMD"/>
+    <a id="nav-wikidata" href="{{ url_for('generate_wikidata_page') }}" style="font-size: 35px">
+        Wikidata
     </a>
 </div>
 
@@ -159,9 +156,9 @@ table#t01 {
 <div class="container" id="Literature">
     <th><span style="color: #efa50e; "><b>Literature</b></span></th>
     <br> <br>
-    {% autoescape false %}
-        {{text1}}
-    {% endautoescape %}
+    <a id="nav-literature" href="{{ url_for('generate_literature_page') }}" style="font-size: 35px">
+        Pubmed
+    </a>
 
 </div>
 
@@ -172,8 +169,8 @@ table#t01 {
 
 <div class="container" id="Clinical Trials">
     <br>
-    <a id="nav-clinical" href={{ url_for('generate_clinical_page') }}>
-        <img src="/static/clinical.png" alt="Clinical Trials"/>
+    <a id="nav-clinical" href={{ url_for('generate_clinical_page') }} style="font-size: 35px">
+        ClinicalTrials.gov
     </a>
 
 </div>
