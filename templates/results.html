@@ -76,15 +76,15 @@ th {
 <div class="container" id="Aliases">
     <h1><span style="color: #efa50e; "><b>Aliases</b></span></h1>
     <br><br>
-    <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="https://www.nlm.nih.gov/research/umls/index.html">UMLS database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the aliases referenced from <a target="_blank" href="https://www.nlm.nih.gov/research/umls/index.html">UMLS database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
     {{ html_umls|safe }}
     <hr class="innerbar">
-    <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="http://www.snomed.org/">SNOMED database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the aliases referenced from <a target="_blank" href="http://www.snomed.org/">SNOMED database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
     {{ html_snomed|safe }}
     <hr class="innerbar">
-    <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="https://www.icd10data.com/">ICD-10 database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the aliases referenced from <a target="_blank" href="https://www.icd10data.com/">ICD-10 database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
     <hr class="innerbar">
-    <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="https://hpo.jax.org/app/">HPO database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the aliases referenced from <a target="_blank" href="https://hpo.jax.org/app/">HPO database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
     {{ html_table1|safe }}
 
 </div>
@@ -105,11 +105,11 @@ th {
 <div class="container" id="Diseases">
     <h1><span style="color: #efa50e; "><b>Diseases</b></span></h1>
     <br><br>
-    <tr><th><span style="color: black; ">Here are the diseases referenced from <a href="https://www.ncbi.nlm.nih.gov/omim/">OMIM database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the diseases referenced from <a target="_blank" href="https://www.ncbi.nlm.nih.gov/omim/">OMIM database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
     {{ html_table2OMIM|safe }}
     {{ html_table2D|safe }}
     <br><br>
-    <tr><th><span style="color: black; ">Here are the diseases referenced from <a href="https://www.orpha.net/consor/cgi-bin/index.php">ORPHA database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the diseases referenced from <a target="_blank" href="https://www.orpha.net/consor/cgi-bin/index.php">ORPHA database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
     {{ html_table2OR|safe }}
 </div>
 <br>
@@ -121,7 +121,7 @@ th {
 <div class="container" id="Genes">
     <h1><span style="color: #efa50e; "><b>Genes</b></span></h1>
     <br><br>
-    <tr><th><span style="color: black; ">Here are the related genes referenced from <a href="https://phen2gene.wglab.org">Phen2Gene web application</a>:</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the related genes referenced from <a target="_blank" href="https://phen2gene.wglab.org">Phen2Gene web application</a>:</span></th></tr>
 </div>
 <br>
 {# gene list return 04/26/2020 #}
@@ -137,7 +137,7 @@ th {
 <div class="container" id="Pathway">
     <h1><span style="color: #efa50e; "><b>Pathway</b></span></h1>
     <br><br>
-    <a id="nav-pathway" href="{{ url_for('generate_pathway_page') }}" style="font-size: 25px">
+    <a target="_blank" id="nav-pathway" href="{{ url_for('generate_pathway_page') }}" style="font-size: 25px">
         KEGG
     </a>
 
@@ -152,13 +152,13 @@ th {
     <br><br>
     <table>
     <tr>
-    <td class="verticaltable"><a id="nav-tocris" href="{{ url_for('generate_tocris_page') }}" style="font-size: 25px">
+    <td class="verticaltable"><a target="_blank" id="nav-tocris" href="{{ url_for('generate_tocris_page') }}" style="font-size: 25px">
         Tocris
     </a></td>
-    <td class="verticaltable"><a id="nav-apexbio" href="{{ url_for('generate_apexbio_page') }}" style="font-size: 25px">
+    <td class="verticaltable"><a target="_blank" id="nav-apexbio" href="{{ url_for('generate_apexbio_page') }}" style="font-size: 25px">
         APExBio
     </a></td>
-    <td class="verticaltable"><a id="nav-wikidata" href="{{ url_for('generate_wikidata_page') }}" style="font-size: 25px">
+    <td class="verticaltable"><a target="_blank" id="nav-wikidata" href="{{ url_for('generate_wikidata_page') }}" style="font-size: 25px">
         Wikidata
     </a></td>
     </tr>
@@ -172,7 +172,7 @@ th {
 <div class="container" id="Literature">
     <h1><span style="color: #efa50e; "><b>Literature</b></span></h1>
     <br><br>
-    <a id="nav-literature" href="{{ url_for('generate_literature_page') }}" style="font-size: 25px">
+    <a target="_blank" id="nav-literature" href="{{ url_for('generate_literature_page') }}" style="font-size: 25px">
         Pubmed
     </a>
 
@@ -194,7 +194,7 @@ th {
 <div class="container" id="Clinical Trials">
     <h1><span style="color: #efa50e; "><b>Clinical Trials</b></span></h1>
     <br><br>
-    <a id="nav-clinical" href={{ url_for('generate_clinical_page') }} style="font-size: 25px">
+    <a target="_blank" id="nav-clinical" href={{ url_for('generate_clinical_page') }} style="font-size: 25px">
         ClinicalTrials.gov
     </a>
 
