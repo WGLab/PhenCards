@@ -45,10 +45,12 @@ th {
 </style>
 </head>
 
-<nav class="navbar navbar-expand-sm navbar-inverse bg-light">
+<!--<nav class="navbar navbar-expand-sm navbar-inverse bg-light">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse">
         <span class="navbar-toggler-icon"></span>
-    </button>
+    </button
+-->
+{% block nav %}
     <div class="collapse navbar-collapse flex-column" id="navbarCollapse">
         <ul class="navbar-nav ml-auto small">
           <li class="nav-item active"><a class="page-scroll scroll" href="#Aliases">Aliases</a></li>
@@ -67,6 +69,7 @@ th {
 </div>
 </nav>
 
+{% endblock %}
 
 
 <br>

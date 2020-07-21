@@ -64,8 +64,7 @@
 
 </head>
 
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
         <a class="navbar-brand">PhenCards</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
             aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,6 +81,8 @@
                     style="cursor: pointer;">Contact</a>
             </div>
         </div>
+        {% block nav %}
+        {% endblock %}
     </nav>
 
     <div class="modal" tabindex="-1" role="dialog" id="KBModal">
@@ -128,6 +129,7 @@
         </div>
     </div>
 
+<body>
     <!-- content of the page goes here -->
     {% block content %}
     {% endblock %}
