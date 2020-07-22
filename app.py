@@ -486,6 +486,24 @@ def results_page():
         html_res = '</td>'.join(html_lst)
         return html_res
 
+    def generate_cohd_list():
+        HPOquery=session['HPOquery'].replace("+","_") # replace + with _
+        params={
+        'q': HPOquery,
+        'dataset_id': 4, # lifetime non-hierarchical is 2, 4 is temporal beta
+        'domain': "Condition", # can use "Drug" for drugs
+        'min_count': 1
+        }
+        rsearch=requests.get("http://cohd.io/api/omop/findConceptIDs", params=params)
+        if rsearch.status_code == requests.status_codes.codes.OK:
+            results = rsearch.json()
+            results=sorted(results['results'], key=lambda k: k['concept_count'], reverse=True)
+        else:
+            results = []
+
+        return results
+
+
     if not request.referrer:
         return redirect(url_for('phencards'))
 
@@ -554,6 +572,7 @@ def results_page():
     html_snomed = json2html.convert(json=top_100_SNOMED,
                                   table_attributes="id=\"results-snomed\" class=\"table table-striped table-bordered table-sm\"")
 
+    cohd = generate_cohd_list()
     API.api_reference(HPO_list[0])
     try:
         reference = API.api_reference(phenname).replace("\n",'<br>')
@@ -565,7 +584,7 @@ def results_page():
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
                            html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
                            html_umls=html_umls, html_gene_api=html_gene_api, html_snomed=html_snomed,
-                           errors=errors, text1=reference)
+                           errors=errors, text1=reference, cohd=cohd)
 
 
 # pathway results
@@ -597,7 +616,39 @@ def generate_pathway_page():
 
     return render_template('pathways.html', dispath=dispath)
 
-# return independent page for drugs information
+@app.route('/cohd')
+def generate_cohd_page():
+    concept_id=request.args.get('concept')
+    params={
+        'concept_id': concept_id,
+        'dataset_id': 4, # lifetime non-hierarchical is 2, 4 is temporal beta
+    }
+    rsearch=requests.get("http://cohd.io/api/omop/conceptAncestors", params=params)
+    if rsearch.status_code == requests.status_codes.codes.OK:
+        results = rsearch.json()
+        ancestors = sorted(results['results'], key=lambda k: k['concept_count'], reverse=True)
+    else:
+        ancestors = []
+    domains = ['Drug', 'Condition', 'Procedure']
+    results={}
+    for domain in domains: 
+        params={
+            'concept_id_1': concept_id,
+            'dataset_id': 4, # lifetime non-hierarchical is 2, 4 is temporal beta
+            'domain': domain, # get the drugs, conditions, etc.
+        }
+        rsearch=requests.get("http://cohd.io/api/association/chiSquare", params=params)
+        if rsearch.status_code == requests.status_codes.codes.OK:
+            results[domain] = rsearch.json()
+            results[domain] = sorted(results[domain]['results'], key=lambda k: k['chi_square'], reverse=True)
+        else:
+            results[domain] = []
+
+
+    conditions = results['Condition']
+    drugs = results['Drug']
+    procedures = results['Procedure']
+    return render_template('cohd.html', conditions=conditions,drugs=drugs,procedures=procedures,ancestors=ancestors)
 
 @app.route('/clinical')
 def generate_clinical_page():
@@ -662,6 +713,7 @@ def generate_literature_page():
             pubmed[id1]=publication
     return render_template('literature.html', pubmed=pubmed)
 
+# return independent page for drugs information
 @app.route('/tocris')
 def generate_tocris_page():
     HPOquery=session['HPOquery']
@@ -673,6 +725,7 @@ def generate_tocris_page():
                               escape=False)
     return render_template('tocris.html', tocris=drugs)
 
+# return independent page for drugs information
 @app.route('/apexbio')
 def generate_apexbio_page():
     HPOquery=session['HPOquery']
@@ -681,6 +734,7 @@ def generate_apexbio_page():
     return render_template('apexbio.html', apex=drugs_lst)
 
 
+# return independent page for drugs information
 @app.route('/wikidata')
 def generate_wikidata_page():
     link ="https://www.wikidata.org/w/index.php?search=drugs+for+" + "+".join(HPO_names)

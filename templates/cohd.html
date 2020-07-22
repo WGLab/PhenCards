@@ -1,0 +1,184 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="container" id="Ancestor Terms">
+    <h1><span style="color: #efa50e; "><b>Ancestor Terms</b></span></h1>
+    <span style="color: black; ">These are ancestor terms from <a target="_blank" href="http://cohd.io/index.html"> Columbia Open Health Data (COHD)</a>, for the selected concept, sorted by patient count:</span>
+    <br><br>
+    {% if ancestors %}
+        <table id="ancestors" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+            <td>Concept Name</td>
+            <td>Ancestor Concept ID</td>
+            <td>Concept Count</td>
+            <td>Vocabulary ID</td>
+            <td>Domain ID</td>
+            <td>Concept Class ID</td>
+            <td>Concept Code</td>
+            <td>Standard Concept</td>
+            <td>Max Levels of Separation</td>
+            <td>Min Levels of Separation</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in ancestors %}
+                <tr>
+                    <td>{{result["concept_name"]}}</td>
+                    <td>{{result["ancestor_concept_id"]}}</td>
+                    <td>{{result["concept_count"]}}</td>
+                    <td>{{result["vocabulary_id"]}}</td>
+                    <td>{{result["domain_id"]}}</td>
+                    <td>{{result["concept_class_id"]}}</td>
+                    <td>{{result["concept_code"]}}</td>
+                    <td>{{result["standard_concept"]}}</td>
+                    <td>{{result["max_levels_of_separation"]}}</td>
+                    <td>{{result["min_levels_of_separation"]}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the concept's ancestors in COHD.
+    {% endif %}
+
+</div>
+
+<div class="container" id="bar" >
+<hr>
+</div>
+
+<div class="container" id="Conditions in Co-occurrence">
+    <h1><span style="color: #efa50e; "><b>Conditions Co-occurring</b></span></h1>
+    <span style="color: black; ">These are conditions from <a target="_blank" href="http://cohd.io/index.html"> Columbia Open Health Data (COHD)</a>, that are sorted by the significant of their cooccurence with the selected concept, sorted by significance:</span>
+    <br><br>
+    {% if conditions %}
+        <table id="conditions" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+            <td>Concept 2 Name</td>
+            <td>Concept 2 Domain</td>
+            <td>Concept 2 ID</td>
+            <td>Chi-Square value</td>
+            <td>p-value</td>
+            <td>Concept 1 ID</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in conditions %}
+                <tr>
+                    <td>{{result["concept_2_name"]}}</td>
+                    <td>{{result["concept_2_domain"]}}</td>
+                    <td>{{result["concept_id_2"]}}</td>
+                    <td>{{result["chi_square"]}}</td>
+                    <td>{{result["p-value"]}}</td>
+                    <td>{{result["concept_id_1"]}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the concept's co-occurring conditions in COHD.
+    {% endif %}
+
+</div>
+
+
+<div class="container" id="bar" >
+<hr>
+</div>
+
+<div class="container" id="Drugs in Co-occurrence">
+    <h1><span style="color: #efa50e; "><b>Drugs Co-occurring</b></span></h1>
+    <span style="color: black; ">These are drugs from <a target="_blank" href="http://cohd.io/index.html"> Columbia Open Health Data (COHD)</a>, that are sorted by the significant of their cooccurence with the selected concept, sorted by significance:</span>
+    <br><br>
+    {% if drugs %}
+        <table id="drugs" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+            <td>Concept 2 Name</td>
+            <td>Concept 2 Domain</td>
+            <td>Concept 2 ID</td>
+            <td>Chi-Square value</td>
+            <td>p-value</td>
+            <td>Concept 1 ID</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in drugs %}
+                <tr>
+                    <td>{{result["concept_2_name"]}}</td>
+                    <td>{{result["concept_2_domain"]}}</td>
+                    <td>{{result["concept_id_2"]}}</td>
+                    <td>{{result["chi_square"]}}</td>
+                    <td>{{result["p-value"]}}</td>
+                    <td>{{result["concept_id_1"]}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the concept's co-occurring drugs in COHD.
+    {% endif %}
+
+</div>
+
+<div class="container" id="bar" >
+<hr>
+</div>
+
+<div class="container" id="Procedures in Co-occurrence">
+    <h1><span style="color: #efa50e; "><b>Procedures Co-occurring</b></span></h1>
+    <span style="color: black; ">These are procedures from <a target="_blank" href="http://cohd.io/index.html"> Columbia Open Health Data (COHD)</a>, that are sorted by the significant of their cooccurence with the selected concept, sorted by significance:</span>
+    <br><br>
+    {% if procedures %}
+        <table id="procedures" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+            <td>Concept 2 Name</td>
+            <td>Concept 2 Domain</td>
+            <td>Concept 2 ID</td>
+            <td>Chi-Square value</td>
+            <td>p-value</td>
+            <td>Concept 1 ID</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in procedures %}
+                <tr>
+                    <td>{{result["concept_2_name"]}}</td>
+                    <td>{{result["concept_2_domain"]}}</td>
+                    <td>{{result["concept_id_2"]}}</td>
+                    <td>{{result["chi_square"]}}</td>
+                    <td>{{result["p-value"]}}</td>
+                    <td>{{result["concept_id_1"]}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the concept's co-occurring procedures in COHD.
+    {% endif %}
+
+</div>
+
+<!-- make nice table with multiple pages -->
+<script type="text/javascript">
+        $(document).ready(function () {
+                $('#ancestors').DataTable({
+                        "order": [[ 2, "desc" ]],
+                        "pageLength": 5,
+                        "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
+                });
+                $('#conditions, #procedures, #drugs').DataTable({
+                        "order": [[ 3, "desc" ]],
+                        "pageLength": 5,
+                        "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
+                });
+        });
+
+</script>
+
+{% endblock %}
+                  
