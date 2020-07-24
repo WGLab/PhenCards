@@ -17,6 +17,7 @@ import tempfile
 import weakref
 import re
 import os
+import time
 from datetime import timedelta
 import xml.etree.ElementTree as ET
 
@@ -303,6 +304,7 @@ def phencards():
         if doc2hpo_check: # runs doc2hpo instead of string match
             return redirect(url_for('patient_page'))
         HPO_list = [phen_name]
+        session['HPOquery']=phen_name
         return redirect(url_for('results_page'))
     return render_template('index.html', form=form)
 
@@ -573,22 +575,16 @@ def results_page():
                                   table_attributes="id=\"results-snomed\" class=\"table table-striped table-bordered table-sm\"")
 
     cohd = generate_cohd_list()
-    API.api_reference(HPO_list[0])
-    try:
-        reference = API.api_reference(phenname).replace("\n",'<br>')
-    except:
-        reference = '<br>'
 
     session['HPOquery']=phenname.replace("_", "+").replace(" ","+")
 
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
                            html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
                            html_umls=html_umls, html_gene_api=html_gene_api, html_snomed=html_snomed,
-                           errors=errors, text1=reference, cohd=cohd)
+                           errors=errors, cohd=cohd)
 
 
 # pathway results
-
 
 @app.route('/pathway')
 def generate_pathway_page():
@@ -663,54 +659,81 @@ def generate_clinical_page():
 def generate_literature_page():
     pubmed={}
     HPOquery=session['HPOquery']
-    rsearch=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term="+HPOquery+"&retmax=5000&sort=relevance")
+    rsearch=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term="+HPOquery+"&retmax=400&sort=relevance")
+    def generate_citations(uid):
+        params={
+        'retmode': "json",
+        'dbfrom': "pubmed",
+        'db': "pubmed",
+        'linkname': "pubmed_pubmed_citedin",
+        'id': uid, # get from esearch
+        'cmd': "neighbor",
+        'api_key': '1ee2a8a8bf1b1b2b09e8087eb5cf16c95109'
+        }
+        while True:
+            rsearch=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi", params=params)
+            rdict=rsearch.json()
+            try:
+                links = rdict['linksets'][0]['linksetdbs'][0]['links']
+                citedby = len(links)
+                return citedby
+            except KeyError as e:
+                e='{}: {}'.format(type(e).__name__, e)
+                if 'linksetdbs' in e:
+                    return 0
+                else:
+                    time.sleep(0.1)
+                   # print (e,uid, "time", file=sys.stderr)
+            except Exception as e:
+                print (e,uid,"exc",file=sys.stderr)
+                return 0
+        return 0
+
     root=ET.fromstring(rsearch.text)
-    ids=[]
+    ids={}
     for i in root.iter("Id"):
-        ids.append(i.text)
-    l=len(ids)
-    for i in range(0,l,250):
-        if l < i + 250:
-            query=ids[i:l] 
+        citedby=generate_citations(i.text)
+        ids[i.text]=citedby
+    top25=sorted(ids, key=ids.get, reverse=True)[:25]
+    top25 = { key: ids[key] for key in top25 }
+
+    query=",".join(top25.keys())
+    rsum=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id="+query+"&retmode=text&rettype=abstract")
+    root=ET.fromstring(rsum.text)
+    title=pages=first=authors=pubdate=doi=volume=issue=''
+    for doc in root.iter("DocSum"):
+        id1 = doc.find("Id").text
+        for child in doc.iter("Item"):
+            if child.attrib['Name'] == "AuthorList":
+                if child:
+                    g = child[0]
+                    first=g.text
+            if child.attrib['Name'] == "LastAuthor":
+                authors=child.text
+            if child.attrib['Name'] == "Title":
+                title=child.text
+            if child.attrib['Name'] == "Source":
+                journal=child.text
+            if child.attrib['Name'] == "PubDate":
+                pubdate=child.text
+            if child.attrib['Name'] == "Volume":
+                if child.text:
+                    volume = ";"+child.text
+            if child.attrib['Name'] == "Issue":
+                if child.text:
+                    issue="("+child.text+")"
+            if child.attrib['Name'] == "Pages":
+                if child.text:
+                    pages=":"+child.text
+            if child.attrib['Name'] == "DOI":
+                doi="doi:"+child.text
+        if authors and first != authors:
+            authors = first + " .. " + authors
         else:
-            query=ids[i:i+250] 
-        query=",".join(query)
-        rsum=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id="+query+"&retmode=text&rettype=abstract")
-        root=ET.fromstring(rsum.text)
-        title=pages=first=authors=pubdate=doi=volume=issue=''
-        for doc in root.iter("DocSum"):
-            id1 = doc.find("Id").text
-            for child in doc.iter("Item"):
-                if child.attrib['Name'] == "AuthorList":
-                    if child:
-                        g = child[0]
-                        first=g.text
-                if child.attrib['Name'] == "LastAuthor":
-                    authors=child.text
-                if child.attrib['Name'] == "Title":
-                    title=child.text
-                if child.attrib['Name'] == "Source":
-                    journal=child.text
-                if child.attrib['Name'] == "PubDate":
-                    pubdate=child.text
-                if child.attrib['Name'] == "Volume":
-                    if child.text:
-                        volume = ";"+child.text
-                if child.attrib['Name'] == "Issue":
-                    if child.text:
-                        issue="("+child.text+")"
-                if child.attrib['Name'] == "Pages":
-                    if child.text:
-                        pages=":"+child.text
-                if child.attrib['Name'] == "DOI":
-                    doi="doi:"+child.text
-            if authors and first != authors:
-                authors = first + " .. " + authors
-            else:
-                authors = first
-            if title:
-                publication = title + " " + authors + ". " + journal + " " + pubdate + volume + issue + pages + ". " + doi
-            pubmed[id1]=publication
+            authors = first
+        if title:
+            publication = title + " " + authors + ". " + journal + " " + pubdate + volume + issue + pages + ". " + doi
+        pubmed[id1]=[publication,top25[id1]]
     return render_template('literature.html', pubmed=pubmed)
 
 # return independent page for drugs information
