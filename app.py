@@ -45,9 +45,6 @@ results3 = None
 resultsUMLS = None
 resultsSNOMED = None
 
-# use API from phen2gene web app
-HPOID = 'cleft palate'
-
 # errors and doc2hpo-error are for the errors storage
 errors = None
 doc2hpo_error = None
@@ -71,12 +68,10 @@ def get_results(phen_name: str, search_method='string', HPO_list=['cleft_palate'
     global results3
     global resultsUMLS
     global resultsSNOMED
-    global HPOID
-    global GeneAPI_JSON
 
     phen_name = phen_name.strip()
     # initialize values
-    results1 = results2OMIM = results2D = results2OR = results3 = GeneAPI_JSON = None
+    results1 = results2OMIM = results2D = results2OR = results3 = None
 
     # (1) database id search
     if search_method == 'hpo':
@@ -166,7 +161,6 @@ def get_results(phen_name: str, search_method='string', HPO_list=['cleft_palate'
         elif OMIMID[:5] == 'ORPHA':
             phen_dict2_ORPHA[idx].extend([phenName, OMIMID, HPOId, HPOName])
         phen_dict2[idx].extend([phenName, OMIMID, HPOId, HPOName])
-        HPOID = phen_dict1[idx][1] # this is wrong.  this should not be here.
     # use c2 to get information inside ICD10BASE
     cursor2 = c2.execute("SELECT * FROM ICD10BASE WHERE NAME LIKE'%" + phen_name + "%'")
     for row in cursor2:
@@ -225,7 +219,6 @@ def phencards():
     global resultsUMLS
     global resultsSNOMED
     global doc2hpo_error
-    global GeneAPI_JSON
     global HPO_list
     global HPO_names
     HPO_list = []
@@ -300,6 +293,8 @@ def phencards():
 
         results1, results2OMIM, results2D, results2OR, resultsUMLS, resultsSNOMED, results3 = get_results(phen_name, search_method, HPO_list)
         if doc2hpo_check: # runs doc2hpo instead of string match
+            session['HPOquery']=HPO_list
+            session['HPOnames']=HPO_names
             return redirect(url_for('patient_page'))
         HPO_list = [phen_name]
         session['HPOquery']=phen_name
@@ -308,36 +303,27 @@ def phencards():
 
 @app.route('/patient')
 def patient_page():
-    global HPO_list
-    phen_dict = defaultdict(list)
-    HPOidstring=";".join(HPO_list)
-    HPOquery="+OR+".join([s.replace(" ", "+") for s in HPO_names])
+    HPOquery = session['HPOquery']
+    HPO_names = session['HPOnames']
     print(HPOquery, file=sys.stderr)
-    for i, (HPOId, HPOName) in enumerate(zip(HPO_list, HPO_names)):
+    phen_dict = defaultdict(list)
+    for i, (HPOId, HPOName) in enumerate(zip(HPOquery, HPO_names)):
         phen_dict[i].extend([HPOId, HPOName])
     results = format_json_table(phen_dict, 'patient')
-    try:
-        top_100 = json.loads(results)[:100]
-    except:
-        top_100 = results
-    patient_table = json2html.convert(json=top_100,
+    patient_table = json2html.convert(json=results,
                                     table_attributes="id=\"doc2hpo-results\" class=\"table table-striped table-bordered table-sm\"")
-    try:
-        GeneAPI_JSON = requests.get('https://phen2gene.wglab.org/api?HPO_list=' + HPOidstring + '&weight_model=sk', verify=False).json()['results'][:1000]
-        phen2gene_table = json2html.convert(json=GeneAPI_JSON,
-                                      table_attributes="id=\"phen2gene-api\" class=\"table table-striped table-bordered table-sm\"")
-    except:
-        phen2gene_table = ''
 
-    session['HPOquery']=HPOquery
-    return render_template('patient.html', patient_table=patient_table, phen2gene_table=phen2gene_table)
+    HPOclinical="+OR+".join([s.replace(" ", "+") for s in HPO_names])
+    session['HPOclinical']=HPOclinical
+    return render_template('patient.html', patient_table=patient_table, phen2gene_table=API.phen2gene_page(HPOquery,patient=True))
     
 
 @app.route('/results')
 def results_page():
     global HPO_list
-    global GeneAPI_JSON
     phenname = HPO_list[0]
+    
+    HPOquery=session['HPOquery']
 
     # if request.method == 'POST':
     #     return redirect(url_for('index'))
@@ -542,11 +528,6 @@ def results_page():
         top_100_SNOMED = json.loads(resultsSNOMED)[:100]
     except:
         top_100_SNOMED = resultsSNOMED
-    try:
-        GeneAPI_JSON = requests.get('https://phen2gene.wglab.org/api?HPO_list=' + HPOID + '&weight_model=sk', verify=False).json()['results'][:100]
-        GeneAPI_JSON = json.loads(GeneAPI_JSON)[:100]
-    except:
-        GeneAPI_JSON = GeneAPI_JSON
 
     html_table1 = json2html.convert(json=top_100_1,
                                     table_attributes="id=\"results-table1\" class=\"table table-striped table-bordered table-sm\"")
@@ -563,20 +544,18 @@ def results_page():
     html_table3 = json2html.convert(json=top_100_3,
                                     table_attributes="id=\"results-table3\" class=\"table table-striped table-bordered table-sm\"")
     html_table3 = add_link_3(html_table3)
-    html_gene_api = json2html.convert(json=GeneAPI_JSON,
-                                      table_attributes="id=\"results-gene-api\" class=\"table table-striped table-bordered table-sm\"")
     html_umls = json2html.convert(json=top_100_UMLS,
                                       table_attributes="id=\"results-umls\" class=\"table table-striped table-bordered table-sm\"")
     html_snomed = json2html.convert(json=top_100_SNOMED,
                                   table_attributes="id=\"results-snomed\" class=\"table table-striped table-bordered table-sm\"")
-
     cohd = generate_cohd_list()
+    phen2gene=API.phen2gene_page(HPOquery, patient=False)
 
     session['HPOquery']=phenname.replace("_", "+").replace(" ","+")
 
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
                            html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
-                           html_umls=html_umls, html_gene_api=html_gene_api, html_snomed=html_snomed,
+                           html_umls=html_umls, phen2gene=phen2gene, html_snomed=html_snomed,
                            errors=errors, cohd=cohd)
 
 
@@ -584,7 +563,7 @@ def results_page():
 
 @app.route('/pathway')
 def generate_pathway_page():
-    phenname=session['phenname']
+    phenname=session['HPOquery']
     phenname=phenname.replace("_", "+").replace(" ","+")
     diseases=requests.get('http://rest.kegg.jp/find/disease/'+phenname, verify=False, stream=True)
     diseases=[x.split("\t") for x in diseases.text.strip().split("\n")]
@@ -645,6 +624,8 @@ def generate_cohd_page():
 @app.route('/clinical')
 def generate_clinical_page():
     HPOquery=session['HPOquery']
+    if 'HPOclinical' in session:
+        return render_template('clinical.html', clinicaljson=API.clinical_page(session['HPOclinical']))
     return render_template('clinical.html', clinicaljson=API.clinical_page(HPOquery))
 
 @app.route('/literature')

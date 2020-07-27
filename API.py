@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 import time
 from lib.json import format_json_table
 from json2html import json2html
+import json
 
 # pubmed page generator
 def literature_page(HPOquery):
@@ -147,3 +148,20 @@ def clinical_page(HPOquery):
     except:
         clinicaljson = {}
     return clinicaljson
+
+# phen2gene api call
+def phen2gene_page(HPOquery, patient=False):
+    if patient: 
+        HPOquery=";".join(HPOquery)
+    params = {
+    'HPO_list': HPOquery,
+    'weight_model': 'sk'}
+    try:
+        GeneAPI_JSON = requests.get('https://phen2gene.wglab.org/api', params=params, verify=False).json()['results']
+        GeneAPI_JSON = json.loads(GeneAPI_JSON)[:1000]
+    except:
+        GeneAPI_JSON = {}
+
+    p2g_table = json2html.convert(json=GeneAPI_JSON,
+                    table_attributes="id=\"phen2gene-api\" class=\"table table-striped table-bordered table-sm\"")
+    return p2g_table
