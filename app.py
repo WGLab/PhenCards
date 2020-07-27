@@ -5,7 +5,7 @@ import sqlite3
 from flask import Flask, Response, render_template, redirect, url_for, request, abort, flash, session, after_this_request, g, app
 from forms import PhenCardsForm
 from config import Config
-from json2html import *
+from json2html import json2html
 import sys
 import json
 import requests
@@ -645,11 +645,7 @@ def generate_cohd_page():
 @app.route('/clinical')
 def generate_clinical_page():
     HPOquery=session['HPOquery']
-    try:
-        clinicaljson = requests.get('https://clinicaltrials.gov/api/query/study_fields?expr='+ HPOquery +'&fields=NCTId%2CBriefTitle%2CCondition%2CInterventionName&min_rnk=1&max_rnk=1000&fmt=json', verify=False).json()['StudyFieldsResponse']
-    except:
-        clinicaljson = {}
-    return render_template('clinical.html', clinicaljson=clinicaljson)
+    return render_template('clinical.html', clinicaljson=API.clinical_page(HPOquery))
 
 @app.route('/literature')
 def generate_literature_page():
@@ -661,21 +657,13 @@ def generate_literature_page():
 @app.route('/tocris')
 def generate_tocris_page():
     HPOquery=session['HPOquery']
-    drugs_lst = API.tocris_drugs_api(HPOquery)
-    print(drugs_lst,file=sys.stderr)
-    drugs = format_json_table(drugs_lst, 'DRUG')
-    drugs = json2html.convert(json=drugs,
-                              table_attributes="id=\"results-drugs\" class=\"table table-striped table-bordered table-sm\"",
-                              escape=False)
-    return render_template('tocris.html', tocris=drugs)
+    return render_template('tocris.html', tocris=API.tocris_drugs_api(HPOquery))
 
 # return independent page for drugs information
 @app.route('/apexbio')
 def generate_apexbio_page():
     HPOquery=session['HPOquery']
-    drugs_lst = API.apexbt_drugs_api(HPOquery)
-    print(drugs_lst,file=sys.stderr)
-    return render_template('apexbio.html', apex=drugs_lst)
+    return render_template('apexbio.html', apex=API.apexbt_drugs_api(HPOquery))
 
 
 # return independent page for drugs information
@@ -683,11 +671,6 @@ def generate_apexbio_page():
 def generate_wikidata_page():
     link ="https://www.wikidata.org/w/index.php?search=drugs+for+" + "+".join(HPO_names)
     return redirect(link)
-
-
-@app.route('/snomed')
-def generate_snomed_page():
-    return redirect("http://www.snomed.org/")
 
 
 @app.route('/download_json/')

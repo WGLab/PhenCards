@@ -5,15 +5,20 @@ from bs4 import BeautifulSoup
 import sys
 import xml.etree.ElementTree as ET
 import time
+from lib.json import format_json_table
+from json2html import json2html
 
-# input is the phenotype name, output is list([reference w/ external links])
-
-
+# pubmed page generator
 def literature_page(HPOquery):
     pubmed={}
+    params1={
+    'db': 'pubmed',
+    'term': HPOquery,
+    'retmax': '400',
+    'sort': 'relevance'}
     rsearch=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term="+HPOquery+"&retmax=400&sort=relevance")
     def generate_citations(uid):
-        params={
+        params2={
         'retmode': "json",
         'dbfrom': "pubmed",
         'db': "pubmed",
@@ -23,7 +28,7 @@ def literature_page(HPOquery):
         'api_key': '1ee2a8a8bf1b1b2b09e8087eb5cf16c95109'
         }
         while True:
-            rsearch=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi", params=params)
+            rsearch=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi", params=params2)
             rdict=rsearch.json()
             try:
                 links = rdict['linksets'][0]['linksetdbs'][0]['links']
@@ -88,6 +93,7 @@ def literature_page(HPOquery):
         pubmed[id1]=[publication,top25[id1]]
     return pubmed
 
+# tocris drugs page generator
 def tocris_drugs_api(query):
     link = "https://www.tocris.com/search?keywords=" + query
     html_doc = requests.get(link, verify=False).text
@@ -99,11 +105,14 @@ def tocris_drugs_api(query):
             idx = item.find('href="') + 6
             item = item[:idx] + "https://www.tocris.com/" + item[idx+1:] #+1 removes extra slash
             drugs.append(item)
+
+    drugs = format_json_table(drugs, 'DRUG')
+    drugs = json2html.convert(json=drugs,
+          table_attributes="id=\"results-drugs\" class=\"table table-striped table-bordered table-sm\"",
+          escape=False)
     return drugs
 
-
-# print(tocris_drugs_api("cleft palate"))
-
+# apexbio page generator
 def apexbt_drugs_api(query):
     link = "https://www.apexbt.com/catalogsearch/result/?q=" + query
     html_doc = requests.get(link, verify=False).text
@@ -118,5 +127,23 @@ def apexbt_drugs_api(query):
             
     return drugs
 
-
-# print(apexbt_drugs_api("cleft palate"))
+# clinical trial page generator
+def clinical_page(HPOquery):
+    try:
+        fields = [
+        "NCTId",
+        "BriefTitle",
+        "Condition",
+        "InterventionName"]
+        params = {
+        'expr': HPOquery,
+        'fields': ','.join(fields),
+        'min_rnk': '1',
+        'max_rnk': '1000',
+        'fmt': 'json'}
+        clinicaljson = requests.get('https://clinicaltrials.gov/api/query/study_fields', params=params, verify=False)
+        clinicaljson = clinicaljson.json()['StudyFieldsResponse']#?expr='+ HPOquery +'&fields=NCTId%2CBriefTitle%2CCondition%2CInterventionName&min_rnk=1&max_rnk=1000&fmt=json', verify=False).json()['StudyFieldsResponse']
+        print (clinicaljson)
+    except:
+        clinicaljson = {}
+    return clinicaljson
