@@ -17,9 +17,7 @@ import tempfile
 import weakref
 import re
 import os
-import time
 from datetime import timedelta
-import xml.etree.ElementTree as ET
 
 
 # connect to SQLite at phenotype db file
@@ -338,6 +336,7 @@ def patient_page():
 @app.route('/results')
 def results_page():
     global HPO_list
+    global GeneAPI_JSON
     phenname = HPO_list[0]
 
     # if request.method == 'POST':
@@ -545,9 +544,6 @@ def results_page():
         top_100_SNOMED = resultsSNOMED
     try:
         GeneAPI_JSON = requests.get('https://phen2gene.wglab.org/api?HPO_list=' + HPOID + '&weight_model=sk', verify=False).json()['results'][:100]
-    except:
-        pass
-    try:
         GeneAPI_JSON = json.loads(GeneAPI_JSON)[:100]
     except:
         GeneAPI_JSON = GeneAPI_JSON
@@ -657,84 +653,9 @@ def generate_clinical_page():
 
 @app.route('/literature')
 def generate_literature_page():
-    pubmed={}
     HPOquery=session['HPOquery']
-    rsearch=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term="+HPOquery+"&retmax=400&sort=relevance")
-    def generate_citations(uid):
-        params={
-        'retmode': "json",
-        'dbfrom': "pubmed",
-        'db': "pubmed",
-        'linkname': "pubmed_pubmed_citedin",
-        'id': uid, # get from esearch
-        'cmd': "neighbor",
-        'api_key': '1ee2a8a8bf1b1b2b09e8087eb5cf16c95109'
-        }
-        while True:
-            rsearch=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi", params=params)
-            rdict=rsearch.json()
-            try:
-                links = rdict['linksets'][0]['linksetdbs'][0]['links']
-                citedby = len(links)
-                return citedby
-            except KeyError as e:
-                e='{}: {}'.format(type(e).__name__, e)
-                if 'linksetdbs' in e:
-                    return 0
-                else:
-                    time.sleep(0.1)
-                   # print (e,uid, "time", file=sys.stderr)
-            except Exception as e:
-                print (e,uid,"exc",file=sys.stderr)
-                return 0
-        return 0
-
-    root=ET.fromstring(rsearch.text)
-    ids={}
-    for i in root.iter("Id"):
-        citedby=generate_citations(i.text)
-        ids[i.text]=citedby
-    top25=sorted(ids, key=ids.get, reverse=True)[:25]
-    top25 = { key: ids[key] for key in top25 }
-
-    query=",".join(top25.keys())
-    rsum=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id="+query+"&retmode=text&rettype=abstract")
-    root=ET.fromstring(rsum.text)
-    title=pages=first=authors=pubdate=doi=volume=issue=''
-    for doc in root.iter("DocSum"):
-        id1 = doc.find("Id").text
-        for child in doc.iter("Item"):
-            if child.attrib['Name'] == "AuthorList":
-                if child:
-                    g = child[0]
-                    first=g.text
-            if child.attrib['Name'] == "LastAuthor":
-                authors=child.text
-            if child.attrib['Name'] == "Title":
-                title=child.text
-            if child.attrib['Name'] == "Source":
-                journal=child.text
-            if child.attrib['Name'] == "PubDate":
-                pubdate=child.text
-            if child.attrib['Name'] == "Volume":
-                if child.text:
-                    volume = ";"+child.text
-            if child.attrib['Name'] == "Issue":
-                if child.text:
-                    issue="("+child.text+")"
-            if child.attrib['Name'] == "Pages":
-                if child.text:
-                    pages=":"+child.text
-            if child.attrib['Name'] == "DOI":
-                doi="doi:"+child.text
-        if authors and first != authors:
-            authors = first + " .. " + authors
-        else:
-            authors = first
-        if title:
-            publication = title + " " + authors + ". " + journal + " " + pubdate + volume + issue + pages + ". " + doi
-        pubmed[id1]=[publication,top25[id1]]
-    return render_template('literature.html', pubmed=pubmed)
+    return render_template('literature.html',pubmed=API.literature_page(HPOquery))
+    
 
 # return independent page for drugs information
 @app.route('/tocris')
