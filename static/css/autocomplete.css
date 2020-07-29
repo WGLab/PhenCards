@@ -1,4 +1,4 @@
-.ui-autocomplete {
+/* .ui-autocomplete {
     position: absolute;
     top: 100%;
     left: 0;
@@ -18,9 +18,9 @@
     -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
     background-clip: padding-box;
-  }
+  } */
   
-  .ui-autocomplete > li > div {
+  /* .ui-autocomplete > li > div {
     display: block;
     padding: 3px 20px;
     clear: both;
@@ -28,14 +28,15 @@
     line-height: 1.42857143;
     color: #333333;
     white-space: nowrap;
-  }
+  } */
   
-  .ui-state-hover,
+  /* .ui-state-hover,
   .ui-state-active,
   .ui-state-focus {
     text-decoration: none;
     color: #262626;
-    background-color: #f5f5f5;
+    background-color:rgb(135, 163, 222);
+    border: none;
     cursor: pointer;
   }
   
@@ -48,5 +49,5 @@
     padding: 0;
     position: absolute;
     width: 1px;
-  }
-  
+  } */
+

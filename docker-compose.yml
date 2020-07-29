@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+    elasticsearch: # Elasticsearch Instance
+        container_name: elastic-search
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
+        volumes: # Persist ES data in seperate "esdata" volume
+            - ./database/esdata:/usr/share/elasticsearch/data
+            - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+        environment:
+            - bootstrap.memory_lock=true
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+            - discovery.type=single-node
+        ports: # Expose Elasticsearch ports
+            - "9300:9300"
+            - "9200:9200"
+    app: # flask app
+        container_name: phencard
+        build: .
+        ports:
+            - "5000:5000" # Expose flask port
+        environment: # Set ENV vars
+            - NODE_ENV=local
+            - ES_HOST=elasticsearch
+        volumes: # Attach local book data directory
+            - ./database:/code/database
+        depends_on:
+            - elasticsearch
+
+
+# volumes: # Define seperate volume for Elasticsearch data
+#   esdata:
