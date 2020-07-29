@@ -301,28 +301,19 @@ def phencards():
         if doc2hpo_check: # runs doc2hpo instead of string match
             session['HPOquery']=HPO_list
             session['HPOnames']=HPO_names
-            return redirect(url_for('patient_page'))
+            return redirect(url_for('generate_patient_page'))
         HPO_list = [phen_name]
         session['HPOquery']=phen_name
         return redirect(url_for('results_page'))
     return render_template('index.html', form=form)
 
 @app.route('/patient')
-def patient_page():
+def generate_patient_page():
     HPOquery = session['HPOquery']
     HPO_names = session['HPOnames']
+    session['HPOclinical'], patient_table, phen2gene_table = API.patient_page(HPOquery, HPO_names)
     print(HPOquery, file=sys.stderr)
-    phen_dict = defaultdict(list)
-    for i, (HPOId, HPOName) in enumerate(zip(HPOquery, HPO_names)):
-        phen_dict[i].extend([HPOId, HPOName])
-    results = format_json_table(phen_dict, 'patient')
-    patient_table = json2html.convert(json=results,
-                                    table_attributes="id=\"doc2hpo-results\" class=\"table table-striped table-bordered table-sm\"")
-
-    HPOclinical="+OR+".join([s.replace(" ", "+") for s in HPO_names])
-    session['HPOclinical']=HPOclinical
-    return render_template('patient.html', patient_table=patient_table, phen2gene_table=API.phen2gene_page(HPOquery,patient=True))
-    
+    return render_template('patient.html', patient_table=patient_table, phen2gene_table=phen2gene_table)
 
 @app.route('/results')
 def results_page():

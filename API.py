@@ -220,7 +220,9 @@ def clinical_page(HPOquery):
         'min_rnk': '1',
         'max_rnk': '1000',
         'fmt': 'json'}
-        clinicaljson = requests.get('https://clinicaltrials.gov/api/query/study_fields', params=params, verify=False)
+        payload = "&".join("%s=%s" % (k,v) for k,v in params.items()) # prevents URL encoding of "+"
+        clinicaljson = requests.get('https://clinicaltrials.gov/api/query/study_fields', params=payload, verify=False)
+        print (clinicaljson.url)
         clinicaljson = clinicaljson.json()['StudyFieldsResponse']
     except:
         clinicaljson = {}
@@ -244,3 +246,16 @@ def phen2gene_page(HPOquery, patient=False):
     p2g_table = json2html.convert(json=GeneAPI_JSON,
                     table_attributes="id=\"phen2gene-api\" class=\"table table-striped table-bordered table-sm\"")
     return p2g_table
+
+def patient_page(HPOquery, HPO_names):
+    phen_dict = defaultdict(list)
+    for i, (HPOId, HPOName) in enumerate(zip(HPOquery, HPO_names)):
+        phen_dict[i].extend([HPOId, HPOName])
+    results = format_json_table(phen_dict, 'patient')
+    patient_table = json2html.convert(json=results,
+                                    table_attributes="id=\"doc2hpo-results\" class=\"table table-striped table-bordered table-sm\"")
+
+    HPOclinical="+OR+".join([s.replace(" ", "+") for s in HPO_names])
+    phen2gene_table = phen2gene_page(HPOquery,patient=True)
+
+    return HPOclinical, patient_table, phen2gene_table
