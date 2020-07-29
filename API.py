@@ -7,6 +7,8 @@ import xml.etree.ElementTree as ET
 import time
 from lib.json import format_json_table
 from json2html import json2html
+import re
+from collections import defaultdict
 import json
 
 # cohd list generator
@@ -59,6 +61,31 @@ def cohd_page(concept_id):
     drugs = results['Drug']
     procedures = results['Procedure']
     return ancestors, conditions, drugs, procedures
+
+# pathway page generator
+
+def pathway_page(phenname):
+    phenname=phenname.replace("_", "+").replace(" ","+")
+    diseases=requests.get('http://rest.kegg.jp/find/disease/'+phenname, verify=False, stream=True)
+    diseases=[x.split("\t") for x in diseases.text.strip().split("\n")]
+    paths = defaultdict(list)
+    for did, dname in diseases:
+        path=requests.get('http://rest.kegg.jp/link/pathway/'+did, verify=False, stream=True)
+        for line in path.text.splitlines():
+            if re.search("hsa", line):
+                paths[line.strip().split("\t")[1]].append(dname)
+    # generate temporary images then os remove using @after_this_request decorator in flask under app route (/results/pathway)
+    dispath = {}
+    print (paths)
+    for i, pid in enumerate(paths):
+        link='https://www.genome.jp/dbget-bin/www_bget?'+pid
+        reqname=requests.get('http://rest.kegg.jp/get/'+pid, verify=False, stream=True)
+        for line in reqname.text.splitlines():
+            if re.search("NAME\s*", line):
+                name=re.split("\w*\s*",line,1)[-1].split("-")[0]
+        dispath[name]=[paths[pid],link]
+
+    return dispath
 
 # pubmed page generator
 def literature_page(HPOquery):
@@ -194,8 +221,7 @@ def clinical_page(HPOquery):
         'max_rnk': '1000',
         'fmt': 'json'}
         clinicaljson = requests.get('https://clinicaltrials.gov/api/query/study_fields', params=params, verify=False)
-        clinicaljson = clinicaljson.json()['StudyFieldsResponse']#?expr='+ HPOquery +'&fields=NCTId%2CBriefTitle%2CCondition%2CInterventionName&min_rnk=1&max_rnk=1000&fmt=json', verify=False).json()['StudyFieldsResponse']
-        print (clinicaljson)
+        clinicaljson = clinicaljson.json()['StudyFieldsResponse']
     except:
         clinicaljson = {}
     return clinicaljson
@@ -209,10 +235,8 @@ def phen2gene_page(HPOquery, patient=False):
     'weight_model': 'sk'}
     try:
         GeneAPI_JSON = requests.get('https://phen2gene.wglab.org/api', params=params, verify=False)
-        print (GeneAPI_JSON.url)
+        print (GeneAPI_JSON.url,file=sys.stderr)
         GeneAPI_JSON = GeneAPI_JSON.json()['results'][:1000]
-        print (GeneAPI_JSON)
-        #GeneAPI_JSON = json.loads(GeneAPI_JSON)[:1000]
     except Exception as e:
         GeneAPI_JSON = {}
         print (e)

@@ -553,27 +553,7 @@ def results_page():
 @app.route('/pathway')
 def generate_pathway_page():
     phenname=session['HPOquery']
-    phenname=phenname.replace("_", "+").replace(" ","+")
-    diseases=requests.get('http://rest.kegg.jp/find/disease/'+phenname, verify=False, stream=True)
-    diseases=[x.split("\t") for x in diseases.text.strip().split("\n")]
-    paths = defaultdict(list)
-    for did, dname in diseases:
-        path=requests.get('http://rest.kegg.jp/link/pathway/'+did, verify=False, stream=True)
-        for line in path.text.splitlines():
-            if re.search("hsa", line):
-                paths[line.strip().split("\t")[1]].append(dname)
-    # generate temporary images then os remove using @after_this_request decorator in flask under app route (/results/pathway)
-    dispath = {}
-    print (paths)
-    for i, pid in enumerate(paths):
-        link='https://www.genome.jp/dbget-bin/www_bget?'+pid
-        reqname=requests.get('http://rest.kegg.jp/get/'+pid, verify=False, stream=True)
-        for line in reqname.text.splitlines():
-            if re.search("NAME\s*", line):
-                name=re.split("\w*\s*",line,1)[-1].split("-")[0]
-        dispath[name]=[paths[pid],link]
-        g.dispath = dispath
-
+    dispath=API.pathway_page(phenname)
     return render_template('pathways.html', dispath=dispath)
 
 @app.route('/cohd')
@@ -586,26 +566,31 @@ def generate_cohd_page():
 def generate_clinical_page():
     HPOquery=session['HPOquery']
     if 'HPOclinical' in session:
-        return render_template('clinical.html', clinicaljson=API.clinical_page(session['HPOclinical']))
-    return render_template('clinical.html', clinicaljson=API.clinical_page(HPOquery))
+        clinicaljson=API.clinical_page(session['HPOclinical'])
+    else:
+        clinicaljson=API.clinical_page(HPOquery)
+    return render_template('clinical.html', clinicaljson=clinicaljson)
 
 @app.route('/literature')
 def generate_literature_page():
     HPOquery=session['HPOquery']
-    return render_template('literature.html',pubmed=API.literature_page(HPOquery))
+    pubmed=API.literature_page(HPOquery)
+    return render_template('literature.html',pubmed=pubmed)
     
 
 # return independent page for drugs information
 @app.route('/tocris')
 def generate_tocris_page():
     HPOquery=session['HPOquery']
-    return render_template('tocris.html', tocris=API.tocris_drugs_api(HPOquery))
+    tocris=API.tocris_drugs_api(HPOquery)
+    return render_template('tocris.html', tocris=tocris)
 
 # return independent page for drugs information
 @app.route('/apexbio')
 def generate_apexbio_page():
     HPOquery=session['HPOquery']
-    return render_template('apexbio.html', apex=API.apexbt_drugs_api(HPOquery))
+    apex=API.apexbt_drugs_api(HPOquery)
+    return render_template('apexbio.html', apex=apex)
 
 
 # return independent page for drugs information
