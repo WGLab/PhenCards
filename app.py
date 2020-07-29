@@ -579,35 +579,7 @@ def generate_pathway_page():
 @app.route('/cohd')
 def generate_cohd_page():
     concept_id=request.args.get('concept')
-    params={
-        'concept_id': concept_id,
-        'dataset_id': 4, # lifetime non-hierarchical is 2, 4 is temporal beta
-    }
-    rsearch=requests.get("http://cohd.io/api/omop/conceptAncestors", params=params)
-    if rsearch.status_code == requests.status_codes.codes.OK:
-        results = rsearch.json()
-        ancestors = sorted(results['results'], key=lambda k: k['concept_count'], reverse=True)
-    else:
-        ancestors = []
-    domains = ['Drug', 'Condition', 'Procedure']
-    results={}
-    for domain in domains: 
-        params={
-            'concept_id_1': concept_id,
-            'dataset_id': 4, # lifetime non-hierarchical is 2, 4 is temporal beta
-            'domain': domain, # get the drugs, conditions, etc.
-        }
-        rsearch=requests.get("http://cohd.io/api/association/chiSquare", params=params)
-        if rsearch.status_code == requests.status_codes.codes.OK:
-            results[domain] = rsearch.json()
-            results[domain] = sorted(results[domain]['results'], key=lambda k: k['chi_square'], reverse=True)
-        else:
-            results[domain] = []
-
-
-    conditions = results['Condition']
-    drugs = results['Drug']
-    procedures = results['Procedure']
+    ancestors, conditions, drugs, procedures = API.cohd_page(concept_id)
     return render_template('cohd.html', conditions=conditions,drugs=drugs,procedures=procedures,ancestors=ancestors)
 
 @app.route('/clinical')
