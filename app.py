@@ -84,7 +84,7 @@ def get_results(phen_name: str, search_method='string', HPO_list=['cleft_palate'
         phen_dict2_DECIPHER = defaultdict(list)
         phen_dict2_ORPHA = defaultdict(list)
         phen_dict3 = defaultdict(list)
-        cursor1 = c1.execute("SELECT * FROM PHENBASE WHERE [HPO-ID] LIKE'%" + phen_name + "%'")
+        cursor1 = c1.execute("select * from PHENBASE where \"HPO-Id\" like '%" + phen_name + "%' order by \"HPO-Id\" = \"" + phen_name + "\";")
         for row in cursor1:
             # index in database
             idx = row[0]
@@ -132,7 +132,10 @@ def get_results(phen_name: str, search_method='string', HPO_list=['cleft_palate'
     phen_dict3 = defaultdict(list)
 
     # use c1 to get data from PHENBASE
-    cursor1 = c1.execute("SELECT * FROM PHENBASE WHERE DiseaseName LIKE'%" + phen_name + "%'") # where shawn searches DB, replace with elasticsearch
+    #cursor1 = c1.execute("SELECT * FROM PHENBASE WHERE DiseaseName LIKE'%" + phen_name + "%'") # where shawn searches DB, replace with elasticsearch
+    phen_like="%".join(phen_name.split())
+    cursor1 = c1.execute("select * from PHENBASE where \"HPO-Name\" like '%" + phen_like + "%' order by \"HPO-Name\" = \"" + phen_name + "\";")
+    ct=1
     # parse data in cursor1 through analyzing each item in SQL return tuple
     for row in cursor1:
         # index in database
@@ -153,7 +156,7 @@ def get_results(phen_name: str, search_method='string', HPO_list=['cleft_palate'
         '''
 
         # add dictionaries for the result page
-        phen_dict1[idx].extend([phenName, HPOId, HPOName])
+        phen_dict1[HPOId]=[HPOId, HPOName]
         if OMIMID[:4] == 'OMIM':
             phen_dict2_OMIM[idx].extend([phenName, OMIMID, HPOId, HPOName])
         elif OMIMID[:8] == 'DECIPHER':
@@ -161,6 +164,9 @@ def get_results(phen_name: str, search_method='string', HPO_list=['cleft_palate'
         elif OMIMID[:5] == 'ORPHA':
             phen_dict2_ORPHA[idx].extend([phenName, OMIMID, HPOId, HPOName])
         phen_dict2[idx].extend([phenName, OMIMID, HPOId, HPOName])
+        if ct == 1:
+            session['HPOID']=HPOId
+            ct+=1
     # use c2 to get information inside ICD10BASE
     cursor2 = c2.execute("SELECT * FROM ICD10BASE WHERE NAME LIKE'%" + phen_name + "%'")
     for row in cursor2:
@@ -320,9 +326,8 @@ def patient_page():
 
 @app.route('/results')
 def results_page():
-    global HPO_list
-    phenname = HPO_list[0]
     
+    phenname=session['HPOquery']
     HPOquery=session['HPOquery']
 
     # if request.method == 'POST':
@@ -473,22 +478,6 @@ def results_page():
         html_res = '</td>'.join(html_lst)
         return html_res
 
-    def generate_cohd_list():
-        HPOquery=session['HPOquery'].replace("+","_") # replace + with _
-        params={
-        'q': HPOquery,
-        'dataset_id': 4, # lifetime non-hierarchical is 2, 4 is temporal beta
-        'domain': "Condition", # can use "Drug" for drugs
-        'min_count': 1
-        }
-        rsearch=requests.get("http://cohd.io/api/omop/findConceptIDs", params=params)
-        if rsearch.status_code == requests.status_codes.codes.OK:
-            results = rsearch.json()
-            results=sorted(results['results'], key=lambda k: k['concept_count'], reverse=True)
-        else:
-            results = []
-
-        return results
 
 
     if not request.referrer:
@@ -548,8 +537,8 @@ def results_page():
                                       table_attributes="id=\"results-umls\" class=\"table table-striped table-bordered table-sm\"")
     html_snomed = json2html.convert(json=top_100_SNOMED,
                                   table_attributes="id=\"results-snomed\" class=\"table table-striped table-bordered table-sm\"")
-    cohd = generate_cohd_list()
-    phen2gene=API.phen2gene_page(HPOquery, patient=False)
+    cohd = API.generate_cohd_list(HPOquery)
+    phen2gene=API.phen2gene_page(session['HPOID'], patient=False)
 
     session['HPOquery']=phenname.replace("_", "+").replace(" ","+")
 

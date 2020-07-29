@@ -276,7 +276,12 @@ th {
 <!-- make nice table with multiple pages -->
 <script type="text/javascript">
 	$(document).ready(function () {
-	  	$('#results-table1, #results-table2OMIM, #results-table2D, #results-table2OR, #results-table3, #results-gene-api, #results-umls, #results-snomed, #results-drugs').DataTable({
+	  	$('#results-table1').DataTable({
+	  		"order": [],
+	  		"pageLength": 5,
+	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
+	  	});
+	  	$('#results-table2OMIM, #results-table2D, #results-table2OR, #results-table3, #phen2gene-api, #results-umls, #results-snomed, #results-drugs').DataTable({
 	  		"order": [[ 1, "asc" ]],
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]

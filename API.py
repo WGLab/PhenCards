@@ -9,15 +9,33 @@ from lib.json import format_json_table
 from json2html import json2html
 import json
 
+# cohd list generator
+def generate_cohd_list(HPOquery):
+    HPOquery=HPOquery.replace("+","_") # replace + with _
+    params={
+    'q': HPOquery,
+    'dataset_id': 4, # lifetime non-hierarchical is 2, 4 is temporal beta
+    'domain': "Condition", # can use "Drug" for drugs
+    'min_count': 1
+    }
+    rsearch=requests.get("http://cohd.io/api/omop/findConceptIDs", params=params)
+    if rsearch.status_code == requests.status_codes.codes.OK:
+        results = rsearch.json()
+        results=sorted(results['results'], key=lambda k: k['concept_count'], reverse=True)
+    else:
+        results = []
+
+    return results
+
 # pubmed page generator
 def literature_page(HPOquery):
     pubmed={}
     params1={
     'db': 'pubmed',
     'term': HPOquery,
-    'retmax': '400',
+    'retmax': '200',
     'sort': 'relevance'}
-    rsearch=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term="+HPOquery+"&retmax=400&sort=relevance")
+    rsearch=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi", params=params1)
     def generate_citations(uid):
         params2={
         'retmode': "json",
@@ -157,10 +175,14 @@ def phen2gene_page(HPOquery, patient=False):
     'HPO_list': HPOquery,
     'weight_model': 'sk'}
     try:
-        GeneAPI_JSON = requests.get('https://phen2gene.wglab.org/api', params=params, verify=False).json()['results']
-        GeneAPI_JSON = json.loads(GeneAPI_JSON)[:1000]
-    except:
+        GeneAPI_JSON = requests.get('https://phen2gene.wglab.org/api', params=params, verify=False)
+        print (GeneAPI_JSON.url)
+        GeneAPI_JSON = GeneAPI_JSON.json()['results'][:1000]
+        print (GeneAPI_JSON)
+        #GeneAPI_JSON = json.loads(GeneAPI_JSON)[:1000]
+    except Exception as e:
         GeneAPI_JSON = {}
+        print (e)
 
     p2g_table = json2html.convert(json=GeneAPI_JSON,
                     table_attributes="id=\"phen2gene-api\" class=\"table table-striped table-bordered table-sm\"")
