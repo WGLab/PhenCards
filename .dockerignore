@@ -1,0 +1,10 @@
+.dockerignore
+.gitignore
+*__pychache*
+/database
+/db
+*.db
+*.db
+/.phencard
+/.vscode
+*.pyc
