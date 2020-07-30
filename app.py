@@ -5,7 +5,7 @@ import sqlite3
 from flask import Flask, Response, render_template, redirect, url_for, request, abort, flash, session, after_this_request, g, app
 from forms import PhenCardsForm
 from config import Config
-from json2html import *
+from json2html import json2html
 import sys
 import json
 import requests
@@ -17,9 +17,7 @@ import tempfile
 import weakref
 import re
 import os
-import time
 from datetime import timedelta
-import xml.etree.ElementTree as ET
 
 
 # connect to SQLite at phenotype db file
@@ -47,9 +45,6 @@ results3 = None
 resultsUMLS = None
 resultsSNOMED = None
 
-# use API from phen2gene web app
-HPOID = 'cleft palate'
-
 # errors and doc2hpo-error are for the errors storage
 errors = None
 doc2hpo_error = None
@@ -73,12 +68,10 @@ def get_results(phen_name: str, search_method='string', HPO_list=['cleft_palate'
     global results3
     global resultsUMLS
     global resultsSNOMED
-    global HPOID
-    global GeneAPI_JSON
 
     phen_name = phen_name.strip()
     # initialize values
-    results1 = results2OMIM = results2D = results2OR = results3 = GeneAPI_JSON = None
+    results1 = results2OMIM = results2D = results2OR = results3 = None
 
     # (1) database id search
     if search_method == 'hpo':
@@ -91,7 +84,7 @@ def get_results(phen_name: str, search_method='string', HPO_list=['cleft_palate'
         phen_dict2_DECIPHER = defaultdict(list)
         phen_dict2_ORPHA = defaultdict(list)
         phen_dict3 = defaultdict(list)
-        cursor1 = c1.execute("SELECT * FROM PHENBASE WHERE [HPO-ID] LIKE'%" + phen_name + "%'")
+        cursor1 = c1.execute("select * from PHENBASE where \"HPO-Id\" like '%" + phen_name + "%' order by \"HPO-Id\" = \"" + phen_name + "\";")
         for row in cursor1:
             # index in database
             idx = row[0]
@@ -139,7 +132,10 @@ def get_results(phen_name: str, search_method='string', HPO_list=['cleft_palate'
     phen_dict3 = defaultdict(list)
 
     # use c1 to get data from PHENBASE
-    cursor1 = c1.execute("SELECT * FROM PHENBASE WHERE DiseaseName LIKE'%" + phen_name + "%'") # where shawn searches DB, replace with elasticsearch
+    #cursor1 = c1.execute("SELECT * FROM PHENBASE WHERE DiseaseName LIKE'%" + phen_name + "%'") # where shawn searches DB, replace with elasticsearch
+    phen_like="%".join(phen_name.split())
+    cursor1 = c1.execute("select * from PHENBASE where \"HPO-Name\" like '%" + phen_like + "%' order by \"HPO-Name\" = \"" + phen_name + "\";")
+    ct=1
     # parse data in cursor1 through analyzing each item in SQL return tuple
     for row in cursor1:
         # index in database
@@ -160,7 +156,7 @@ def get_results(phen_name: str, search_method='string', HPO_list=['cleft_palate'
         '''
 
         # add dictionaries for the result page
-        phen_dict1[idx].extend([phenName, HPOId, HPOName])
+        phen_dict1[HPOId]=[HPOId, HPOName]
         if OMIMID[:4] == 'OMIM':
             phen_dict2_OMIM[idx].extend([phenName, OMIMID, HPOId, HPOName])
         elif OMIMID[:8] == 'DECIPHER':
@@ -168,7 +164,9 @@ def get_results(phen_name: str, search_method='string', HPO_list=['cleft_palate'
         elif OMIMID[:5] == 'ORPHA':
             phen_dict2_ORPHA[idx].extend([phenName, OMIMID, HPOId, HPOName])
         phen_dict2[idx].extend([phenName, OMIMID, HPOId, HPOName])
-        HPOID = phen_dict1[idx][1] # this is wrong.  this should not be here.
+        if ct == 1:
+            session['HPOID']=HPOId
+            ct+=1
     # use c2 to get information inside ICD10BASE
     cursor2 = c2.execute("SELECT * FROM ICD10BASE WHERE NAME LIKE'%" + phen_name + "%'")
     for row in cursor2:
@@ -227,7 +225,6 @@ def phencards():
     global resultsUMLS
     global resultsSNOMED
     global doc2hpo_error
-    global GeneAPI_JSON
     global HPO_list
     global HPO_names
     HPO_list = []
@@ -302,43 +299,27 @@ def phencards():
 
         results1, results2OMIM, results2D, results2OR, resultsUMLS, resultsSNOMED, results3 = get_results(phen_name, search_method, HPO_list)
         if doc2hpo_check: # runs doc2hpo instead of string match
-            return redirect(url_for('patient_page'))
+            session['HPOquery']=HPO_list
+            session['HPOnames']=HPO_names
+            return redirect(url_for('generate_patient_page'))
         HPO_list = [phen_name]
         session['HPOquery']=phen_name
         return redirect(url_for('results_page'))
     return render_template('index.html', form=form)
 
 @app.route('/patient')
-def patient_page():
-    global HPO_list
-    phen_dict = defaultdict(list)
-    HPOidstring=";".join(HPO_list)
-    HPOquery="+OR+".join([s.replace(" ", "+") for s in HPO_names])
+def generate_patient_page():
+    HPOquery = session['HPOquery']
+    HPO_names = session['HPOnames']
+    session['HPOclinical'], patient_table, phen2gene_table = API.patient_page(HPOquery, HPO_names)
     print(HPOquery, file=sys.stderr)
-    for i, (HPOId, HPOName) in enumerate(zip(HPO_list, HPO_names)):
-        phen_dict[i].extend([HPOId, HPOName])
-    results = format_json_table(phen_dict, 'patient')
-    try:
-        top_100 = json.loads(results)[:100]
-    except:
-        top_100 = results
-    patient_table = json2html.convert(json=top_100,
-                                    table_attributes="id=\"doc2hpo-results\" class=\"table table-striped table-bordered table-sm\"")
-    try:
-        GeneAPI_JSON = requests.get('https://phen2gene.wglab.org/api?HPO_list=' + HPOidstring + '&weight_model=sk', verify=False).json()['results'][:1000]
-        phen2gene_table = json2html.convert(json=GeneAPI_JSON,
-                                      table_attributes="id=\"phen2gene-api\" class=\"table table-striped table-bordered table-sm\"")
-    except:
-        phen2gene_table = ''
-
-    session['HPOquery']=HPOquery
     return render_template('patient.html', patient_table=patient_table, phen2gene_table=phen2gene_table)
-    
 
 @app.route('/results')
 def results_page():
-    global HPO_list
-    phenname = HPO_list[0]
+    
+    phenname=session['HPOquery']
+    HPOquery=session['HPOquery']
 
     # if request.method == 'POST':
     #     return redirect(url_for('index'))
@@ -488,22 +469,6 @@ def results_page():
         html_res = '</td>'.join(html_lst)
         return html_res
 
-    def generate_cohd_list():
-        HPOquery=session['HPOquery'].replace("+","_") # replace + with _
-        params={
-        'q': HPOquery,
-        'dataset_id': 4, # lifetime non-hierarchical is 2, 4 is temporal beta
-        'domain': "Condition", # can use "Drug" for drugs
-        'min_count': 1
-        }
-        rsearch=requests.get("http://cohd.io/api/omop/findConceptIDs", params=params)
-        if rsearch.status_code == requests.status_codes.codes.OK:
-            results = rsearch.json()
-            results=sorted(results['results'], key=lambda k: k['concept_count'], reverse=True)
-        else:
-            results = []
-
-        return results
 
 
     if not request.referrer:
@@ -543,14 +508,6 @@ def results_page():
         top_100_SNOMED = json.loads(resultsSNOMED)[:100]
     except:
         top_100_SNOMED = resultsSNOMED
-    try:
-        GeneAPI_JSON = requests.get('https://phen2gene.wglab.org/api?HPO_list=' + HPOID + '&weight_model=sk', verify=False).json()['results'][:100]
-    except:
-        pass
-    try:
-        GeneAPI_JSON = json.loads(GeneAPI_JSON)[:100]
-    except:
-        GeneAPI_JSON = GeneAPI_JSON
 
     html_table1 = json2html.convert(json=top_100_1,
                                     table_attributes="id=\"results-table1\" class=\"table table-striped table-bordered table-sm\"")
@@ -567,20 +524,18 @@ def results_page():
     html_table3 = json2html.convert(json=top_100_3,
                                     table_attributes="id=\"results-table3\" class=\"table table-striped table-bordered table-sm\"")
     html_table3 = add_link_3(html_table3)
-    html_gene_api = json2html.convert(json=GeneAPI_JSON,
-                                      table_attributes="id=\"results-gene-api\" class=\"table table-striped table-bordered table-sm\"")
     html_umls = json2html.convert(json=top_100_UMLS,
                                       table_attributes="id=\"results-umls\" class=\"table table-striped table-bordered table-sm\"")
     html_snomed = json2html.convert(json=top_100_SNOMED,
                                   table_attributes="id=\"results-snomed\" class=\"table table-striped table-bordered table-sm\"")
-
-    cohd = generate_cohd_list()
+    cohd = API.generate_cohd_list(HPOquery)
+    phen2gene=API.phen2gene_page(session['HPOID'], patient=False)
 
     session['HPOquery']=phenname.replace("_", "+").replace(" ","+")
 
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
                            html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
-                           html_umls=html_umls, html_gene_api=html_gene_api, html_snomed=html_snomed,
+                           html_umls=html_umls, phen2gene=phen2gene, html_snomed=html_snomed,
                            errors=errors, cohd=cohd)
 
 
@@ -588,173 +543,45 @@ def results_page():
 
 @app.route('/pathway')
 def generate_pathway_page():
-    phenname=session['phenname']
-    phenname=phenname.replace("_", "+").replace(" ","+")
-    diseases=requests.get('http://rest.kegg.jp/find/disease/'+phenname, verify=False, stream=True)
-    diseases=[x.split("\t") for x in diseases.text.strip().split("\n")]
-    paths = defaultdict(list)
-    for did, dname in diseases:
-        path=requests.get('http://rest.kegg.jp/link/pathway/'+did, verify=False, stream=True)
-        for line in path.text.splitlines():
-            if re.search("hsa", line):
-                paths[line.strip().split("\t")[1]].append(dname)
-    # generate temporary images then os remove using @after_this_request decorator in flask under app route (/results/pathway)
-    dispath = {}
-    print (paths)
-    for i, pid in enumerate(paths):
-        link='https://www.genome.jp/dbget-bin/www_bget?'+pid
-        reqname=requests.get('http://rest.kegg.jp/get/'+pid, verify=False, stream=True)
-        for line in reqname.text.splitlines():
-            if re.search("NAME\s*", line):
-                name=re.split("\w*\s*",line,1)[-1].split("-")[0]
-        dispath[name]=[paths[pid],link]
-        g.dispath = dispath
-
+    phenname=session['HPOquery']
+    dispath=API.pathway_page(phenname)
     return render_template('pathways.html', dispath=dispath)
 
 @app.route('/cohd')
 def generate_cohd_page():
     concept_id=request.args.get('concept')
-    params={
-        'concept_id': concept_id,
-        'dataset_id': 4, # lifetime non-hierarchical is 2, 4 is temporal beta
-    }
-    rsearch=requests.get("http://cohd.io/api/omop/conceptAncestors", params=params)
-    if rsearch.status_code == requests.status_codes.codes.OK:
-        results = rsearch.json()
-        ancestors = sorted(results['results'], key=lambda k: k['concept_count'], reverse=True)
-    else:
-        ancestors = []
-    domains = ['Drug', 'Condition', 'Procedure']
-    results={}
-    for domain in domains: 
-        params={
-            'concept_id_1': concept_id,
-            'dataset_id': 4, # lifetime non-hierarchical is 2, 4 is temporal beta
-            'domain': domain, # get the drugs, conditions, etc.
-        }
-        rsearch=requests.get("http://cohd.io/api/association/chiSquare", params=params)
-        if rsearch.status_code == requests.status_codes.codes.OK:
-            results[domain] = rsearch.json()
-            results[domain] = sorted(results[domain]['results'], key=lambda k: k['chi_square'], reverse=True)
-        else:
-            results[domain] = []
-
-
-    conditions = results['Condition']
-    drugs = results['Drug']
-    procedures = results['Procedure']
+    ancestors, conditions, drugs, procedures = API.cohd_page(concept_id)
     return render_template('cohd.html', conditions=conditions,drugs=drugs,procedures=procedures,ancestors=ancestors)
 
 @app.route('/clinical')
 def generate_clinical_page():
     HPOquery=session['HPOquery']
-    try:
-        clinicaljson = requests.get('https://clinicaltrials.gov/api/query/study_fields?expr='+ HPOquery +'&fields=NCTId%2CBriefTitle%2CCondition%2CInterventionName&min_rnk=1&max_rnk=1000&fmt=json', verify=False).json()['StudyFieldsResponse']
-    except:
-        clinicaljson = {}
+    if 'HPOclinical' in session:
+        clinicaljson=API.clinical_page(session['HPOclinical'])
+    else:
+        clinicaljson=API.clinical_page(HPOquery)
     return render_template('clinical.html', clinicaljson=clinicaljson)
 
 @app.route('/literature')
 def generate_literature_page():
-    pubmed={}
     HPOquery=session['HPOquery']
-    rsearch=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term="+HPOquery+"&retmax=400&sort=relevance")
-    def generate_citations(uid):
-        params={
-        'retmode': "json",
-        'dbfrom': "pubmed",
-        'db': "pubmed",
-        'linkname': "pubmed_pubmed_citedin",
-        'id': uid, # get from esearch
-        'cmd': "neighbor",
-        'api_key': '1ee2a8a8bf1b1b2b09e8087eb5cf16c95109'
-        }
-        while True:
-            rsearch=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi", params=params)
-            rdict=rsearch.json()
-            try:
-                links = rdict['linksets'][0]['linksetdbs'][0]['links']
-                citedby = len(links)
-                return citedby
-            except KeyError as e:
-                e='{}: {}'.format(type(e).__name__, e)
-                if 'linksetdbs' in e:
-                    return 0
-                else:
-                    time.sleep(0.1)
-                   # print (e,uid, "time", file=sys.stderr)
-            except Exception as e:
-                print (e,uid,"exc",file=sys.stderr)
-                return 0
-        return 0
-
-    root=ET.fromstring(rsearch.text)
-    ids={}
-    for i in root.iter("Id"):
-        citedby=generate_citations(i.text)
-        ids[i.text]=citedby
-    top25=sorted(ids, key=ids.get, reverse=True)[:25]
-    top25 = { key: ids[key] for key in top25 }
-
-    query=",".join(top25.keys())
-    rsum=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id="+query+"&retmode=text&rettype=abstract")
-    root=ET.fromstring(rsum.text)
-    title=pages=first=authors=pubdate=doi=volume=issue=''
-    for doc in root.iter("DocSum"):
-        id1 = doc.find("Id").text
-        for child in doc.iter("Item"):
-            if child.attrib['Name'] == "AuthorList":
-                if child:
-                    g = child[0]
-                    first=g.text
-            if child.attrib['Name'] == "LastAuthor":
-                authors=child.text
-            if child.attrib['Name'] == "Title":
-                title=child.text
-            if child.attrib['Name'] == "Source":
-                journal=child.text
-            if child.attrib['Name'] == "PubDate":
-                pubdate=child.text
-            if child.attrib['Name'] == "Volume":
-                if child.text:
-                    volume = ";"+child.text
-            if child.attrib['Name'] == "Issue":
-                if child.text:
-                    issue="("+child.text+")"
-            if child.attrib['Name'] == "Pages":
-                if child.text:
-                    pages=":"+child.text
-            if child.attrib['Name'] == "DOI":
-                doi="doi:"+child.text
-        if authors and first != authors:
-            authors = first + " .. " + authors
-        else:
-            authors = first
-        if title:
-            publication = title + " " + authors + ". " + journal + " " + pubdate + volume + issue + pages + ". " + doi
-        pubmed[id1]=[publication,top25[id1]]
-    return render_template('literature.html', pubmed=pubmed)
+    pubmed=API.literature_page(HPOquery)
+    return render_template('literature.html',pubmed=pubmed)
+    
 
 # return independent page for drugs information
 @app.route('/tocris')
 def generate_tocris_page():
     HPOquery=session['HPOquery']
-    drugs_lst = API.tocris_drugs_api(HPOquery)
-    print(drugs_lst,file=sys.stderr)
-    drugs = format_json_table(drugs_lst, 'DRUG')
-    drugs = json2html.convert(json=drugs,
-                              table_attributes="id=\"results-drugs\" class=\"table table-striped table-bordered table-sm\"",
-                              escape=False)
-    return render_template('tocris.html', tocris=drugs)
+    tocris=API.tocris_drugs_api(HPOquery)
+    return render_template('tocris.html', tocris=tocris)
 
 # return independent page for drugs information
 @app.route('/apexbio')
 def generate_apexbio_page():
     HPOquery=session['HPOquery']
-    drugs_lst = API.apexbt_drugs_api(HPOquery)
-    print(drugs_lst,file=sys.stderr)
-    return render_template('apexbio.html', apex=drugs_lst)
+    apex=API.apexbt_drugs_api(HPOquery)
+    return render_template('apexbio.html', apex=apex)
 
 
 # return independent page for drugs information
@@ -762,11 +589,6 @@ def generate_apexbio_page():
 def generate_wikidata_page():
     link ="https://www.wikidata.org/w/index.php?search=drugs+for+" + "+".join(HPO_names)
     return redirect(link)
-
-
-@app.route('/snomed')
-def generate_snomed_page():
-    return redirect("http://www.snomed.org/")
 
 
 @app.route('/download_json/')
