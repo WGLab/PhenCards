@@ -18,8 +18,6 @@ def connect_to_db(path_to_db):
 
     return c1, c2
 
-HPOquery="cleft palate"
-
 def get_results(phen_name: str, phencurs, icdcurs):
 
     c1, c2 = phencurs, icdcurs
