@@ -15,35 +15,9 @@ from forms import PhenCardsForm
 from config import Config
 
 
-
-# connect to SQLite at phenotype db file
-#c1, c2 = queries.connect_to_db(Config.path_to_phenotypedb)
-
 app = Flask(__name__)
 # cors = CORS(app)
 app.config.from_object(Config)
-
-# results1 is used to store HPO related information, table 1 in result page
-results1 = None
-# results2 is used to store OMIM/DECIPHER/ORPHA information, table 2-4 in result page
-results2OMIM = None
-results2D = None
-results2OR = None
-# results3 is used to store ICD-10 information, table 5 in result page
-results3 = None
-
-# store UMLS and SNOMED database
-resultsUMLS = None
-resultsSNOMED = None
-
-# errors and doc2hpo-error are for the errors storage
-errors = None
-doc2hpo_error = None
-
-DOC2HPO_URL = "http://doc2hpo.wglab.org/parse/acdat" #"http://impact2.dbmi.columbia.edu/doc2hpo/parse/acdat" # can return to HTTPS when Columbia renews SSL cert and fixes site permanently
-data = []
-
-HPO_list = ''
 
 @app.before_request
 def make_session_permanent():
@@ -59,10 +33,6 @@ def phencards():
     global results3
     global resultsUMLS
     global resultsSNOMED
-    global doc2hpo_error
-    global HPO_list
-    global HPO_names
-    c1, c2 = queries.connect_to_db(Config.path_to_phenotypedb)
     HPO_list = []
     HPO_names = []
     doc2hpo_error = None
@@ -86,6 +56,7 @@ def phencards():
                 "note": doc2hpo_notes,
                 "negex": True  # default true for now
             }
+            DOC2HPO_URL = "http://doc2hpo.wglab.org/parse/acdat" #"http://impact2.dbmi.columbia.edu/doc2hpo/parse/acdat" # can return to HTTPS when Columbia renews SSL cert and fixes site permanently
             r = requests.post(url=DOC2HPO_URL, json=data)
             # r = requests.post(url = 'http://127.0.0.1:8000/doc2hpo/parse/acdat', json = data)
 
@@ -133,7 +104,6 @@ def phencards():
             # default HPO list
 
         # get_results is for the SQL query functions
-        results1, results2OMIM, results2D, results2OR, resultsUMLS, resultsSNOMED, results3 = queries.get_results(phen_name, c1, c2)
         if doc2hpo_check: # runs doc2hpo instead of string match
             session['HPOquery']=HPO_list
             session['HPOnames']=HPO_names
@@ -153,9 +123,10 @@ def generate_patient_page():
 
 @app.route('/results')
 def results_page():
-    
     phenname=session['HPOquery']
     HPOquery=session['HPOquery']
+    c1, c2 = queries.connect_to_db(Config.path_to_phenotypedb)
+    results1, results2OMIM, results2D, results2OR, resultsUMLS, resultsSNOMED, results3 = queries.get_results(phenname, c1, c2)
 
     # if request.method == 'POST':
     #     return redirect(url_for('index'))
@@ -310,12 +281,6 @@ def results_page():
     if not request.referrer:
         return redirect(url_for('phencards'))
 
-    global errors
-
-    # needs to be set to be rendered by HTML
-    if not errors:
-        errors = set()
-
     try:
         top_100_1 = json.loads(results1)[:100]
     except:
@@ -371,8 +336,7 @@ def results_page():
 
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
                            html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
-                           html_umls=html_umls, phen2gene=phen2gene, html_snomed=html_snomed,
-                           errors=errors, cohd=cohd)
+                           html_umls=html_umls, phen2gene=phen2gene, html_snomed=html_snomed, cohd=cohd)
 
 
 # pathway results
@@ -423,7 +387,7 @@ def generate_apexbio_page():
 # return independent page for drugs information
 @app.route('/wikidata')
 def generate_wikidata_page():
-    link ="https://www.wikidata.org/w/index.php?search=drugs+for+" + "+".join(HPO_names)
+    link ="https://www.wikidata.org/w/index.php?search=drugs+for+" + "+".join(session['HPOquery'])
     return redirect(link)
 
 
