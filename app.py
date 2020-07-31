@@ -1,22 +1,16 @@
 #!/usr/bin/env python
 
 from flask import Flask, Response, render_template, redirect, url_for, request, abort, flash, session, app
-from collections import defaultdict
-from json2html import json2html
 import sys
 import json
 import requests
-import os
 from datetime import timedelta
-from lib.json import format_json_table
 import API
 import queries
 from forms import PhenCardsForm
 from config import Config
 
-
 app = Flask(__name__)
-# cors = CORS(app)
 app.config.from_object(Config)
 
 @app.before_request
@@ -103,14 +97,13 @@ def phencards():
                 phen_name = form.typeahead.data
             # default HPO list
 
-        # get_results is for the SQL query functions
         if doc2hpo_check: # runs doc2hpo instead of string match
             session['HPOquery']=HPO_list
             session['HPOnames']=HPO_names
             return redirect(url_for('generate_patient_page'))
         HPO_list = [phen_name]
         session['HPOquery']=phen_name
-        return redirect(url_for('results_page'))
+        return redirect(url_for('generate_results_page'))
     return render_template('index.html', form=form)
 
 @app.route('/patient')
@@ -122,237 +115,30 @@ def generate_patient_page():
     return render_template('patient.html', patient_table=patient_table, phen2gene_table=phen2gene_table)
 
 @app.route('/results')
-def results_page():
+def generate_results_page():
     phenname=session['HPOquery']
     HPOquery=session['HPOquery']
-    c1, c2 = queries.connect_to_db(Config.path_to_phenotypedb)
-    results1, results2OMIM, results2D, results2OR, resultsUMLS, resultsSNOMED, results3 = queries.get_results(phenname, c1, c2)
-
-    # if request.method == 'POST':
-    #     return redirect(url_for('index'))
-
-    # only allow internal redirect to results page
-    # <wiki link> https://en.wikipedia.org/wiki/Waterhouse%E2%80%93Friderichsen_syndrome
-    # <ICD-10 ID link> https://www.icd10data.com/search?s=A391&codebook=icd10all
-    # <OMIM ID link> https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=248340
-    # <HPO ID link> https://hpo.jax.org/app/browse/search?q=HP:0000377&navFilter=all
-    # <HPO string> https://hpo.jax.org/app/browse/search?q=DiGeorge%20syndrome&navFilter=all
-    def add_link_1(html_res):
-        html_lst = html_res.split("</td>")
-        for i in range(len(html_lst)):
-            item = html_lst[i]
-
-            if "<td>HP:" in item:
-                # find index of the <td>
-                idx = item.find("<td>HP:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):] + "&navFilter=all>" \
-                              + item[(idx + 4):] + '</a>'
-
-            elif "<td>OMIM:" in item:
-                idx = item.find("<td>OMIM:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
-                              + item[(idx + 9):] + ">" + item[(idx + 4):] + '</a>'
-
-            elif "<td>" in item:
-                idx = item.find("<td>")
-                if item[idx + 4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" and item[idx + 5:].isdigit():
-                    html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx + 4:] \
-                                  + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
-                    continue
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):].replace(' ', '%20') \
-                              + '&navFilter=all">' + item[(idx + 4):] + '</a>'
-        html_res = '</td>'.join(html_lst)
-        return html_res
-
-    # <OMIM link> https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=DiGeorge+syndrome
-    def add_link_2OMIM(html_res):
-        html_lst = html_res.split("</td>")
-        for i in range(len(html_lst)):
-            item = html_lst[i]
-
-            if "<td>HP:" in item:
-                # find index of the <td>
-                idx = item.find("<td>HP:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):] + "&navFilter=all>" \
-                              + item[(idx + 4):] + '</a>'
-
-            elif "<td>OMIM:" in item:
-                idx = item.find("<td>OMIM:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
-                              + item[(idx + 9):] + ">" + item[(idx + 4):] + '</a>'
-
-            elif "<td>" in item:
-                idx = item.find("<td>")
-                if item[idx + 4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" and item[idx + 5:].isdigit():
-                    html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx + 4:] \
-                                  + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
-                    continue
-                html_lst[i] = item[:( idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' + item[(idx + 4):].replace(' ', '+') \
-                              + '>' + item[(idx + 4):] + '</a>'
-        html_res = '</td>'.join(html_lst)
-        return html_res
-
-    def add_link_2D(html_res):
-        html_lst = html_res.split("</td>")
-        for i in range(len(html_lst)):
-            item = html_lst[i]
-
-            if "<td>HP:" in item:
-                # find index of the <td>
-                idx = item.find("<td>HP:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):] + "&navFilter=all>" \
-                              + item[(idx + 4):] + '</a>'
-
-            elif "<td>OMIM:" in item:
-                idx = item.find("<td>OMIM:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
-                              + item[(idx + 9):] + ">" + item[(idx + 4):] + '</a>'
-
-            elif "<td>" in item:
-                idx = item.find("<td>")
-                if item[idx + 4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" and item[idx + 5:].isdigit():
-                    html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx + 4:] \
-                                  + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
-                    continue
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://en.wikipedia.org/w/index.php?cirrusUserTesting=glent_m0&search=' + item[(idx + 4):].replace(' ', '%20') + '&title=Special%3ASearch&go=Go&ns0=1">' \
-                              + item[(idx + 4):] + '</a>'
-        html_res = '</td>'.join(html_lst)
-        return html_res
-
-    # https://bioportal.bioontology.org/search?q=DiGeorge%20Syndrome&ontologies=ORDO&include_properties=false&include_views=false&includeObsolete=false&require_definition=false&exact_match=false&categories=
-    def add_link_2OR(html_res):
-        html_lst = html_res.split("</td>")
-        for i in range(len(html_lst)):
-            item = html_lst[i]
-
-            if "<td>HP:" in item:
-                # find index of the <td>
-                idx = item.find("<td>HP:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(idx + 4):] + "&navFilter=all>" \
-                              + item[(idx + 4):] + '</a>'
-
-            elif "<td>OMIM:" in item:
-                idx = item.find("<td>OMIM:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
-                              + item[(idx + 9):] + ">" + item[(idx + 4):] + '</a>'
-
-            elif "<td>" in item:
-                idx = item.find("<td>")
-                if item[idx + 4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" and item[idx + 5:].isdigit():
-                    html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx + 4:] \
-                                  + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
-                    continue
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://bioportal.bioontology.org/search?q=' + item[(idx + 4):].replace(' ', '%20') \
-                              + '&ontologies=ORDO&include_properties=false&include_views=false&includeObsolete=false&require_definition=false&exact_match=false">' + item[(idx + 4):] + '</a>'
-        html_res = '</td>'.join(html_lst)
-        return html_res
-
-    # <ICD link> https://www.icd10data.com/search?s=waterhouse-friderchsen%20syndrome&codebook=icd10all
-    def add_link_3(html_res):
-        html_lst = html_res.split("</td>")
-        for i in range(len(html_lst)):
-            item = html_lst[i]
-
-            if "<td>HP:" in item:
-                # find index of the <td>
-                idx = item.find("<td>HP:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://hpo.jax.org/app/browse/search?q=' + item[(
-                                                                                                                       idx + 4):] + "&navFilter=all>" \
-                              + item[(idx + 4):] + '</a>'
-
-            elif "<td>OMIM:" in item:
-                idx = item.find("<td>OMIM:")
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.omim.org/search/?index=entry&start=1&limit=10&sort=score+desc%2C+prefix_sort+desc&search=' \
-                              + item[(idx + 9):] + ">" + item[(idx + 4):] + '</a>'
-
-            elif "<td>" in item:
-                idx = item.find("<td>")
-                if item[idx + 4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" and item[idx + 5:].isdigit():
-                    html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[idx + 4:] \
-                                  + "&codebook=icd10all>" + item[(idx + 4):] + '</a>'
-                    continue
-                html_lst[i] = item[:(idx + 4)] + '<a href=https://www.icd10data.com/search?s=' + item[(idx + 4):].replace(' ', '%20') \
-                              + '&codebook=icd10all">' + item[(idx + 4):] + '</a>'
-        html_res = '</td>'.join(html_lst)
-        return html_res
-
-
-
-    if not request.referrer:
-        return redirect(url_for('phencards'))
-
-    try:
-        top_100_1 = json.loads(results1)[:100]
-    except:
-        top_100_1 = results1
-    try:
-        top_100_2OMIM = json.loads(results2OMIM)[:100]
-    except:
-        top_100_2OMIM = results2OMIM
-    try:
-        top_100_2D = json.loads(results2D)[:100]
-    except:
-        top_100_2D = results2D
-    try:
-        top_100_2OR = json.loads(results2OR)[:100]
-    except:
-        top_100_2OR = results2OR
-    try:
-        top_100_3 = json.loads(results3)[:100]
-    except:
-        top_100_3 = results3
-    try:
-        top_100_UMLS = json.loads(resultsUMLS)[:100]
-    except:
-        top_100_UMLS = resultsUMLS
-    try:
-        top_100_SNOMED = json.loads(resultsSNOMED)[:100]
-    except:
-        top_100_SNOMED = resultsSNOMED
-
-    html_table1 = json2html.convert(json=top_100_1,
-                                    table_attributes="id=\"results-table1\" class=\"table table-striped table-bordered table-sm\"")
-    html_table1 = add_link_1(html_table1)
-    html_table2OMIM = json2html.convert(json=top_100_2OMIM,
-                                        table_attributes="id=\"results-table2OMIM\" class=\"table table-striped table-bordered table-sm\"")
-    html_table2OMIM = add_link_2OMIM(html_table2OMIM)
-    html_table2D = json2html.convert(json=top_100_2D,
-                                     table_attributes="id=\"results-table2D\" class=\"table table-striped table-bordered table-sm\"")
-    html_table2D = add_link_2D(html_table2D)
-    html_table2OR = json2html.convert(json=top_100_2OR,
-                                      table_attributes="id=\"results-table2OR\" class=\"table table-striped table-bordered table-sm\"")
-    html_table2OR = add_link_2OR(html_table2OR)
-    html_table3 = json2html.convert(json=top_100_3,
-                                    table_attributes="id=\"results-table3\" class=\"table table-striped table-bordered table-sm\"")
-    html_table3 = add_link_3(html_table3)
-    html_umls = json2html.convert(json=top_100_UMLS,
-                                      table_attributes="id=\"results-umls\" class=\"table table-striped table-bordered table-sm\"")
-    html_snomed = json2html.convert(json=top_100_SNOMED,
-                                  table_attributes="id=\"results-snomed\" class=\"table table-striped table-bordered table-sm\"")
-    cohd = API.generate_cohd_list(HPOquery)
-    phen2gene=API.phen2gene_page(session['HPOID'], patient=False)
-
-    session['HPOquery']=phenname.replace("_", "+").replace(" ","+")
-
+    html_table1, html_table2OMIM, html_table2D, html_table2OR, html_table3, html_umls, phen2gene, html_snomed, cohd = queries.results_page(phenname, HPOquery)
     return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
                            html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
                            html_umls=html_umls, phen2gene=phen2gene, html_snomed=html_snomed, cohd=cohd)
 
 
 # pathway results
-
 @app.route('/pathway')
 def generate_pathway_page():
     phenname=session['HPOquery']
     dispath=API.pathway_page(phenname)
     return render_template('pathways.html', dispath=dispath)
 
+# cohd results
 @app.route('/cohd')
 def generate_cohd_page():
     concept_id=request.args.get('concept')
     ancestors, conditions, drugs, procedures = API.cohd_page(concept_id)
     return render_template('cohd.html', conditions=conditions,drugs=drugs,procedures=procedures,ancestors=ancestors)
 
+# clinical trials results
 @app.route('/clinical')
 def generate_clinical_page():
     HPOquery=session['HPOquery']
@@ -362,6 +148,7 @@ def generate_clinical_page():
         clinicaljson=API.clinical_page(HPOquery)
     return render_template('clinical.html', clinicaljson=clinicaljson)
 
+# literature (pubmed) results
 @app.route('/literature')
 def generate_literature_page():
     HPOquery=session['HPOquery']
@@ -369,14 +156,14 @@ def generate_literature_page():
     return render_template('literature.html',pubmed=pubmed)
     
 
-# return independent page for drugs information
+# return independent page for tocris drugs information
 @app.route('/tocris')
 def generate_tocris_page():
     HPOquery=session['HPOquery']
     tocris=API.tocris_drugs_api(HPOquery)
     return render_template('tocris.html', tocris=tocris)
 
-# return independent page for drugs information
+# return independent page for apexbio drugs information
 @app.route('/apexbio')
 def generate_apexbio_page():
     HPOquery=session['HPOquery']
@@ -384,7 +171,7 @@ def generate_apexbio_page():
     return render_template('apexbio.html', apex=apex)
 
 
-# return independent page for drugs information
+# return independent page for wikidata drugs information (not done yet)
 @app.route('/wikidata')
 def generate_wikidata_page():
     link ="https://www.wikidata.org/w/index.php?search=drugs+for+" + "+".join(session['HPOquery'])
