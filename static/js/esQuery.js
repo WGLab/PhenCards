@@ -18,12 +18,14 @@ $(document).ready(function () {
                                 "size": 10
                             }
                         }
-                    }
+                    },
+                    "_source": ["NAME","ID"]
                 };
+                
 
                 $.ajax({
                     type: "POST",
-                    url: "http://localhost:9200/autosuggest/_search",
+                    url: elasticroot + "/autosuggest/_search",
                     async: false,
                     data: JSON.stringify(postData),
                     contentType: "application/json; charset=utf-8",
@@ -31,7 +33,10 @@ $(document).ready(function () {
                     success: function (data) {
                         var resultsArray = (data.suggest.name[0].options);
                         for (var i = 0; i < resultsArray.length; i++) {
-                            arr.push(resultsArray[i].text);
+                            arr.push({
+                                'label' : resultsArray[i]['_source']['ID'],
+                                'value' : resultsArray[i]['_source']['NAME']
+                            });
                         }
                         response(arr);
                     },
@@ -40,8 +45,22 @@ $(document).ready(function () {
                     }
                 });
             },
+            focus: function( event, ui ) {
+				$( "#typeahead" ).val( ui.item.value );
+				return false;
+			},
+			select: function( event, ui ) {
+				$( "#typeahead" ).val( ui.item.value );
+				return false;
+			},
             minLength: 3, delay: 300
         })
+        .data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+			return $( "<li></li>" )
+				.data( "item.autocomplete", item )
+                .append( "<span style='color:grey'>" + item.label + "</span> " + "<span>" + item.value + "</span>")
+				.appendTo( ul );
+		};
     });
 
 

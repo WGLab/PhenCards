@@ -20,8 +20,9 @@ import os
 from datetime import timedelta
 
 
+from config import Config
 # connect to SQLite at phenotype db file
-conn = sqlite3.connect("/media/database/phenotype.db", check_same_thread=False)
+conn = sqlite3.connect(Config.path_to_phenotypedb, check_same_thread=False)
 # connect to PHENBASE
 c1 = conn.cursor()
 # connect to ICD10BASE
@@ -670,6 +671,7 @@ def hpo_info_from_phenopacket():
 
 if __name__ == '__main__':
     app.jinja_env.auto_reload = True
+    # app.run(host="0.0.0.0", debug=True)
     app.run(debug=True, port=5005)
     # print(res[0:10])
     # get_results('cleft')
