@@ -1,9 +1,10 @@
-from lib.json import format_json_table
-from config import Config
+from flask import session, request, Response, abort
 import sqlite3
-from flask import session, request
 from collections import defaultdict
 from json2html import json2html
+import json
+from lib.json import format_json_table
+from config import Config
 import API
 
 def connect_to_db(path_to_db):
@@ -337,3 +338,59 @@ def results_page(phenname, HPOquery):
     session['HPOquery']=phenname.replace("_", "+").replace(" ","+")
 
     return html_table1, html_table2OMIM, html_table2D, html_table2OR, html_table3, html_umls, phen2gene, html_snomed, cohd
+
+def get_results_json():
+
+    # get arguments from request
+    HPO_list = request.args.get('HPO_list')
+
+    if not HPO_list:  # no HPO IDs provided as argument to API
+        results = "No HPO IDs provided"
+    else:
+        HPO_list = '10q22.3q23.3 microdeletion syndrome'
+        results = json.loads(results_page(HPO_list))
+
+    response = json.dumps({
+        "results": results,
+        "errors": errors
+    }, default=set_default)
+
+    return response
+
+def hpo_from_phenopacket():
+    # for serializing set to return as JSON
+    def set_default(obj):
+        if isinstance(obj, set):
+            return list(obj)
+        raise TypeError
+    # transform json format to dict
+    data = json.loads(request.get_json(force=True))
+    hpo_list = ''
+    try:
+        phenopacket = data['phenopacket']
+    except KeyError:
+        abort(400, '"phenopacket" not found!')
+    try:
+        phenotypes = phenopacket['phenotypic_features']
+    except KeyError:
+        try:
+            phenotypes = phenopacket['phenotypicFeatures']
+        except KeyError:
+            abort(400, '"phenotypicFeatures" not found!')
+
+    item_not_found = 0
+    for item in phenotypes:
+        try:
+            hpo_id = item['type']['id']
+            if (hpo_list == ''):
+                hpo_list = hpo_id
+            else:
+                hpo_list += ';' + hpo_id
+        except KeyError:
+            item_not_found += 1
+    if (len(hpo_list) <= 0):
+        abort(400, 'No phenotypic features found!')
+
+    results = get_results(hpo_list, weight_model='s')
+
+    return results

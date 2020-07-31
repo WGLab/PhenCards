@@ -2,7 +2,6 @@
 
 from flask import Flask, Response, render_template, redirect, url_for, request, abort, flash, session, app
 import sys
-import json
 import requests
 from datetime import timedelta
 import API
@@ -20,13 +19,6 @@ def make_session_permanent():
 
 @app.route('/', methods=["GET", "POST"])
 def phencards():
-    global results1
-    global results2OMIM
-    global results2D
-    global results2OR
-    global results3
-    global resultsUMLS
-    global resultsSNOMED
     HPO_list = []
     HPO_names = []
     doc2hpo_error = None
@@ -123,7 +115,6 @@ def generate_results_page():
                            html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
                            html_umls=html_umls, phen2gene=phen2gene, html_snomed=html_snomed, cohd=cohd)
 
-
 # pathway results
 @app.route('/pathway')
 def generate_pathway_page():
@@ -154,7 +145,6 @@ def generate_literature_page():
     HPOquery=session['HPOquery']
     pubmed=API.literature_page(HPOquery)
     return render_template('literature.html',pubmed=pubmed)
-    
 
 # return independent page for tocris drugs information
 @app.route('/tocris')
@@ -170,89 +160,29 @@ def generate_apexbio_page():
     apex=API.apexbt_drugs_api(HPOquery)
     return render_template('apexbio.html', apex=apex)
 
-
 # return independent page for wikidata drugs information (not done yet)
 @app.route('/wikidata')
 def generate_wikidata_page():
     link ="https://www.wikidata.org/w/index.php?search=drugs+for+" + "+".join(session['HPOquery'])
     return redirect(link)
 
-
 @app.route('/download_json/')
 def download_json():
-    return Response(results1, mimetype="application/json",
+    return Response(results1, mimetype="application/json", # will need to add link to HPO results later
                     headers={"Content-disposition":
                                  "attachment; filename=results.json"})
 
-
-# for serializing set to return as JSON
-def set_default(obj):
-    if isinstance(obj, set):
-        return list(obj)
-    raise TypeError
-
-
 # RESTful API
 @app.route('/api', methods=["GET"])
-def get_results_json():
-    if request.method == 'GET':
+def apiroute():
+    response = queries.get_results_json()  
+    return Response(response, mimetype="application/json", status=200)
 
-        # get arguments from request
-        HPO_list = request.args.get('HPO_list')
-        weight_model = request.args.get('weight_model')
-
-        if not HPO_list:  # no HPO IDs provided as argument to API
-            results = "No HPO IDs provided"
-        else:
-            HPO_list = '10q22.3q23.3 microdeletion syndrome'
-            results = json.loads(get_results(HPO_list, weight_model))
-
-        response = json.dumps({
-            "results": results,
-            "errors": errors
-        }, default=set_default)
-
-        return Response(response, mimetype="application/json", status=200)
-
-
-# Phenopacket
+# Phenopackets
 @app.route('/phenopacket', methods=["POST"])
-def hpo_info_from_phenopacket():
-    if request.method == 'POST':
-        # transform json format to dict
-        data = json.loads(request.get_json(force=True))
-        hpo_list = ''
-        try:
-            phenopacket = data['phenopacket']
-        except KeyError:
-            abort(400, '"phenopacket" not found!')
-        try:
-            phenotypes = phenopacket['phenotypic_features']
-        except KeyError:
-            try:
-                phenotypes = phenopacket['phenotypicFeatures']
-            except KeyError:
-                abort(400, '"phenotypicFeatures" not found!')
-
-        item_not_found = 0
-        for item in phenotypes:
-            try:
-                hpo_id = item['type']['id']
-                if (hpo_list == ''):
-                    hpo_list = hpo_id
-                else:
-                    hpo_list += ';' + hpo_id
-            except KeyError:
-                item_not_found += 1
-        if (len(hpo_list) <= 0):
-            abort(400, 'No phenotypic features found!')
-
-        results = get_results(hpo_list, weight_model='s')
-
-        return Response(results, mimetype="application/json", status=200)
-
-    else:
-        abort(400, 'Bad request! Please use "POST" reuqest method!')
+def phenopacket():
+    results = queries.hpo_from_phenopacket() 
+    return Response(results, mimetype="application/json", status=200)
 
 
 if __name__ == '__main__':
