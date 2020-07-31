@@ -35,8 +35,7 @@
 
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="static/css/custom.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.0/css/smoothness/jquery-ui-1.10.0.custom.min.css"
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"
     rel="stylesheet" type="text/css">
 
     
@@ -51,19 +50,20 @@
 
 
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-typeahead/2.11.0/jquery.typeahead.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-typeahead/2.11.0/jquery.typeahead.min.js"></script> -->
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
     integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
     crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-
+    <script src="{{ url_for('static', filename='js/esConfig.js')}}"></script>
     <script src="{{ url_for('static', filename='js/esQuery.js')}}"></script>
     
 
 </head>
 
+<<<<<<< HEAD
     <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
         <a class="navbar-brand">PhenCards</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
@@ -130,6 +130,72 @@
     </div>
 
 <body>
+=======
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand">PhenCards</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-item nav-link active" id="nav-home" href="{{ url_for('phencards') }}">Home</a>
+                <a class="nav-item nav-link" href="https://github.com/WGLab/Project_PhenCards" target="_blank"
+                    rel="noopener noreferrer">PhenCards GitHub Code</a>
+                <a class="nav-item nav-link" id="knowledge-base" data-toggle="modal" data-target="#KBModal"
+                    style="cursor: pointer;">HPO2Gene KnowledgeBase</a>
+                <a class="nav-item nav-link" id="contact" data-toggle="modal" data-target="#contactModal"
+                    style="cursor: pointer;">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="modal" tabindex="-1" role="dialog" id="KBModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">HPO2Gene KnowledgeBase</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Please click the link below to download the HPO2Gene KnowledgeBase (the size is around 2GB).</p>
+                    <a class="nav-item nav-link"
+                        href="https://github.com/WGLab/Phen2Gene/releases/download/1.1.0/H2GKBs.zip" target="_blank"
+                        rel="noopener noreferrer"><span style="display: inline;">
+                            <h3><i class="material-icons">cloud_download</i>Download</h3>
+                        </span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="contactModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Contact PhenCards</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>PhenCards relies on your feedback. Please send an email if you wish to make a request, a comment,
+                        or report a bug.</p>
+                    <p>Dr. Kai Wang:
+                        <br>Associate Professor, University of Pennsylvania
+                        <br>Web Site: <a href="http://wglab.org/" target="_blank"
+                            rel="noopener noreferrer">http://wglab.org</a>
+                        <br>Email: <a href="mailto:kaichop@gmail.com">kaichop@gmail.com</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+>>>>>>> autocomplete jqueryui with elasticsearch
     <!-- content of the page goes here -->
     {% block content %}
     {% endblock %}
