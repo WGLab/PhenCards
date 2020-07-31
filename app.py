@@ -2,7 +2,6 @@
 
 from flask import Flask, Response, render_template, redirect, url_for, request, abort, flash, session, app
 import sys
-import requests
 from datetime import timedelta
 import API
 import queries
@@ -19,9 +18,6 @@ def make_session_permanent():
 
 @app.route('/', methods=["GET", "POST"])
 def phencards():
-    HPO_list = []
-    HPO_names = []
-    doc2hpo_error = None
     phen_name = "cleft_palate" # default string
     # methods in form class
     form = PhenCardsForm()
@@ -31,51 +27,11 @@ def phencards():
         doc2hpo_notes = form.doc2hpo_notes.data
 
         # use doc2hpo to get HPO ids
-        if doc2hpo_check:
-
-            # default doc2hpo text
-            if not doc2hpo_notes:
-                doc2hpo_notes=Config.doc2hpo_default
-
-            # data to be sent to api 
-            data = {
-                "note": doc2hpo_notes,
-                "negex": True  # default true for now
-            }
-            DOC2HPO_URL = Config.doc2hpo_url
-            r = requests.post(url=DOC2HPO_URL, json=data)
-
-            # check if doc2hpo request is successful
-            # if status code of response starts with 2, it is successful, otherwise something is wrong with doc2hpo
-            print ("hi", r.status_code, file=sys.stderr)
-            if int(str(r.status_code)[:1]) != 2:
-                r = requests.post(url='http://127.0.0.1:8000/doc2hpo/parse/acdat', json=data)
-                if int(str(r.status_code)[:1]) != 2:
-                    doc2hpo_error = "Doc2Hpo service is temporarily unavailable and cannot process clinical notes. Please manually input HPO terms instead."
-                    flash(doc2hpo_error)
-                    return redirect(url_for('phencards'))
-            
-            res = r.json()
-            print ("results", res, file=sys.stderr)
-            res = res["hmName2Id"] # where hpo term result is grabbed
-
-            HPO_set = set()
-            HPO_nset = set()
-            negated_HPOs = set()
-            negated_names = set()
-
-            for i in res:
-                if i["negated"]:
-                    negated_HPOs.add(i["hpoId"])
-                    negated_names.add(i["hpoName"])
-                else:
-                    HPO_set.add(i["hpoId"])
-                    HPO_nset.add(i["hpoName"])
-            # only use non-negated HPO IDs
-            for i in HPO_set.difference(negated_HPOs):
-                HPO_list.append(i)
-            for i in HPO_nset.difference(negated_names):
-                HPO_names.append(i)
+        if doc2hpo_check: # runs doc2hpo instead of string match
+            HPO_list, HPO_names = queries.doc2hpo(doc2hpo_notes)
+            session['HPOquery']=HPO_list
+            session['HPOnames']=HPO_names
+            return redirect(url_for('generate_patient_page'))
 
         # get manually entered HPO IDs
         else:
@@ -86,13 +42,7 @@ def phencards():
             # use autophenname in case there is an input.
             if form.typeahead.data:
                 phen_name = form.typeahead.data
-            # default HPO list
 
-        if doc2hpo_check: # runs doc2hpo instead of string match
-            session['HPOquery']=HPO_list
-            session['HPOnames']=HPO_names
-            return redirect(url_for('generate_patient_page'))
-        HPO_list = [phen_name]
         session['HPOquery']=phen_name
         return redirect(url_for('generate_results_page'))
     return render_template('index.html', form=form)

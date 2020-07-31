@@ -3,6 +3,8 @@ import sqlite3
 from collections import defaultdict
 from json2html import json2html
 import json
+import requests
+import sys
 from lib.json import format_json_table
 from config import Config
 import API
@@ -17,6 +19,56 @@ def connect_to_db(path_to_db):
     c2 = conn.cursor()
 
     return c1, c2
+
+def doc2hpo(doc2hpo_notes):
+    HPO_list = []
+    HPO_names = []
+    # default doc2hpo text
+    if not doc2hpo_notes:
+        doc2hpo_notes=Config.doc2hpo_default
+
+    # data to be sent to api 
+    data = {
+        "note": doc2hpo_notes,
+        "negex": True  # default true for now
+    }
+    DOC2HPO_URL = Config.doc2hpo_url
+    r = requests.post(url=DOC2HPO_URL, json=data)
+
+    # check if doc2hpo request is successful
+    # if status code of response starts with 2, it is successful, otherwise something is wrong with doc2hpo
+    print ("hi", r.status_code, file=sys.stderr)
+    if int(str(r.status_code)[:1]) != 2:
+        r = requests.post(url='http://127.0.0.1:8000/doc2hpo/parse/acdat', json=data)
+        if int(str(r.status_code)[:1]) != 2:
+            doc2hpo_error = "Doc2Hpo service is temporarily unavailable and cannot process clinical notes. Please manually input HPO terms instead."
+            flash(doc2hpo_error)
+            return redirect(url_for('phencards'))
+    
+    res = r.json()
+    print ("results", res, file=sys.stderr)
+    res = res["hmName2Id"] # where hpo term result is grabbed
+
+    HPO_set = set()
+    HPO_nset = set()
+    negated_HPOs = set()
+    negated_names = set()
+
+    for i in res:
+        if i["negated"]:
+            negated_HPOs.add(i["hpoId"])
+            negated_names.add(i["hpoName"])
+        else:
+            HPO_set.add(i["hpoId"])
+            HPO_nset.add(i["hpoName"])
+    # only use non-negated HPO IDs
+    for i in HPO_set.difference(negated_HPOs):
+        HPO_list.append(i)
+    for i in HPO_nset.difference(negated_names):
+        HPO_names.append(i)
+
+    return HPO_list, HPO_names
+
 
 def get_results(phen_name: str, phencurs, icdcurs):
 
