@@ -45,11 +45,6 @@ th {
 </style>
 </head>
 
-<!--<nav class="navbar navbar-expand-sm navbar-inverse bg-light">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse">
-        <span class="navbar-toggler-icon"></span>
-    </button
--->
 {% block nav %}
     <div class="collapse navbar-collapse flex-column" id="navbarCollapse">
         <ul class="navbar-nav ml-auto small">
@@ -67,7 +62,6 @@ th {
           <li class="nav-item"><a class="page-scroll scroll" href="#Images">Images</a></li>
         </ul>
 </div>
-</nav>
 
 {% endblock %}
 
@@ -163,7 +157,7 @@ th {
 {# gene list return 04/26/2020 #}
 <div class="container" >
 
-	{{ html_gene_api|safe }}
+	{{ phen2gene|safe }}
 
 </div>
 
@@ -276,7 +270,12 @@ th {
 <!-- make nice table with multiple pages -->
 <script type="text/javascript">
 	$(document).ready(function () {
-	  	$('#results-table1, #results-table2OMIM, #results-table2D, #results-table2OR, #results-table3, #results-gene-api, #results-umls, #results-snomed, #results-drugs').DataTable({
+	  	$('#results-table1').DataTable({
+	  		"order": [],
+	  		"pageLength": 5,
+	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
+	  	});
+	  	$('#results-table2OMIM, #results-table2D, #results-table2OR, #results-table3, #phen2gene-api, #results-umls, #results-snomed, #results-drugs').DataTable({
 	  		"order": [[ 1, "asc" ]],
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]

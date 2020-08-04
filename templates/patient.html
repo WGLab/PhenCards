@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="jumbotron text-center">
-	<h1 class="display-4"><i class="material-icons" style="font-size: 48px">assessment</i>Results </h1>
+	<h2 class="display-4"><i class="material-icons" style="font-size: 48px">assessment</i>Results </h1>
     <p class="lead">Please export the results to see all the relative database results.</p>
 	<a href="{{ url_for('phencards') }}"><button type="button" class="btn btn-success" style="margin-right: 15px"><i class="material-icons" style="font-size: 16px;">redo</i>Re-analyze</button></a>
 
@@ -25,10 +25,16 @@
 	</div>
 </div>
 
-<div class="container" >
 
 <head>
 <style>
+h1 {
+  display: inline;
+  margin-bottom: 1em;
+  text-align: left;
+  color: #efa50e;
+  font-size: 35px;
+}
 table, th, td {
   border: 2px #4b873f;
   border-collapse: collapse;
@@ -37,90 +43,96 @@ th {
   padding: 2px;
   text-align: center;
 }
-table#t01 {
-  border: 2px #5e5e5e;
-  width: 100%;
-  background-color: #ececec;
-}
 </style>
 </head>
 
-<table id="t01">
-    <b>Jump to one of these ten sections:</b>
-    <br><br>
-    <tr>
-      <th width="20%"><span style="color: darkblue;"><a class="page-scroll scroll" href="#Aliases">Aliases</a></span></th>
-      <th width="20%"><span style="color: darkblue;"><a class="page-scroll scroll" href="#Related Terms">Related Terms</a></span></th>
-      <th width="20%"><span style="color: darkblue;"><a class="page-scroll scroll" href="#Diseases">Diseases</a></span></th>
-      <th width="20%"><span style="color: darkblue;"><a class="page-scroll scroll" href="#Genes">Genes</a></span></th>
-      <th width="20%"><span style="color: darkblue;"><a class="page-scroll scroll" href="#Pathway">Pathway</a></span></th>
-    </tr>
-    <tr>
-      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Drugs">Drugs</a></span></th>
-      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Literature">Literature</a></span></th>
-      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Companies & Foundations">Companies&Foundations</a></span></th>
-      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Clinical Trials">Clinical Trials</a></span></th>
-      <th><span style="color: darkblue;"><a class="page-scroll scroll" href="#Images">Images</a></span></th>
-    </tr>
-</table>
-
+{% block nav %}
+    <div class="collapse navbar-collapse flex-column" id="navbarCollapse">
+        <ul class="navbar-nav ml-auto small">
+          <li class="nav-item active"><a class="page-scroll scroll" href="#Patient Results">HPO terms</a></li>
+          <li class="nav-item"><a class="page-scroll scroll" href="#Diseases">Diseases</a></li>
+          <li class="nav-item"><a class="page-scroll scroll" href="#Genes">Genes</a></li>
+        </ul>
+        <ul class="navbar-nav flex-row ml-auto small">
+          <li class="nav-item"><a class="page-scroll scroll" href="#Clinical Trials">Clinical Trials</a></li>
+          <li class="nav-item"><a class="page-scroll scroll" href="#Pathway">Pathway</a></li>
+          <li class="nav-item"><a class="page-scroll scroll" href="#Drugs">Drugs</a></li>
+          <li class="nav-item"><a class="page-scroll scroll" href="#Literature">Literature</a></li>
+        </ul>
 </div>
-<br />
+</nav>
 
+{% endblock %}
 <br>
+<div class="container" id="bar">
+<hr>
+</div>
+
 <div class="container" id="Patient results">
-    <th><span style="color: #efa50e; "><b>HPO terms</b></span></th>
+    <h1><span style="color: #efa50e; "><b>HPO terms</b></span></h1>
     <br><br>
     <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="https://hpo.jax.org/app/">HPO database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
     {{ patient_table|safe }}
 
 </div>
 
-<br>
+<div class="container" id="bar">
+<hr>
+</div>
+
 <div class="container" id="Genes">
-    <tr><th><span style="color: #efa50e; "><b>Genes</b></span></th></tr>
+    <h1><span style="color: #efa50e; "><b>Genes</b></span></h1>
     <br><br>
     <tr><th><span style="color: black; ">Here are the related genes referenced from <a href="https://phen2gene.wglab.org">Phen2Gene web application</a>:</span></th></tr>
     {{ phen2gene_table|safe }}
+    <br><br>
 </div>
-<br>
+
+<div class="container" id="bar">
+<hr>
+</div>
 
 <div class="container" id="Clinical Trials">
-    <tr><th><span style="color: #efa50e; "><b>Clinical Trials</b></span></th></tr>
+    <h1><span style="color: #efa50e; "><b>Clinical Trials</b></span></h1>
     <br><br>
-    <a id="nav-clinical" href={{ url_for('generate_clinical_page') }}>
-        <img src="/static/clinical.png" alt="Clinical Trials"/>
+    <a target="_blank" id="nav-clinical" href="{{ url_for('generate_clinical_page') }}" style="font-size: 25px">
+        ClinicalTrials.gov
     </a>
 </div>
-<br>
-{# gene list return 04/26/2020 #}
-<br>
+
+<div class="container" id="bar">
+<hr>
+</div>
+
 <div class="container" id="Pathway">
-    <th><span style="color: #efa50e; "><b>Pathway</b></span></th>
+    <h1><span style="color: #efa50e; "><b>Pathway</b></span></h1>
+    <br><br>
+    <a target="_blank" id="nav-pathway" href="{{ url_for('generate_pathway_page') }}" style="font-size: 25px">
+        KEGG
+    </a>
 </div>
-<br>
 
-<br>
+
+<div class="container" id="bar">
+<hr>
+</div>
+
 <div class="container" id="Drugs">
-    <th><span style="color: #efa50e; "><b>Drugs</b></span></th>
-</div>
-{#<input type="radio" id="drugs" name="weight_model" value="hpo">#}
-{#<label for="dewey">Search for Drugs</label>#}
-<br>
-
-<div class="container" >
-    <a id="nav-tocris" href="{{ url_for('generate_tocris_page') }}">
-        <img src="/static/tocris.png" width="200" height="180" alt="TOCRIS"/>
-    </a>
-    <a id="nav-apexbio" href="{{ url_for('generate_apexbio_page') }}">
-        <img src="/static/APEXBIO.png" width="200" height="100" alt="APEXBIO"/>
-    </a>
-    <a id="nav-wikidata" href="{{ url_for('generate_wikidata_page') }}">
-        <img src="/static/Wikidata.png" width="200" height="80" alt="Wikidata"/>
-    </a>
-    <a id="nav-snomed" href="{{ url_for('generate_snomed_page') }}">
-        <img src="/static/snomed.png" width="200" height="80" alt="SNOWMD"/>
-    </a>
+    <h1><span style="color: #efa50e; "><b>Drugs</b></span></h1>
+    <br><br>
+    <table>
+    <tr>
+    <td class="verticaltable"><a target="_blank" id="nav-tocris" href="{{ url_for('generate_tocris_page') }}" style="font-size: 25px">
+        Tocris
+    </a></td>
+    <td class="verticaltable"><a target="_blank" id="nav-apexbio" href="{{ url_for('generate_apexbio_page') }}" style="font-size: 25px">
+        APExBio
+    </a></td>
+    <td class="verticaltable"><a target="_blank" id="nav-wikidata" href="{{ url_for('generate_wikidata_page') }}" style="font-size: 25px">
+        Wikidata
+    </a></td>
+    </tr>
+    </table>
 </div>
 
 <div class="container" >

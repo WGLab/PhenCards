@@ -26,9 +26,8 @@ def format_json_table(gene_dict, type):
                 # output_file.write(str(rank) + "\t" + gene_dict[gene_item][0] + "\t" + str(gene_item) + "\t" + str( np.round(gene_dict[gene_item][1] / highest_score, 6 ) ) + "\t" +gene_dict[gene_item][2] + "\n" )
                 # phen_dict[idx].extend([phenName, HPOId, HPOName])
                 gene_info_dict = {
-                    'Phenotype Aliases': gene_dict[gene_item][0],
-                    'HPO ID': gene_dict[gene_item][1],
-                    'HPO Name': gene_dict[gene_item][2]
+                    'HPO ID': gene_dict[gene_item][0],
+                    'HPO Name': gene_dict[gene_item][1]
                 }
                 gene_info_lst.append(gene_info_dict)
         elif type == 'patient':

@@ -149,7 +149,7 @@ def index_umls(INDEX_NAME='umls',path_to_txt='/media/database/UMLS-DATA.txt'):
                 if len(es_data) > 0:
                     helpers.bulk(es, es_data, stats_only=False)    
 
-def index_autosuggest(INDEX_NAME='autosuggest',path_to_icd10='./database/ICD10_data_result/ICD10-DATA.txt',path_to_phenotype='./database/phenotype_database.csv'):
+def index_autosuggest(INDEX_NAME='autosuggest',path_to_icd10='/media/database/ICD10_data_result/ICD10-DATA.txt',path_to_phenotype='/media/database/phenotype_database.csv'):
     request_body = {
         "settings": {
             "analysis": {
