@@ -18,12 +18,12 @@ services:
         container_name: phencard
         build: .
         ports:
-            - "5000:5000" # Expose flask port
+            - "5005:5005" # Expose flask port
         environment: # Set ENV vars
             - NODE_ENV=local
             - ES_HOST=elasticsearch
         volumes: # Attach local book data directory
-            - ./database:/code/database
+            - ./database:/media/database
         depends_on:
             - elasticsearch
 

@@ -4,10 +4,11 @@ import json
 import time, datetime
 import os
 from datetime import datetime
+from config import Config
 
 time.sleep(30) # sleep until elastic is fully started.
 
-es = Elasticsearch(['elasticsearch:9200'], timeout=60, retry_on_timeout=True)
+es = Elasticsearch([Config.elasticsearch_url], timeout=60, retry_on_timeout=True)
 
 def index_doid(INDEX_NAME='doid',path_to_txt='/media/database/DOID_data_result/DOID-DATA.txt'):
     request_body = {

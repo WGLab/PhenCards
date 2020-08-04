@@ -7,7 +7,7 @@ ENV FLASK_APP app.py
 ENV FLASK_RUN_HOST 0.0.0.0
 RUN apk add --no-cache gcc musl-dev linux-headers
 COPY . /code
-RUN mkdir database
+RUN mkdir /media/database
 RUN apk add --update \
     curl \
     && rm -rf /var/cache/apk/*
