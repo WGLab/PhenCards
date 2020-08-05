@@ -167,7 +167,8 @@ def get_results(phen_name: str, phencurs, icdcurs):
         # output the JSON
         # if NAME.lower().startswith(phen_name.lower()):
         phen_dict_SNOMED[idx].extend([conceptId, languageCode, term])
-
+    
+    print (phen_dict1)
     # return results in json file, transfer dict into json format
     return format_json_table(phen_dict1, 'HPO'), \
            format_json_table(phen_dict2_OMIM, 'OMIM'), \

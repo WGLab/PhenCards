@@ -25,7 +25,7 @@ $(document).ready(function () {
 
                 $.ajax({
                     type: "POST",
-                    url: elasticroot + "/autosuggest/_search",
+                    url: "/autosuggest",
                     async: false,
                     data: JSON.stringify(postData),
                     contentType: "application/json; charset=utf-8",

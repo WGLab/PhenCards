@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
-from flask import Flask, Response, render_template, redirect, url_for, request, abort, flash, session, app
+from flask import Flask, Response, render_template, redirect, url_for, request, jsonify, abort, flash, session, app
 import sys
 from datetime import timedelta
 import API
 import queries
 from forms import PhenCardsForm
 from config import Config
+from lib.esQuery import autosuggest
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -133,8 +134,17 @@ def phenopacket():
     results = queries.hpo_from_phenopacket() 
     return Response(results, mimetype="application/json", status=200)
 
+# autosuggest
+@app.route('/autosuggest', methods=['POST'])
+def get_autosuggest():
+    query_json = request.json
+    results = autosuggest(query_json, index = 'autosuggest')
+    return jsonify(results)
+
+
 
 if __name__ == '__main__':
     app.jinja_env.auto_reload = True
     # app.run(host="0.0.0.0", debug=True)
-    app.run(debug=True, port=5005)
+    # binding to 0.0.0.0 if you want the container to be accessible from outside.
+    app.run(host="0.0.0.0",debug=True, port=5005)
