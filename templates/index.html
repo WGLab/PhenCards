@@ -39,7 +39,7 @@
                 <!-- text box to enter HPO IDs -->
 		<div class="form-group" id="manual">
 			<span style="display: inline;">
-			<h3><i class="material-icons">book</i>Enter you want to search for here:</h3>
+			<h3><i class="material-icons">book</i>Enter your phenotype term query here:</h3>
 		    </span>
 			<textarea class="form-control" name="phenname" id="phenname" rows="4" placeholder="e.g. cleft palate (Search by Phenotype Name)"></textarea>
 			<span class="form-text text-muted">Please enter your focused phenotype names / external database ID.</span>
@@ -47,7 +47,7 @@
         
        <!-- text box to enter patient description -->
 		<div class="form-group" id="auto" style="display:none;">
-            <h3><i class="material-icons">book</i>Enter you want to search for here:</h3>
+            <h3><i class="material-icons">book</i>Enter your phenotype term query here:</h3>
             {{ form.csrf_token }}
 			<!-- <textarea class="form-control" name="phenname" id="phenname" rows="4" placeholder="e.g. cleft palate (Search by Phenotype Name)"></textarea> -->
             <input id="typeahead" class="form-control autocomplete" rows="4" placeholder="cleft palate">

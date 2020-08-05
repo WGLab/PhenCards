@@ -32,7 +32,7 @@ def index_doid(INDEX_NAME='doid',path_to_txt='/media/database/DOID_data_result/D
                 a = ftxt.readlines()
                 data = {}
                 for i in a:
-                    eles = i.split('\t')
+                    eles = i.strip().split('\t')
                     data = {} # init to avoid deep copy.
                     data['ID'] = eles[0]
                     data['NAME'] = eles[1]
@@ -66,7 +66,7 @@ def index_msh(INDEX_NAME='msh',path_to_txt='/media/database/MSH_data_result/MSH-
                 a = ftxt.readlines()
                 data = {}
                 for i in a:
-                    eles = i.split('\t')
+                    eles = i.strip().split('\t')
                     data = {} # init to avoid deep copy.
                     data['ID'] = eles[0]
                     data['NAME'] = eles[1]
@@ -103,7 +103,7 @@ def index_icd10(INDEX_NAME='icd10',path_to_txt='/media/database/ICD10_data_resul
                 a = ftxt.readlines()
                 data = {}
                 for i in a:
-                    eles = i.split('\t')
+                    eles = i.strip().split('\t')
                     data = {} # init to avoid deep copy.
                     data['ID'] = eles[1]
                     data['NAME'] = eles[4]
@@ -138,7 +138,7 @@ def index_umls(INDEX_NAME='umls',path_to_txt='/media/database/UMLS-DATA.txt'):
                 a = ftxt.readlines()
                 data = {}
                 for i in a:
-                    eles = i.split('\t')
+                    eles = i.strip().split('\t')
                     data = {} # init to avoid deep copy.
                     data['ID'] = eles[0]
                     data['NAME'] = eles[14] #IndexError: list index out of range
@@ -198,10 +198,13 @@ def index_autosuggest(INDEX_NAME='autosuggest',path_to_icd10='/media/database/IC
                 a = ftxt.readlines()
                 data = {}
                 for i in a:
-                    eles = i.split('\t')
+                    eles = i.strip().split('\t')
                     data = {} # init to avoid deep copy.
                     data['ID'] = eles[1]
-                    data['NAME'] = eles[4]
+                    try:
+                        data['NAME'] = eles[4]
+                    except IndexError:
+                        print(data)
                     data['ABBR'] = eles[3]
                     data['NAMESUGGEST'] = {}
                     data['NAMESUGGEST']['input'] = [eles[4]]
@@ -224,7 +227,7 @@ def index_autosuggest(INDEX_NAME='autosuggest',path_to_icd10='/media/database/IC
                 a = ftxt.readlines()
                 data = {}
                 for i in a:
-                    eles = i.split('\t')
+                    eles = i.strip().split('\t')
                     # Disease ID
                     data = {} # init to avoid deep copy.
                     data['ID'] = eles[2]
@@ -238,7 +241,10 @@ def index_autosuggest(INDEX_NAME='autosuggest',path_to_icd10='/media/database/IC
                     # HPO ID
                     data = {} # init to avoid deep copy.
                     data['ID'] = eles[3]
-                    data['NAME'] = eles[4]
+                    try:
+                        data['NAME'] = eles[4]
+                    except IndexError:
+                        print(data)
                     data['ABBR'] = ''
                     data['NAMESUGGEST'] = {}
                     data['NAMESUGGEST']['input'] = [eles[1]]

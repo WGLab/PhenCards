@@ -4,7 +4,7 @@ services:
     elasticsearch: # Elasticsearch Instance
         container_name: elastic-search
         image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
-        volumes: # Persist ES data in seperate "esdata" volume
+        volumes: # Persist ES data in separate "esdata" volume
             - ./database/esdata:/usr/share/elasticsearch/data
             - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
         environment:
@@ -15,7 +15,7 @@ services:
             - "9300:9300"
             - "9200:9200"
     app: # flask app
-        container_name: phencard
+        container_name: phencards
         build: .
         ports:
             - "5005:5005" # Expose flask port
@@ -28,5 +28,5 @@ services:
             - elasticsearch
 
 
-# volumes: # Define seperate volume for Elasticsearch data
+# volumes: # Define separate volume for Elasticsearch data
 #   esdata:
