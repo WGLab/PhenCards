@@ -5,11 +5,11 @@ services:
         container_name: elastic-search
         image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
         volumes: # Persist ES data in separate "esdata" volume
-            - ./database/esdata:/usr/share/elasticsearch/data
+            - /media/database/esdata:/usr/share/elasticsearch/data
             - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
         environment:
             - bootstrap.memory_lock=true
-            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+            - "ES_JAVA_OPTS=-Xms750m -Xmx750m"
             - discovery.type=single-node
         ports: # Expose Elasticsearch ports
             - "9300:9300"
@@ -23,7 +23,7 @@ services:
             - NODE_ENV=local
             - ES_HOST=elasticsearch
         volumes: # Attach local book data directory
-            - ./database:/media/database
+            - /media/database:/media/database
         depends_on:
             - elasticsearch
 
