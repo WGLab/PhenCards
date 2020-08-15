@@ -74,6 +74,7 @@ th {
     <h1><span style="color: #efa50e; "><b>Aliases</b></span></h1>
     <br><br>
     <tr><th><span style="color: black; ">Here are the aliases referenced from <a target="_blank" href="https://www.nlm.nih.gov/research/umls/index.html">UMLS database</a>:</span></th></tr>
+    <br><br>
     {% if umls %}
         <table id="umls" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
@@ -106,6 +107,7 @@ th {
     {% endif %}
     <hr class="innerbar">
     <tr><th><span style="color: black; ">Here are the aliases referenced from <a target="_blank" href="https://athena.ohdsi.org">OHDSI database</a>, you can click below to learn more about the vocabulary terms:</span></th></tr>
+    <br><br>
     {% if ohdsi %}
         {% set url = "https://athena.ohdsi.org/search-terms/terms/" %}
         <table id="ohdsi" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
@@ -139,7 +141,8 @@ th {
     {% endif %}
     <hr class="innerbar">
     <tr><th><span style="color: black; ">Here are the aliases referenced from <a target="_blank" href="https://www.icd10data.com/">ICD-10 database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
-    {% if hpo %}
+    <br><br>
+    {% if icd10 %}
         {% set url = "https://icd.codes/icd10cm/" %}
         <table id="icd10" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
@@ -166,6 +169,7 @@ th {
     {% endif %}
     <hr class="innerbar">
     <tr><th><span style="color: black; ">Here are the aliases referenced from <a target="_blank" href="https://hpo.jax.org/app/">HPO database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
+    <br><br>
     {% if hpo %}
         {% set url = "https://hpo.jax.org/app/browse/term/" %}
         <table id="hpo" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
@@ -201,6 +205,7 @@ th {
     {% endif %}
     <hr class="innerbar">
     <tr><th><span style="color: black; ">Here are the aliases referenced from <a target="_blank" href="https://www.ncbi.nlm.nih.gov/mesh">MeSH term database</a>, you can click on the links to learn more about the MeSH terms:</span></th></tr>
+    <br><br>
     {% if msh %}
         {% set url = "https://www.ncbi.nlm.nih.gov/mesh/?term=" %}
         <table id="msh" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
@@ -275,12 +280,63 @@ th {
 <div class="container" id="Diseases">
     <h1><span style="color: #efa50e; "><b>Diseases</b></span></h1>
     <br><br>
-    <tr><th><span style="color: black; ">Here are the diseases referenced from <a target="_blank" href="https://www.ncbi.nlm.nih.gov/omim/">OMIM database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
-    {{ html_table2OMIM|safe }}
-    {{ html_table2D|safe }}
+    <tr><th><span style="color: black; ">Here are the diseases from the <a target="_blank" href="https://disease-ontology.org">Disease Ontology (DO) database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
     <br><br>
-    <tr><th><span style="color: black; ">Here are the diseases referenced from <a target="_blank" href="https://www.orpha.net/consor/cgi-bin/index.php">ORPHA database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
-    {{ html_table2OR|safe }}
+    {% if doid %}
+        {% set url = "https://disease-ontology.org/term/" %}
+        <table id="icd10" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+            <td>Disease Name</td>
+            <td>DO ID</td>
+            <td>Score</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in doid %}
+                <tr>
+                    <td>{{result["_source"]["NAME"]}}</td>
+                    <td><a target="_blank" href={{ url ~ "DOID:" ~ result["_source"]["ID"] }}>{{"DOID:" ~ result["_source"]["ID"]}}</a></td>
+                    <td>{{result["_score"]}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the search term in DO DB.
+    {% endif %}
+    <hr class="innerbar">
+    <tr><th><span style="color: black; ">Here are the diseases from the <a target="_blank" href="https://hpo.jax.org">Human Phenotype Ontology (HPO)'s linked disease databases</a>, you can click to learn more about the individual phenotypes from OMIM, ORPHANET, and DECIPHER:</span></th></tr>
+    <br><br>
+    {% if hpolink %}
+        {% set url = "https://hpo.jax.org/app/browse/disease/" %}
+        <table id="hpolink" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+            <td>Disease Name</td>
+            <td>Related Database ID</td>
+            <td>Database Name</td>
+            <td>Linked HPO Term</td>
+            <td>Linked HPO ID</td>
+            <td>Score</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in hpolink %}
+                <tr>
+                    <td>{{result["_source"]["NAME"]}}</td>
+                    <td><a target="_blank" href={{ url ~ result["_source"]["Database Name"] ~ ":" ~ result["_source"]["Related Database ID"] }}>{{result["_source"]["Related Database ID"]}}</a></td>
+                    <td>{{result["_source"]["Database Name"]}}</td>
+                    <td>{{result["_source"]["Linked HPO term"]}}</td>
+                    <td>{{result["_source"]["Linked HPO ID"]}}</td>
+                    <td>{{result["_score"]}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the search term in disease databases linked to HPO.
+    {% endif %}
 </div>
 <br>
 
@@ -425,13 +481,18 @@ th {
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
 	  	});
-	  	$('#cohd, #msh').DataTable({
+	  	$('#cohd, #msh, #doid').DataTable({
 	  		"order": [[ 2, "desc" ]],
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
 	  	});
 	  	$('#umls, #ohdsi').DataTable({
 	  		"order": [[ 6, "desc" ]],
+	  		"pageLength": 5,
+	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
+	  	});
+	  	$('#hpolink').DataTable({
+	  		"order": [[ 4, "desc" ]],
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
 	  	});
