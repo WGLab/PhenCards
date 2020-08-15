@@ -5,6 +5,7 @@ import os
 from datetime import datetime
 from config import Config
 from csv import DictReader as DR
+from collections import defaultdict
 
 es = Elasticsearch(["localhost:9200"], timeout=60, retry_on_timeout=True)
 #es = Elasticsearch([Config.elasticsearch_url], timeout=60, retry_on_timeout=True)
@@ -35,7 +36,7 @@ def index_doid(INDEX_NAME='doid',path_to_txt='/media/database/DOID_data_result/D
                 "ID": {
                     "type": "text"
                 },
-                "NAME": {
+                "NAME": { # Disease Name
                     "type": "text"
                 },
                 "NGRAM":{ 
@@ -75,7 +76,7 @@ def index_msh(INDEX_NAME='msh',path_to_txt='/media/database/MSH_data_result/MSH-
                 "ID": {
                     "type": "text"
                 },
-                "NAME": {
+                "NAME": { # msh term name/string
                     "type": "text"
                 }
             }
@@ -110,7 +111,7 @@ def index_icd10(INDEX_NAME='icd10',path_to_icd='/media/database/ICD10_data_resul
                 "ID": {
                     "type": "text"
                 },
-                "NAME": {
+                "NAME": { # disease name
                     "type": "text"
                 },
                 "ABBR": {
@@ -150,7 +151,7 @@ def index_umls(INDEX_NAME='umls',path_to_txt='/media/database/UMLS-DATA.txt'):
                 "ID": {
                     "type": "text"
                 },
-                "Name": {
+                "NAME": { # concept string umls
                     "type": "text"
                 },
                 "Source ID": {
@@ -181,7 +182,7 @@ def index_umls(INDEX_NAME='umls',path_to_txt='/media/database/UMLS-DATA.txt'):
                 for row in dictfile:
                     data = {} # init to avoid deep copy.
                     data['ID'] = row['CUI']
-                    data['Name'] = row['STR']
+                    data['NAME'] = row['STR']
                     data['Source ID'] = row['SDUI']
                     data['Source Name'] = row['SAB']
                     data['Source Type'] = row['TTY']
@@ -201,7 +202,7 @@ def index_irs990(INDEX_NAME='irs990',path_to_irs="/media/database/IRS990/index_2
         "settings": {},
         "mappings": {
             "properties": {
-                "Name": {
+                "NAME": { # taxpaying foundation name
                     "type": "text"
                 },
                 "EIN": {
@@ -227,7 +228,7 @@ def index_irs990(INDEX_NAME='irs990',path_to_irs="/media/database/IRS990/index_2
             """
             for row in dictfile:
                 data = {} # init to avoid deep copy.
-                data['Name'] = row['TAXPAYER_NAME']
+                data['NAME'] = row['TAXPAYER_NAME']
                 data['EIN'] = row['EIN']
                 data['Date'] = row['SUB_DATE']
                 data['ObjLink'] = row['OBJECT_ID'] # link = 'https://s3.amazonaws.com/irs-form-990/'+OBJECT_ID+'_public.xml'
@@ -249,7 +250,7 @@ def index_open990(INDEX_NAME='open990f',INDEX_NAME2='open990g',path_to_foundatio
         "settings": {},
         "mappings": {
             "properties": {
-                "Foundation Name": {
+                "NAME": { # Foundation Name
                     "type": "text"
                 },
                 "Address": {
@@ -283,7 +284,7 @@ def index_open990(INDEX_NAME='open990f',INDEX_NAME2='open990g',path_to_foundatio
             """
             for row in dictfile:
                 data = {} # init to avoid deep copy.
-                data['Foundation Name'] = row['Foundation name']
+                data['NAME'] = row['Foundation name']
                 data['Address'] = ",".join([row['Street'],row['City'],row['State'],row['ZIP']])
                 data['Website'] = row['Website']
                 data['Email'] = row['Email']
@@ -302,7 +303,7 @@ def index_open990(INDEX_NAME='open990f',INDEX_NAME2='open990g',path_to_foundatio
         "settings": {},
         "mappings": {
             "properties": {
-                "Foundation Name": {
+                "NAME": { # Foundation name
                     "type": "text"
                 },
                 "Grantee": {
@@ -335,8 +336,8 @@ def index_open990(INDEX_NAME='open990f',INDEX_NAME2='open990g',path_to_foundatio
             """
             for row in dictfile:
                 data = {} # init to avoid deep copy.
+                data['NAME'] = row['Foundation name']
                 data['Grantee'] = row['Grantee']
-                data['Foundation Name'] = row['Foundation name']
                 data['Grantee Location'] = ",".join([row['City'],row['State']])
                 data['Grant Purpose'] = row['Purpose']
                 data['Grant Amount'] = row['Amount']
@@ -357,7 +358,7 @@ def index_ohdsi(INDEX_NAME='ohdsi',path_to_ohdsi="/media/database/OHDSI/CONCEPT.
         "settings": {},
         "mappings": {
             "properties": {
-                "Concept Name": {
+                "NAME": { # Concept Name
                     "type": "text"
                 },
                 "Concept ID": {
@@ -389,8 +390,8 @@ def index_ohdsi(INDEX_NAME='ohdsi',path_to_ohdsi="/media/database/OHDSI/CONCEPT.
             """
             for row in dictfile:
                 data = {} # init to avoid deep copy.
+                data['NAME'] = row['concept_name']
                 data['Concept ID'] = row['concept_id']
-                data['Concept Name'] = row['concept_name']
                 data['Domain'] = row['domain_id']
                 data['Vocabulary of Origin'] = row['vocabulary_id']
                 data['Concept Class ID'] = row['concept_class_id']
@@ -406,28 +407,34 @@ def index_ohdsi(INDEX_NAME='ohdsi',path_to_ohdsi="/media/database/OHDSI/CONCEPT.
 
     return es_data
 
-def index_hpo(INDEX_NAME='hpo',INDEX_NAME2='hpolink',path_to_hpo='/media/database/HPO/terms.tsv', path_to_grants='/media/database/HPO/phenotype_annotations.tsv'):
+def index_hpo(INDEX_NAME='hpo',INDEX_NAME2='hpolink',path_to_hpo='/media/database/HPO/terms.tsv', path_to_phenotype='/media/database/HPO/phenotype_annotations.tsv'):
    # used https://github.com/macarthur-lab/obo_parser from MacArthur-Lab to format OBO file into terms.tsv, rest is in ipynb books
     request_body = {
         "settings": {},
         "mappings": {
             "properties": {
-                "Foundation Name": {
+                "HPO ID": {
                     "type": "text"
                 },
-                "Address": {
+                "NAME": { # HPO term name/string
                     "type": "text"
                 },
-                "Website": {
+                "Alternate ID": {
                     "type": "text"
                 },
-                "Email": {
+                "Child IDs": {
                     "type": "text"
                 },
-                "Phone": {
+                "Definition": {
                     "type": "text"
                 },
-                "EIN": {
+                "Similar Subset Terms": {
+                    "type": "text"
+                },
+                "External IDs": {
+                    "type": "text"
+                },
+                "Parent IDs": {
                     "type": "text"
                 }
             }
@@ -438,20 +445,21 @@ def index_hpo(INDEX_NAME='hpo',INDEX_NAME2='hpolink',path_to_hpo='/media/databas
         es.indices.delete(index=INDEX_NAME, ignore=404)
         es.indices.create(index=INDEX_NAME, body=request_body)
         es_dataf, es_datag = [], []
-        with open(path_to_foundations, "r") as ftxt:
-            ftxt.readline() # noncommercial use only line. CC NC BY 4.0
-            dictfile = DR(ftxt, dialect='excel')
+        with open(path_to_hpo, "r") as ftxt:
+            dictfile = DR(ftxt, dialect='excel-tab')
             """
-            EIN,Foundation name,Street,City,State,ZIP,Website,Email,Phone,NTEE code,NTEE description,Subsection,Deductible,Assets book value,Income,Exempt as of,Expenses,Contributions made,Contributions received,Activity 1,Activity 1 expense,Activity 2,Activity 2 expense,Activity 3,Activity 3 expense,Activity 4,Activity 4 expense,App preselect,App deadline,App restrictions,App form,App contact,App phone,App street,App city,App state,App ZIP,Grant maximum,Grant count,990-PF required,Tax period BMF,Tax period 990-PF
+            id      name    alt_id  children        comment created_by      creation_date   definition      parent_ids      subset  synonym xref
             """
             for row in dictfile:
-                data = {} # init to avoid deep copy.
-                data['Foundation Name'] = row['Foundation name']
-                data['Address'] = ",".join([row['Street'],row['City'],row['State'],row['ZIP']])
-                data['Website'] = row['Website']
-                data['Email'] = row['Email']
-                data['Phone'] = row['Phone']
-                data['EIN'] = row['EIN']
+                data = defaultdict(str) # init to avoid deep copy.
+                data['HPO ID'] = row['id']
+                data['NAME'] = row['name']
+                data['Alternate ID'] = row['alt_id']
+                data['Child IDs'] = row['children']
+                data['Definition'] = row['definition']
+                data['Parent IDs'] = row['parent_ids']
+                data['Similar Subset Terms'] = row['subset']
+                data['External IDs'] = row['xref']
                 
                 action = {"_index": INDEX_NAME, '_source': data}
                 es_dataf.append(action)
@@ -465,22 +473,19 @@ def index_hpo(INDEX_NAME='hpo',INDEX_NAME2='hpolink',path_to_hpo='/media/databas
         "settings": {},
         "mappings": {
             "properties": {
-                "Foundation Name": {
+                "Related Database ID": {
                     "type": "text"
                 },
-                "Grantee": {
+                "Database Name": {
                     "type": "text"
                 },
-                "Grantee Location": {
+                "NAME": { # disease name
                     "type": "text"
                 },
-                "Grant Purpose": {
+                "Linked HPO ID": {
                     "type": "text"
                 },
-                "Grant Amount": {
-                    "type": "text"
-                },
-                "EIN": {
+                "Linked HPO term": {
                     "type": "text"
                 }
             }
@@ -490,20 +495,19 @@ def index_hpo(INDEX_NAME='hpo',INDEX_NAME2='hpolink',path_to_hpo='/media/databas
     if es is not None:
         es.indices.delete(index=INDEX_NAME2, ignore=404)
         es.indices.create(index=INDEX_NAME2, body=request_body2)
-        with open(path_to_grants, "r") as ftxt:
-            ftxt.readline() # noncommercial use only line. CC NC BY 4.0
-            dictfile = DR(ftxt, dialect='excel')
+        with open(path_to_phenotype, "r") as ftxt:
+            dictfile = DR(ftxt, dialect='excel-tab')
             """
-            EIN,Foundation name,Grantee,City,State,Purpose,Amount,Paid,Future pay,Tax period 990-PF
+            Index   DiseaseName     DatabaseID      HPO-ID  HPO-Name
             """
             for row in dictfile:
                 data = {} # init to avoid deep copy.
-                data['Grantee'] = row['Grantee']
-                data['Foundation Name'] = row['Foundation name']
-                data['Grantee Location'] = ",".join([row['City'],row['State']])
-                data['Grant Purpose'] = row['Purpose']
-                data['Grant Amount'] = row['Amount']
-                data['EIN'] = row['EIN']
+                dbname, dbid = row['DatabaseID'].split(':')
+                data['Related Database ID'] = dbid
+                data['Database Name'] = dbname
+                data['NAME'] = row['DiseaseName']
+                data['Linked HPO ID'] = row['HPO-ID']
+                data['Linked HPO term'] = row['HPO-Name']
                 
                 action = {"_index": INDEX_NAME2, '_source': data}
                 es_datag.append(action)
@@ -629,11 +633,12 @@ def index_autosuggest(INDEX_NAME='autosuggest',path_to_icd10='/media/database/IC
 
 
 if __name__ == "__main__":
-    # index_open990()
-    # index_irs990()
-    # index_doid()
-    # index_msh()
-    # index_icd10()
+    index_open990()
+    index_irs990()
+    index_doid()
+    index_msh()
+    index_icd10()
     index_umls()
-    # index_autosuggest()
+    index_autosuggest()
     index_ohdsi()
+    index_hpo()
