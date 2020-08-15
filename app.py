@@ -7,7 +7,7 @@ import API
 import queries
 from forms import PhenCardsForm
 from config import Config
-from lib.esQuery import autosuggest
+from lib.esQuery import indexquery
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -19,7 +19,7 @@ def make_session_permanent():
 
 @app.route('/', methods=["GET", "POST"])
 def phencards():
-    phen_name = "cleft_palate" # default string
+    phen_name = "cleft palate" # default string
     # methods in form class
     form = PhenCardsForm()
     # validate_on_submit() method
@@ -58,18 +58,15 @@ def generate_patient_page():
 
 @app.route('/results')
 def generate_results_page():
-    phenname=session['HPOquery']
     HPOquery=session['HPOquery']
-    html_table1, html_table2OMIM, html_table2D, html_table2OR, html_table3, html_umls, phen2gene, html_snomed, cohd = queries.results_page(phenname, HPOquery)
-    return render_template('results.html', html_table1=html_table1, html_table2OMIM=html_table2OMIM,
-                           html_table2D=html_table2D, html_table2OR=html_table2OR, html_table3=html_table3,
-                           html_umls=html_umls, phen2gene=phen2gene, html_snomed=html_snomed, cohd=cohd)
+    doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, cohd = queries.results_page(HPOquery)
+    return render_template('results.html', doid=doid, msh=msh, icd10=icd10, irs990=irs990, open990f=open990f, open990g=open990g, umls=umls, hpo=hpo, hpolink=hpolink, ohdsi=ohdsi, phen2gene=phen2gene, cohd=cohd)
 
 # pathway results
 @app.route('/pathway')
 def generate_pathway_page():
-    phenname=session['HPOquery']
-    dispath=API.pathway_page(phenname)
+    HPOquery=session['HPOquery']
+    dispath=API.pathway_page(HPOquery)
     return render_template('pathways.html', dispath=dispath)
 
 # cohd results
@@ -138,9 +135,8 @@ def phenopacket():
 @app.route('/autosuggest', methods=['POST'])
 def get_autosuggest():
     query_json = request.json
-    results = autosuggest(query_json, index = 'autosuggest')
+    results = indexquery(query_json, index = 'autosuggest')
     return jsonify(results)
-
 
 
 if __name__ == '__main__':
