@@ -59,7 +59,7 @@ th {
           <li class="nav-item"><a class="page-scroll scroll" href="#Literature">Literature</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Companies & Foundations">Companies & Foundations</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Clinical Trials">Clinical Trials</a></li>
-          <li class="nav-item"><a class="page-scroll scroll" href="#Citations">Citations</a></li>
+          <li class="nav-item"><a class="page-scroll scroll" href="#Citations & Licenses">Citations & Licenses</a></li>
         </ul>
 </div>
 
@@ -73,39 +73,6 @@ th {
 <div class="container" id="Aliases">
     <h1><span style="color: #efa50e; "><b>Aliases</b></span></h1>
     <br><br>
-    <tr><th><span style="color: black; ">Here are the aliases referenced from <a target="_blank" href="https://www.nlm.nih.gov/research/umls/index.html">UMLS database</a>:</span></th></tr>
-    <br><br>
-    {% if umls %}
-        <table id="umls" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
-            <thead>
-            <tr>
-            <td>Concept Name</td>
-            <td>Concept ID</td>
-            <td>Source ID</td>
-            <td>Source Name</td>
-            <td>Source Type</td>
-            <td>Language</td>
-            <td>Score</td>
-            </tr>
-            </thead>
-            <tbody>
-            {% for result in umls %}
-                <tr>
-                    <td>{{result["_source"]["NAME"]}}</td>
-                    <td>{{result["_source"]["ID"]}}</td>
-                    <td>{{result["_source"]["Source ID"]}}</td>
-                    <td>{{result["_source"]["Source Name"]}}</td>
-                    <td>{{result["_source"]["Source Type"]}}</td>
-                    <td>{{result["_source"]["Language"]}}</td>
-                    <td>{{result["_score"]}}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        No results for the search term in UMLS.
-    {% endif %}
-    <hr class="innerbar">
     <tr><th><span style="color: black; ">Here are the aliases referenced from <a target="_blank" href="https://athena.ohdsi.org">OHDSI database</a>, you can click below to learn more about the vocabulary terms:</span></th></tr>
     <br><br>
     {% if ohdsi %}
@@ -229,6 +196,10 @@ th {
     {% else %}
         No results for the search term in MeSH.
     {% endif %}
+    <hr class="innerbar">
+    <tr><th><span style="color: black; ">To view the <a target="_blank" href="https://www.nlm.nih.gov/research/umls/index.html">UMLS aliases</a>, you must authenticate through this link:</span></th></tr>
+    <br>
+    <tr><th><span><a target="_blank" href="{{ url_for('umls_login') }}" style="font-size: 25px">UMLS API</a></span></th></tr>
 </div>
 
 <div class="container" id="bar" >
@@ -526,8 +497,8 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Citations">
-    <h1><span style="color: #efa50e; "><b>Citations</b></span></h1>
+<div class="container" id="Citations & Licenses">
+    <h1><span style="color: #efa50e; "><b>Citations & Licenses</b></span></h1>
     <br><br>
 </div>
 <br>
@@ -582,7 +553,7 @@ th {
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
 	  	});
-	  	$('#umls, #ohdsi, #open990f, #open990g').DataTable({
+	  	$('#ohdsi, #open990f, #open990g').DataTable({
 	  		"order": [[ 6, "desc" ]],
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
