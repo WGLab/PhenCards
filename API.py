@@ -259,3 +259,20 @@ def patient_page(HPOquery, HPO_names):
     phen2gene_table = phen2gene_page(HPOquery,patient=True)
 
     return HPOclinical, patient_table, phen2gene_table
+
+def umls_auth(user="username", password="wouldntyoulovetoknow"):
+    data = {"licenseCode": "NLM-323530719", # from uts profile
+            "user": user, # from user input
+            "password": password} # from user input
+    try:
+        response = requests.post("https://uts-ws.nlm.nih.gov/restful/isValidUMLSUser", data=data)
+        if response.status_code == 200:
+            if "true" in response.text:
+                return True
+            else:
+                return False
+        else:
+            return False
+    except Exception as e:
+        print (e)
+        return False

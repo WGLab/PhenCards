@@ -15,7 +15,7 @@ app.config.from_object(Config)
 @app.before_request
 def make_session_permanent():
     session.permanent = True
-    app.permanent_session_lifetime = timedelta(hours=24)
+    app.permanent_session_lifetime = timedelta(hours=8)
 
 @app.route('/', methods=["GET", "POST"])
 def phencards():
@@ -58,9 +58,26 @@ def generate_patient_page():
 
 @app.route('/results')
 def generate_results_page():
+    global umls
     HPOquery=session['HPOquery']
     doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, cohd = queries.results_page(HPOquery)
-    return render_template('results.html', doid=doid, msh=msh, icd10=icd10, irs990=irs990, open990f=open990f, open990g=open990g, umls=umls, hpo=hpo, hpolink=hpolink, ohdsi=ohdsi, phen2gene=phen2gene, cohd=cohd)
+    return render_template('results.html', doid=doid, msh=msh, icd10=icd10, irs990=irs990, open990f=open990f, open990g=open990g, hpo=hpo, hpolink=hpolink, ohdsi=ohdsi, phen2gene=phen2gene, cohd=cohd)
+
+@app.route('/umlslogin')
+def umls_login():
+    return render_template('umlslogin.html')
+
+@app.route('/umlslogin', methods=["POST"])
+def generate_umls_page():
+    user = request.form.get('user')
+    password = request.form.get('password')
+    valid = API.umls_auth(user, password)
+    print (valid)
+    if valid:
+        return render_template('umls.html', umls=umls)
+    else:
+        flash('Invalid credentials')
+        return redirect(url_for('generate_results_page'))
 
 # pathway results
 @app.route('/pathway')
