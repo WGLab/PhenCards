@@ -91,7 +91,10 @@ def results_page(HPOquery):
 
     # indices: doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi
     hpo = indexquery(query_json,index='hpo',size=100)['hits']['hits']
-    session['HPOID']=hpo[0]['_source']['HPO ID']
+    try:
+        session['HPOID']=hpo[0]['_source']['HPO ID']
+    except IndexError:
+        session['HPOID']=""
     hpolink = indexquery(query_json,index='hpolink',size=100)['hits']['hits']
     doid = indexquery(query_json,index='doid',size=100)['hits']['hits']
     msh = indexquery(query_json,index='msh',size=100)['hits']['hits']
