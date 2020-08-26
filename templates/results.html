@@ -59,7 +59,7 @@ th {
           <li class="nav-item"><a class="page-scroll scroll" href="#Literature">Literature</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Companies & Foundations">Companies & Foundations</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Clinical Trials">Clinical Trials</a></li>
-          <li class="nav-item"><a class="page-scroll scroll" href="#Images">Images</a></li>
+          <li class="nav-item"><a class="page-scroll scroll" href="#Citations">Citations</a></li>
         </ul>
 </div>
 
@@ -411,6 +411,102 @@ th {
 <div class="container" id="Companies & Foundations">
     <h1><span style="color: #efa50e; "><b>Companies & Foundations</b></span></h1>
     <br><br>
+    <tr><th><span style="color: black; ">Here are the nonprofits (990s) for this search term from the 2019 <a target="_blank" href="https://docs.opendata.aws/irs-990/readme.html">IRS AWS database</a>, you can click on the links to reach the public XMLs with more details:</span></th></tr>
+    <br><br>
+    {% if irs990 %}
+        {% set url = "https://s3.amazonaws.com/irs-form-990/" %}
+        <table id="irs990" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+            <td>Foundation Name</td>
+            <td>EIN</td>
+            <td>Filing Date</td>
+            <td>URL</td>
+            <td>Score</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in irs990 %}
+                <tr>
+                    <td>{{result["_source"]["NAME"]}}</td>
+                    <td>{{result["_source"]["EIN"]}}</td>
+                    <td>{{result["_source"]["Date"]}}</td>
+                    <td><a target="_blank" href={{ url ~ result["_source"]["ObjLink"] ~ "_public.xml" }}>{{result["_source"]["ObjLink"]}}</a></td>
+
+                    <td>{{result["_score"]}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the search term in IRS 990 AWS DB.
+    {% endif %}
+    <hr class="innerbar">
+    <tr><th><span style="color: black; ">Here are the nonprofits (990s) for this search term from the 2019 <a target="_blank" href="https://www.open990.org/catalog/">Open990 foundations database</a>, you can click on the links, if applicable, to reach the foundations' websites:</span></th></tr>
+    <br><br>
+    {% if open990f %}
+        <table id="open990f" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+            <td>Foundation Name</td>
+            <td>Address</td>
+            <td>Website</td>
+            <td>Email</td>
+            <td>Phone</td>
+            <td>EIN</td>
+            <td>Score</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in open990f %}
+                <tr>
+                    <td>{{result["_source"]["NAME"]}}</td>
+                    <td>{{result["_source"]["Address"]}}</td>
+                    <td><a target="_blank" href={{"http://" ~ result["_source"]["Website"]}}>{{result["_source"]["Website"]}}</a></td>
+                    <td>{{result["_source"]["Email"]}}</td>
+                    <td>{{result["_source"]["Phone"]}}</td>
+                    <td>{{result["_source"]["EIN"]}}</td>
+                    <td>{{result["_score"]}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the search term in Open990 Foundations DB.
+    {% endif %}
+    <hr class="innerbar">
+    <tr><th><span style="color: black; ">Here are the grants and grantees given by nonprofits (990s) for this search term from the 2019 <a target="_blank" href="https://www.open990.org/catalog/">Open990 grants database</a>:</span></th></tr>
+    <br><br>
+    {% if open990g %}
+        <table id="open990g" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+            <td>Foundation Name</td>
+            <td>Grantee</td>
+            <td>Grantee Location</td>
+            <td>Grant Purpose</td>
+            <td>Grant Amount</td>
+            <td>EIN</td>
+            <td>Score</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in open990g %}
+                <tr>
+                    <td>{{result["_source"]["NAME"]}}</td>
+                    <td>{{result["_source"]["Grantee"]}}</td>
+                    <td>{{result["_source"]["Grantee Location"]}}</td>
+                    <td>{{result["_source"]["Grant Purpose"]}}</td>
+                    <td>{{result["_source"]["Grant Amount"]}}</td>
+                    <td>{{result["_source"]["EIN"]}}</td>
+                    <td>{{result["_score"]}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the search term in Open990 Grants DB.
+    {% endif %}
 </div>
 
 <div class="container" id="bar">
@@ -430,8 +526,8 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Images">
-    <h1><span style="color: #efa50e; "><b>Images</b></span></h1>
+<div class="container" id="Citations">
+    <h1><span style="color: #efa50e; "><b>Citations</b></span></h1>
     <br><br>
 </div>
 <br>
@@ -486,12 +582,12 @@ th {
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
 	  	});
-	  	$('#umls, #ohdsi').DataTable({
+	  	$('#umls, #ohdsi, #open990f, #open990g').DataTable({
 	  		"order": [[ 6, "desc" ]],
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
 	  	});
-	  	$('#hpolink').DataTable({
+	  	$('#hpolink, #irs990').DataTable({
 	  		"order": [[ 4, "desc" ]],
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]

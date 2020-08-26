@@ -15,11 +15,12 @@ $(document).ready(function () {
                                     "fuzziness": 1
                                 },
                                 "skip_duplicates": true,
-                                "size": 10
+                                "size": 10,
                             }
                         }
                     },
-                    "_source": ["NAME","ID"]
+                    "_source": ["NAME","ID"],
+                    "sort": {"_score": {"order": "desc"}}
                 };
                 
 
