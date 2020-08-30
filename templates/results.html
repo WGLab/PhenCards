@@ -42,6 +42,17 @@ th {
   padding: 2px;
   text-align: center;
 }
+.img {
+  padding: 5px;
+}
+.img-hpo {
+  filter: grayscale(1) invert(1);
+}
+
+.img:hover {
+  box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+}
+
 </style>
 </head>
 
@@ -499,7 +510,24 @@ th {
 
 <div class="container" id="Citations & Licenses">
     <h1><span style="color: #efa50e; "><b>Citations & Licenses</b></span></h1>
-    <br><br>
+    <ol style="list-style-type: lower-alpha">
+    <li id="ohdsi-cite">From the ATHENA/OHDSI resource. <u>Citation</u>: Hripcsak G, Duke JD, Shah NH, et al. Observational Health Data Sciences and Informatics (OHDSI): Opportunities for Observational Researchers. Stud Health Technol Inform. 2015;216:574-578.</li>
+    <li id="icd-cite">The ICD-10 resource. <u>Citation</u>: World Health Organization. (2004). ICD-10 : international statistical classification of diseases and related health problems : tenth revision, 2nd ed. World Health Organization. https://apps.who.int/iris/handle/10665/42980.
+    <li id="hpo-cite">This service/product is using the Human Phenotype Ontology (hpo-obo@2020-08-11). Find out more at <a target="_blank" href="http://www.human-phenotype-ontology.org">the HPO website</a>. <u>Citation</u>: Sebastian Köhler, Leigh Carmody, Nicole Vasilevsky, Julius O B Jacobsen, et al. Expansion of the Human Phenotype Ontology (HPO) knowledge base and resources. Nucleic Acids Research. (2018) doi: 10.1093/nar/gky1105.  <img class="img-hpo" src="/static/img/hpo-logo-white.png" alt="HPO-logo" filter=invert(100%) height="50" width="150"></li>
+    <li id="mesh-cite">The Medical Subject Headings (MeSH) resource.  Further information: <a href="https://www.ncbi.nlm.nih.gov/books/NBK3827/#pubmedhelp.MeSH_Terms_MH">Pubmed Help</a>.<u>Citation</u>: ROGERS FB. Medical subject headings. Bull Med Libr Assoc. 1963;51(1):114-116.</li>
+    <li id="umls-cite">The Unified Medical Language System (UMLS) resource. This cannot be accessed except through the official NLM authentication API or downloaded via Metathesaurus currently. <u>Citation</u>: Bodenreider O. The Unified Medical Language System (UMLS): integrating biomedical terminology. Nucleic Acids Res. 2004 Jan 1;32(Database issue):D267-70. doi: 10.1093/nar/gkh061. PubMed PMID: 14681409; PubMed Central PMCID: PMC308795.</li>
+    <li id="cohd-cite">The Columbia Open Health Data (COHD) resource. This is freely available under the <a href="http://www.apache.org/licenses/LICENSE-2.0.html">APACHE 2.0 License</a>. <u>Citation</u>: Ta, Casey N.; Dumontier, Michel; Hripcsak, George; P. Tatonetti, Nicholas; Weng, Chunhua (2018): Columbia Open Health Data, a database of EHR prevalence and co-occurrence of conditions, drugs, and procedures. figshare. Collection. https://doi.org/10.6084/m9.figshare.c.4151252.v1</li>
+    <li id="doid-cite">The Disease Ontology (DO) database. This is public domain (CC0 1.0 license). <u>Citation</u>: Schriml, L. M., Arze, C., Nadendla, S., Chang, Y. W., Mazaitis, M., Felix, V., Feng, G., & Kibbe, W. A. (2012). Disease Ontology: a backbone for disease semantic integration. Nucleic acids research, 40(Database issue), D940–D946. https://doi.org/10.1093/nar/gkr972.</li>
+    <li id="p2g-cite">Phen2Gene and the H2GKB resources. This is <a target="_blank" href="https://github.com/WGLab/Phen2Gene/blob/master/LICENSE">MIT license</a>. <u>Citation</u>: Zhao M., Havrilla J. M., Fang L., Chen Y., Peng J., Liu C., Wu C., Sarmady M., Botas P., Isla J., Lyon G., Weng C., Wang K. (2020). Phen2Gene: Rapid Phenotype-Driven Gene Prioritization for Rare Diseases. NAR Genomics and Bioinformatics, 2(2), lqaa032. doi:10.1093/nargab/lqaa032.</li>
+    <li id="pathway-cite">Pathway Commons resource. This is <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0 license</a>. <u>Citation</u>: Cerami, E. G., Gross, B. E., Demir, E., Rodchenkov, I., Babur, O., Anwar, N., Schultz, N., Bader, G. D., & Sander, C. (2011). Pathway Commons, a web resource for biological pathway data. Nucleic acids research, 39(Database issue), D685–D690. https://doi.org/10.1093/nar/gkq1039.</li>
+    <li id="fda-cite">The FDA Adverse Event Reporting System (FAERS) resource for 2020. This is public domain. More about: <a target="_blank" href="https://fis.fda.gov/extensions/FPD-QDE-FAERS/FPD-QDE-FAERS.html">see here</a>.
+    <li id="pubmed-cite">The PubMed database. This is public domain. <u>Citation</u>: Sayers E. The E-utilities In-Depth: Parameters, Syntax and More. 2009 May 29 [Updated 2018 Oct 24]. In: Entrez Programming Utilities Help [Internet]. Bethesda (MD): National Center for Biotechnology Information (US); 2010-. Available from: https://www.ncbi.nlm.nih.gov/books/NBK25499/.</li>
+    <li id="open990-cite">The Open990 resource.  This is <a target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/legalcode">CC NC BY 4.0 license</a>.  This data cannot be used commercially.
+    <li id="irs-cite">The IRS 990 AWS resource.  This is <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0 license</a>. This can be freely used and is available courtesy of the Internal Revenue Service.
+    <li id="reporter-cite">The Federal Reporter. This displays publicly funded grants and is thus public domain courtesy of several branches of government, including the NSF and NIH.</li>
+    <li id="nihfoa-cite">The grant and funding information from the NIH. This comes from the Office of Extramural Research (OER) at NIH and is public domain. </li>
+    <li id="clinical-cite">ClinicalTrials.gov. This is public domain, courtesy of the U.S. National Library of Medicine.</li>
+    </ol>
 </div>
 <br>
 

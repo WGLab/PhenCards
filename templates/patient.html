@@ -55,15 +55,14 @@ th {
         </ul>
         <ul class="navbar-nav flex-row ml-auto small">
           <li class="nav-item"><a class="page-scroll scroll" href="#Clinical Trials">Clinical Trials</a></li>
-          <li class="nav-item"><a class="page-scroll scroll" href="#Pathway">Pathway</a></li>
-          <li class="nav-item"><a class="page-scroll scroll" href="#Drugs">Drugs</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Literature">Literature</a></li>
+          <li class="nav-item"><a class="page-scroll scroll" href="#Citations & Licenses">Citations & Licenses</a></li>
         </ul>
 </div>
 </nav>
 
 {% endblock %}
-<br>
+
 <div class="container" id="bar">
 <hr>
 </div>
@@ -104,36 +103,17 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Pathway">
-    <h1><span style="color: #efa50e; "><b>Pathway</b></span></h1>
+<div class="container" id="Citations & Licenses">
+    <h1><span style="color: #efa50e; "><b>Citations & Licenses</b></span></h1>
     <br><br>
-    <a target="_blank" id="nav-pathway" href="{{ url_for('generate_pathway_page') }}" style="font-size: 25px">
-        KEGG
-    </a>
+    <ol style="list-style-type: lower-alpha">
+    <li id=doc2hpo-cite">Doc2HPO natural language processing resource. This is <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0 license</a>. <u>Citation</u>: Liu C., Peres Kury F. S., Li Z., Ta C., Wang K., & Weng C. (2019). Doc2Hpo: a web application for efficient and accurate HPO concept curation. Nucleic Acids Research, 47(W1), W566–W570. doi:10.1093/nar/gkz386.</li>
+    <li id="p2g-cite">Phen2Gene and the H2GKB resources. This is <a target="_blank" href="https://github.com/WGLab/Phen2Gene/blob/master/LICENSE">MIT license</a>. <u>Citation</u>: Zhao M., Havrilla J. M., Fang L., Chen Y., Peng J., Liu C., Wu C., Sarmady M., Botas P., Isla J., Lyon G., Weng C., Wang K. (2020). Phen2Gene: Rapid Phenotype-Driven Gene Prioritization for Rare Diseases. NAR Genomics and Bioinformatics, 2(2), lqaa032. doi:10.1093/nargab/lqaa032.</li>
+    <li id="clinical-cite">ClinicalTrials.gov. This is public domain, courtesy of the U.S. National Library of Medicine.</li>
+    <li id="pubmed-cite">The PubMed database. This is public domain. <u>Citation</u>: Sayers E. The E-utilities In-Depth: Parameters, Syntax and More. 2009 May 29 [Updated 2018 Oct 24]. In: Entrez Programming Utilities Help [Internet]. Bethesda (MD): National Center for Biotechnology Information (US); 2010-. Available from: https://www.ncbi.nlm.nih.gov/books/NBK25499/.</li>
+    </ol>
 </div>
-
-
-<div class="container" id="bar">
-<hr>
-</div>
-
-<div class="container" id="Drugs">
-    <h1><span style="color: #efa50e; "><b>Drugs</b></span></h1>
-    <br><br>
-    <table>
-    <tr>
-    <td class="verticaltable"><a target="_blank" id="nav-tocris" href="{{ url_for('generate_tocris_page') }}" style="font-size: 25px">
-        Tocris
-    </a></td>
-    <td class="verticaltable"><a target="_blank" id="nav-apexbio" href="{{ url_for('generate_apexbio_page') }}" style="font-size: 25px">
-        APExBio
-    </a></td>
-    <td class="verticaltable"><a target="_blank" id="nav-wikidata" href="{{ url_for('generate_wikidata_page') }}" style="font-size: 25px">
-        Wikidata
-    </a></td>
-    </tr>
-    </table>
-</div>
+<br>
 
 <div class="container" >
 
