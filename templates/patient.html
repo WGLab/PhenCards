@@ -49,14 +49,14 @@ th {
 {% block nav %}
     <div class="collapse navbar-collapse flex-column" id="navbarCollapse">
         <ul class="navbar-nav ml-auto small">
-          <li class="nav-item active"><a class="page-scroll scroll" href="#Patient Results">HPO terms</a></li>
+          <li class="nav-item active"><a class="page-scroll scroll" href="#Patient_Results">HPO terms</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Diseases">Diseases</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Genes">Genes</a></li>
         </ul>
         <ul class="navbar-nav flex-row ml-auto small">
-          <li class="nav-item"><a class="page-scroll scroll" href="#Clinical Trials">Clinical Trials</a></li>
+          <li class="nav-item"><a class="page-scroll scroll" href="#Clinical_Trials">Clinical Trials</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Literature">Literature</a></li>
-          <li class="nav-item"><a class="page-scroll scroll" href="#Citations & Licenses">Citations & Licenses</a></li>
+          <li class="nav-item"><a class="page-scroll scroll" href="#Citations_n_Licenses">Citations & Licenses</a></li>
         </ul>
 </div>
 </nav>
@@ -67,10 +67,10 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Patient results">
+<div class="container" id="Patient_Results">
     <h1><span style="color: #efa50e; "><b>HPO terms</b></span></h1>
     <br><br>
-    <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="https://hpo.jax.org/app/">HPO database</a>, you can click on the result to explore more about the phenotype names:</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="https://hpo.jax.org/app/">HPO database</a> using Doc2HPO<sup><a href="#doc2hpo-cite">1</a></sup>, you can click on the result to explore more about the phenotype names:</span></th></tr>
     {{ patient_table|safe }}
 
 </div>
@@ -82,7 +82,7 @@ th {
 <div class="container" id="Genes">
     <h1><span style="color: #efa50e; "><b>Genes</b></span></h1>
     <br><br>
-    <tr><th><span style="color: black; ">Here are the related genes referenced from <a href="https://phen2gene.wglab.org">Phen2Gene web application</a>:</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the related genes referenced from <a href="https://phen2gene.wglab.org">Phen2Gene web application</a><sup><a href="#p2g-cite">2</a></sup>:</span></th></tr>
     {{ phen2gene_table|safe }}
     <br><br>
 </div>
@@ -91,23 +91,21 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Clinical Trials">
+<div class="container" id="Clinical_Trials">
     <h1><span style="color: #efa50e; "><b>Clinical Trials</b></span></h1>
     <br><br>
-    <a target="_blank" id="nav-clinical" href="{{ url_for('generate_clinical_page') }}" style="font-size: 25px">
-        ClinicalTrials.gov
-    </a>
+    <a target="_blank" id="nav-clinical" href="{{ url_for('generate_clinical_page') }}" style="font-size: 25px">ClinicalTrials.gov</a><sup><a href="#clinical-cite">3</a></sup>
 </div>
 
 <div class="container" id="bar">
 <hr>
 </div>
 
-<div class="container" id="Citations & Licenses">
+<div class="container" id="Citations_n_Licenses">
     <h1><span style="color: #efa50e; "><b>Citations & Licenses</b></span></h1>
     <br><br>
-    <ol style="list-style-type: lower-alpha">
-    <li id=doc2hpo-cite">Doc2HPO natural language processing resource. This is <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0 license</a>. <u>Citation</u>: Liu C., Peres Kury F. S., Li Z., Ta C., Wang K., & Weng C. (2019). Doc2Hpo: a web application for efficient and accurate HPO concept curation. Nucleic Acids Research, 47(W1), W566–W570. doi:10.1093/nar/gkz386.</li>
+    <ol style="list-style-type: numeric">
+    <li id="doc2hpo-cite">Doc2HPO natural language processing resource. This is <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0 license</a>. <u>Citation</u>: Liu C., Peres Kury F. S., Li Z., Ta C., Wang K., & Weng C. (2019). Doc2Hpo: a web application for efficient and accurate HPO concept curation. Nucleic Acids Research, 47(W1), W566–W570. doi:10.1093/nar/gkz386.</li>
     <li id="p2g-cite">Phen2Gene and the H2GKB resources. This is <a target="_blank" href="https://github.com/WGLab/Phen2Gene/blob/master/LICENSE">MIT license</a>. <u>Citation</u>: Zhao M., Havrilla J. M., Fang L., Chen Y., Peng J., Liu C., Wu C., Sarmady M., Botas P., Isla J., Lyon G., Weng C., Wang K. (2020). Phen2Gene: Rapid Phenotype-Driven Gene Prioritization for Rare Diseases. NAR Genomics and Bioinformatics, 2(2), lqaa032. doi:10.1093/nargab/lqaa032.</li>
     <li id="clinical-cite">ClinicalTrials.gov. This is public domain, courtesy of the U.S. National Library of Medicine.</li>
     <li id="pubmed-cite">The PubMed database. This is public domain. <u>Citation</u>: Sayers E. The E-utilities In-Depth: Parameters, Syntax and More. 2009 May 29 [Updated 2018 Oct 24]. In: Entrez Programming Utilities Help [Internet]. Bethesda (MD): National Center for Biotechnology Information (US); 2010-. Available from: https://www.ncbi.nlm.nih.gov/books/NBK25499/.</li>
@@ -137,24 +135,6 @@ th {
 
 </div>
 
-<div class="container" >
-
-
-
-</div>
-
-
-<div class="container" >
-
-
-
-</div>
-
-<div class="container" >
-
-
-
-</div>
 
 {% endblock %}
 
