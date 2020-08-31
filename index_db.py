@@ -597,20 +597,17 @@ def index_autosuggest(INDEX_NAME='autosuggest',path_to_hpo='/media/database/HPO/
             es_data = []
             n_doc = 0
             with open(path_to_icd10, "r") as ftxt:
-                a = ftxt.readlines()
-                data = {}
-                for i in a:
-                    eles = i.strip().split('\t')
+                dictfile = DR(ftxt, dialect='excel-tab')
+                """
+                INDEX   ICD10-ID        PARENT-INDEX    ABBREV  NAME
+                """
+                for row in dictfile:
                     data = {} # init to avoid deep copy.
-                    data['ID'] = eles[1]
-                    try:
-                        data['NAME'] = eles[4]
-                    except IndexError:
-                        print(data)
-                    data['ABBR'] = eles[3]
+                    data['ID'] = row['ICD10-ID']
+                    data['NAME'] = row['NAME']
                     data['NAMESUGGEST'] = {}
-                    data['NAMESUGGEST']['input'] = [eles[4]]
-                    data['NAMESUGGEST']['input'].extend(eles[4].split())
+                    data['NAMESUGGEST']['input'] = [row['NAME']]
+                    data['NAMESUGGEST']['input'].extend(row['NAME'].split())
                     data['NAMESUGGEST']['contexts'] = {"set":['ICD-10']}
                     action = {"_index": INDEX_NAME, '_source': data}
                     es_data.append(action)
@@ -627,18 +624,17 @@ def index_autosuggest(INDEX_NAME='autosuggest',path_to_hpo='/media/database/HPO/
             es_data = []
             n_doc = 0
             with open(path_to_phenotype, "r") as ftxt:
-                a = ftxt.readlines()
-                data = {}
-                for i in a:
-                    eles = i.strip().split('\t')
-                    # Disease ID
+                dictfile = DR(ftxt, dialect='excel-tab')
+                """
+                Index   DiseaseName     DatabaseID      HPO-ID  HPO-Name
+                """
+                for row in dictfile:
                     data = {} # init to avoid deep copy.
-                    data['ID'] = eles[2]
-                    data['NAME'] = eles[1]
-                    data['ABBR'] = ''
+                    data['ID'] = row['DatabaseID']
+                    data['NAME'] = row['DiseaseName']
                     data['NAMESUGGEST'] = {}
-                    data['NAMESUGGEST']['input'] = [eles[1]]
-                    data['NAMESUGGEST']['input'].extend(eles[1].split())
+                    data['NAMESUGGEST']['input'] = [row['DiseaseName']]
+                    data['NAMESUGGEST']['input'].extend(row['DiseaseName'].split())
                     data['NAMESUGGEST']['contexts'] = {"set":['HPOlink']}
                     action = {"_index": INDEX_NAME, '_source': data}
                     es_data.append(action)
@@ -651,7 +647,7 @@ def index_autosuggest(INDEX_NAME='autosuggest',path_to_hpo='/media/database/HPO/
                 
                 if len(es_data) > 0:
                     helpers.bulk(es, es_data, stats_only=False)
-                    print("now =" + str(datetime.now()) + ': indexed phenotype.db is completed!')
+                    print("now =" + str(datetime.now()) + ': indexed HPO annotations are completed!')
 
 
 if __name__ == "__main__":

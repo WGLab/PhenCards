@@ -12,7 +12,7 @@ $(document).ready(function () {
                             "completion": {
                                 "field": "NAMESUGGEST",
                                 "fuzzy": {
-                                    "fuzziness": 2
+                                    "fuzziness": "AUTO:0,6",
                                 },
                                 "skip_duplicates": true,
                                 "size": 10,
@@ -22,9 +22,10 @@ $(document).ready(function () {
                                     "context": "HPO",
                                     "boost": 3
                                     },
-                                    //"context": "HPOlink",
-                                    //"boost": 3
-                                    //},
+                                    {
+                                    "context": "HPOlink",
+                                    "boost": 2
+                                    },
                                     {
                                     "context": "ICD-10",
                                     "boost": 2
