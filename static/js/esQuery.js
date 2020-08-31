@@ -20,7 +20,19 @@ $(document).ready(function () {
                                     "set": [
                                     {
                                     "context": "HPO",
+                                    "boost": 4
+                                    },
+                                    {
+                                    "context": "OHDSI",
                                     "boost": 3
+                                    },
+                                    {
+                                    "context": "MeSH",
+                                    "boost": 2
+                                    },
+                                    {
+                                    "context": "DOID",
+                                    "boost": 1
                                     },
                                     {
                                     "context": "HPOlink",
