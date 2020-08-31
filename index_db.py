@@ -658,7 +658,7 @@ def index_autosuggest(INDEX_NAME='autosuggest', path_to_hpo='/media/database/HPO
                 """
                 for row in dictfile:
                     data = {} # init to avoid deep copy.
-                    data['ID'] = row['concept_id']
+                    data['ID'] = "OHDSI:"+row['concept_id']
                     data['NAME'] = row['concept_name']
                     data['NAMESUGGEST'] = {}
                     data['NAMESUGGEST']['input'] = [row['concept_name']]
@@ -686,7 +686,7 @@ def index_autosuggest(INDEX_NAME='autosuggest', path_to_hpo='/media/database/HPO
                 """
                 for row in dictfile:
                     data = {} # init to avoid deep copy.
-                    data['ID'] = row['DescriptorUI']
+                    data['ID'] = "MeSH:"+row['DescriptorUI']
                     data['NAME'] = row['DescriptorName']
                     data['NAMESUGGEST'] = {}
                     data['NAMESUGGEST']['input'] = [row['DescriptorName']]
@@ -714,7 +714,7 @@ def index_autosuggest(INDEX_NAME='autosuggest', path_to_hpo='/media/database/HPO
                 """
                 for row in dictfile:
                     data = {} # init to avoid deep copy.
-                    data['ID'] = row['DOID-ID']
+                    data['ID'] = "DOID:"+row['DOID-ID']
                     data['NAME'] = row['NAME']
                     data['NAMESUGGEST'] = {}
                     data['NAMESUGGEST']['input'] = [row['NAME']]
