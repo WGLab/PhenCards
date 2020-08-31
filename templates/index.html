@@ -18,17 +18,13 @@
                 </div>
 
                 <ul class="nav nav-tabs">
-                    <!-- tab for manual entry of HPO terms -->
+                    <!-- tab for autocompletion integration -->
                     <li class="nav-item">
-                        <a class="nav-link active" id="manual-tab" href="#manual">Phenotype string search</a>
+                        <a class="nav-link" id="auto-tab" href="#auto">Phenotype search</a>
                     </li>
                     <!-- tab for Doc2Hpo integration -->
                     <li class="nav-item">
                         <a class="nav-link" id="doc2hpo-tab" href="#doc2hpo">Patient notes</a>
-                    </li>
-                    <!-- tab for autocompletion integration -->
-                    <li class="nav-item">
-                        <a class="nav-link" id="auto-tab" href="#auto">Autocompletion (BETA)</a>
                     </li>
                 </ul>
 
@@ -36,21 +32,12 @@
 
                 <br>
 
-                <!-- text box to enter HPO IDs -->
-		<div class="form-group" id="manual">
-			<span style="display: inline;">
-			<h3><i class="material-icons">book</i>Enter your phenotype term query here:</h3>
-		    </span>
-			<textarea class="form-control" name="phenname" id="phenname" rows="4" placeholder="e.g. cleft palate (Search by Phenotype Name)"></textarea>
-			<span class="form-text text-muted">Please enter your focused phenotype names / external database ID.</span>
-        </div> 
         
-       <!-- text box to enter patient description -->
-		<div class="form-group" id="auto" style="display:none;">
+       <!-- text box to enter phenotype with autocompletion -->
+		<div class="form-group" id="auto" style="display:inline;">
             <h3><i class="material-icons">book</i>Enter your phenotype term query here:</h3>
             {{ form.csrf_token }}
-			<!-- <textarea class="form-control" name="phenname" id="phenname" rows="4" placeholder="e.g. cleft palate (Search by Phenotype Name)"></textarea> -->
-            <input id="typeahead" class="form-control autocomplete" rows="4" placeholder="cleft palate">
+            <input name="typeahead" id="typeahead" class="form-control autocomplete" rows="4" placeholder="cleft palate">
             <span class="form-text text-muted">Please enter your focused phenotype names / external database ID.</span>
 		</div> 
 

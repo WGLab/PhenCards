@@ -12,10 +12,38 @@ $(document).ready(function () {
                             "completion": {
                                 "field": "NAMESUGGEST",
                                 "fuzzy": {
-                                    "fuzziness": 1
+                                    "fuzziness": "AUTO:0,6",
                                 },
                                 "skip_duplicates": true,
                                 "size": 10,
+                                "contexts": {
+                                    "set": [
+                                    {
+                                    "context": "HPO",
+                                    "boost": 4
+                                    },
+                                    {
+                                    "context": "OHDSI",
+                                    "boost": 3
+                                    },
+                                    {
+                                    "context": "MeSH",
+                                    "boost": 2
+                                    },
+                                    {
+                                    "context": "DOID",
+                                    "boost": 1
+                                    },
+                                    {
+                                    "context": "HPOlink",
+                                    "boost": 2
+                                    },
+                                    {
+                                    "context": "ICD-10",
+                                    "boost": 2
+                                    }
+                                    ]
+                                }
                             }
                         }
                     },

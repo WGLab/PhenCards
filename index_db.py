@@ -10,7 +10,7 @@ from collections import defaultdict
 es = Elasticsearch(["localhost:9200"], timeout=60, retry_on_timeout=True)
 #es = Elasticsearch([Config.elasticsearch_url], timeout=60, retry_on_timeout=True)
 
-def index_doid(INDEX_NAME='doid',path_to_txt='/media/database/DOID_data_result/DOID-DATA.txt'):
+def index_doid(INDEX_NAME='doid',path_to_doid='/media/database/DOID_data_result/DOID-DATA.txt'):
     request_body = {
         "settings": { 
             "index":{
@@ -51,7 +51,7 @@ def index_doid(INDEX_NAME='doid',path_to_txt='/media/database/DOID_data_result/D
             es.indices.create(index=INDEX_NAME, body=request_body)
             es_data = []
 
-            with open(path_to_txt, "r") as ftxt:
+            with open(path_to_doid, "r") as ftxt:
                 dictfile = DR(ftxt, dialect='excel-tab')
                 """
                 DOID-ID NAME
@@ -68,7 +68,7 @@ def index_doid(INDEX_NAME='doid',path_to_txt='/media/database/DOID_data_result/D
                 if len(es_data) > 0:
                     helpers.bulk(es, es_data, stats_only=False)    
 
-def index_msh(INDEX_NAME='msh',path_to_txt='/media/database/MSH_data_result/MSH-DATA.txt'):
+def index_msh(INDEX_NAME='msh',path_to_mesh='/media/database/MSH_data_result/MSH-DATA.txt'):
     request_body = {
         "settings": {},
         "mappings": {
@@ -86,7 +86,7 @@ def index_msh(INDEX_NAME='msh',path_to_txt='/media/database/MSH_data_result/MSH-
             es.indices.delete(index=INDEX_NAME, ignore=404)
             es.indices.create(index=INDEX_NAME, body=request_body)
             es_data = []
-            with open(path_to_txt, "r") as ftxt:
+            with open(path_to_mesh, "r") as ftxt:
                 dictfile = DR(ftxt, dialect='excel-tab')
                 """
                 DescriptorUI    DescriptorName
@@ -143,7 +143,7 @@ def index_icd10(INDEX_NAME='icd10',path_to_icd='/media/database/ICD10_data_resul
                 if len(es_data) > 0:
                     helpers.bulk(es, es_data, stats_only=False)        
 
-def index_umls(INDEX_NAME='umls',path_to_txt='/media/database/UMLS-DATA.txt'):
+def index_umls(INDEX_NAME='umls',path_to_umls='/media/database/UMLS-DATA.txt'):
     request_body = {
         "settings": {},
         "mappings": {
@@ -173,7 +173,7 @@ def index_umls(INDEX_NAME='umls',path_to_txt='/media/database/UMLS-DATA.txt'):
             es.indices.delete(index=INDEX_NAME, ignore=404)
             es.indices.create(index=INDEX_NAME, body=request_body)
             es_data = []
-            with open(path_to_txt, "r") as ftxt:
+            with open(path_to_umls, "r") as ftxt:
                 dictfile = DR(ftxt, dialect='excel-tab')
                 """
                 CUI     LAT     TS      LUI     STT     SUI     ISPREF  AUI     SAUI    SCUI    SDUI    SAB     TTY     CODE    STR     SRL     SUPPRESS        CVF
@@ -519,7 +519,7 @@ def index_hpo(INDEX_NAME='hpo',INDEX_NAME2='hpolink',path_to_hpo='/media/databas
 
     return es_dataf, es_datag
 
-def index_autosuggest(INDEX_NAME='autosuggest',path_to_icd10='/media/database/ICD10_data_result/ICD10-DATA.txt',path_to_phenotype='/media/database/HPO/phenotype_annotations.tsv'):
+def index_autosuggest(INDEX_NAME='autosuggest', path_to_hpo='/media/database/HPO/terms.tsv', path_to_icd10='/media/database/ICD10_data_result/ICD10-DATA.txt', path_to_phenotype='/media/database/HPO/phenotype_annotations.tsv', path_to_ohdsi='/media/database/OHDSI/CONCEPT.csv', path_to_mesh='/media/database/MSH_data_result/MSH-DATA.txt', path_to_doid='/media/database/DOID_data_result/DOID-DATA.txt'):
     request_body = {
         "settings": {
             "analysis": {
@@ -549,7 +549,13 @@ def index_autosuggest(INDEX_NAME='autosuggest',path_to_icd10='/media/database/IC
                 },
                 "NAMESUGGEST":{ 
                     "type" : "completion",
-                    "analyzer" : "rebuilt_stop"
+                    "analyzer" : "rebuilt_stop",
+                    "contexts" : [
+                    {
+                        "name": "set",
+                        "type": "category"
+                    },
+                ]
                 },
                 "ABBR": {
                     "type": "text",
@@ -563,21 +569,19 @@ def index_autosuggest(INDEX_NAME='autosuggest',path_to_icd10='/media/database/IC
             es.indices.create(index=INDEX_NAME, body=request_body)
             es_data = []
             n_doc = 0
-            with open(path_to_icd10, "r") as ftxt:
-                a = ftxt.readlines()
-                data = {}
-                for i in a:
-                    eles = i.strip().split('\t')
-                    data = {} # init to avoid deep copy.
-                    data['ID'] = eles[1]
-                    try:
-                        data['NAME'] = eles[4]
-                    except IndexError:
-                        print(data)
-                    data['ABBR'] = eles[3]
+            with open(path_to_hpo, "r") as ftxt:
+                dictfile = DR(ftxt, dialect='excel-tab')
+                """
+                id      name    alt_id  children        comment created_by      creation_date   definition      parent_ids      subset  synonym xref
+                """
+                for row in dictfile:
+                    data = {}
+                    data['ID'] = row['id']
+                    data['NAME'] = row['name']
                     data['NAMESUGGEST'] = {}
-                    data['NAMESUGGEST']['input'] = [eles[4]]
-                    data['NAMESUGGEST']['input'].extend(eles[4].split())
+                    data['NAMESUGGEST']['input'] = [row['name']]
+                    data['NAMESUGGEST']['input'].extend(row['name'].split())
+                    data['NAMESUGGEST']['contexts'] = {"set":['HPO']}
                     action = {"_index": INDEX_NAME, '_source': data}
                     es_data.append(action)
                     if len(es_data) > 10000:
@@ -588,36 +592,50 @@ def index_autosuggest(INDEX_NAME='autosuggest',path_to_icd10='/media/database/IC
                 
                 if len(es_data) > 0:
                     helpers.bulk(es, es_data, stats_only=False)   
-                    print("now =" + str(datetime.now()) + ': indexed ICD10 is completed!')
+                    print("now =" + str(datetime.now()) + ': indexed HPO completed!')
+
+            es_data = []
+            n_doc = 0
+            with open(path_to_icd10, "r") as ftxt:
+                dictfile = DR(ftxt, dialect='excel-tab')
+                """
+                INDEX   ICD10-ID        PARENT-INDEX    ABBREV  NAME
+                """
+                for row in dictfile:
+                    data = {} # init to avoid deep copy.
+                    data['ID'] = "ICD-10:"+row['ICD10-ID']
+                    data['NAME'] = row['NAME']
+                    data['NAMESUGGEST'] = {}
+                    data['NAMESUGGEST']['input'] = [row['NAME']]
+                    data['NAMESUGGEST']['input'].extend(row['NAME'].split())
+                    data['NAMESUGGEST']['contexts'] = {"set":['ICD-10']}
+                    action = {"_index": INDEX_NAME, '_source': data}
+                    es_data.append(action)
+                    if len(es_data) > 10000:
+                        helpers.bulk(es, es_data, stats_only=False)
+                        es_data = []
+                        print("now =" + str(datetime.now()) + ': indexed ' + str(10000*n_doc) + ' documents')
+                        n_doc += 1
+                
+                if len(es_data) > 0:
+                    helpers.bulk(es, es_data, stats_only=False)   
+                    print("now =" + str(datetime.now()) + ': indexed ICD10 completed!')
                     
             es_data = []
             n_doc = 0
             with open(path_to_phenotype, "r") as ftxt:
-                a = ftxt.readlines()
-                data = {}
-                for i in a:
-                    eles = i.strip().split('\t')
-                    # Disease ID
+                dictfile = DR(ftxt, dialect='excel-tab')
+                """
+                Index   DiseaseName     DatabaseID      HPO-ID  HPO-Name
+                """
+                for row in dictfile:
                     data = {} # init to avoid deep copy.
-                    data['ID'] = eles[2]
-                    data['NAME'] = eles[1]
-                    data['ABBR'] = ''
+                    data['ID'] = row['DatabaseID']
+                    data['NAME'] = row['DiseaseName']
                     data['NAMESUGGEST'] = {}
-                    data['NAMESUGGEST']['input'] = [eles[1]]
-                    data['NAMESUGGEST']['input'].extend(eles[1].split())
-                    action = {"_index": INDEX_NAME, '_source': data}
-                    es_data.append(action)
-                    # HPO ID
-                    data = {} # init to avoid deep copy.
-                    data['ID'] = eles[3]
-                    try:
-                        data['NAME'] = eles[4]
-                    except IndexError:
-                        print(data)
-                    data['ABBR'] = ''
-                    data['NAMESUGGEST'] = {}
-                    data['NAMESUGGEST']['input'] = [eles[1]]
-                    data['NAMESUGGEST']['input'].extend(eles[1].split())
+                    data['NAMESUGGEST']['input'] = [row['DiseaseName']]
+                    data['NAMESUGGEST']['input'].extend(row['DiseaseName'].split())
+                    data['NAMESUGGEST']['contexts'] = {"set":['HPOlink']}
                     action = {"_index": INDEX_NAME, '_source': data}
                     es_data.append(action)
                     if len(es_data) > 10000:
@@ -629,8 +647,92 @@ def index_autosuggest(INDEX_NAME='autosuggest',path_to_icd10='/media/database/IC
                 
                 if len(es_data) > 0:
                     helpers.bulk(es, es_data, stats_only=False)
-                    print("now =" + str(datetime.now()) + ': indexed phenotype.db is completed!')
+                    print("now =" + str(datetime.now()) + ': indexed HPO annotations completed!')
+            
+            es_data = []
+            n_doc = 0
+            with open(path_to_ohdsi, "r") as ftxt:
+                dictfile = DR(ftxt, dialect='excel-tab')
+                """
+                concept_id      concept_name    domain_id       vocabulary_id   concept_class_id        standard_concept        concept_code    valid_start_date        valid_end_date  invalid_reason
+                """
+                for row in dictfile:
+                    data = {} # init to avoid deep copy.
+                    if row ['domain_id'] == 'Condition':
+                        data['ID'] = "OHDSI:"+row['concept_id']
+                        data['NAME'] = row['concept_name']
+                        data['NAMESUGGEST'] = {}
+                        data['NAMESUGGEST']['input'] = [row['concept_name']]
+                        data['NAMESUGGEST']['input'].extend(row['concept_name'].split())
+                        data['NAMESUGGEST']['contexts'] = {"set":['OHDSI']}
+                        action = {"_index": INDEX_NAME, '_source': data}
+                        es_data.append(action)
+                    if len(es_data) > 10000:
+                        helpers.bulk(es, es_data, stats_only=False)
+                        es_data = []
+                        print("now =" + str(datetime.now()) + ': indexed ' + str(10000*n_doc) + ' documents')
+                        n_doc += 1
 
+                
+                if len(es_data) > 0:
+                    helpers.bulk(es, es_data, stats_only=False)
+                    print("now =" + str(datetime.now()) + ': indexed OHDSI completed!')
+
+            es_data = []
+            n_doc = 0
+            with open(path_to_mesh, "r") as ftxt:
+                dictfile = DR(ftxt, dialect='excel-tab')
+                """
+                DescriptorUI    DescriptorName
+                """
+                for row in dictfile:
+                    data = {} # init to avoid deep copy.
+                    data['ID'] = "MeSH:"+row['DescriptorUI']
+                    data['NAME'] = row['DescriptorName']
+                    data['NAMESUGGEST'] = {}
+                    data['NAMESUGGEST']['input'] = [row['DescriptorName']]
+                    data['NAMESUGGEST']['input'].extend(row['DescriptorName'].split())
+                    data['NAMESUGGEST']['contexts'] = {"set":['MeSH']}
+                    action = {"_index": INDEX_NAME, '_source': data}
+                    es_data.append(action)
+                    if len(es_data) > 10000:
+                        helpers.bulk(es, es_data, stats_only=False)
+                        es_data = []
+                        print("now =" + str(datetime.now()) + ': indexed ' + str(10000*n_doc) + ' documents')
+                        n_doc += 1
+
+                
+                if len(es_data) > 0:
+                    helpers.bulk(es, es_data, stats_only=False)
+                    print("now =" + str(datetime.now()) + ': indexed MeSH completed!')
+
+            es_data = []
+            n_doc = 0
+            with open(path_to_doid, "r") as ftxt:
+                dictfile = DR(ftxt, dialect='excel-tab')
+                """
+                DOID-ID NAME
+                """
+                for row in dictfile:
+                    data = {} # init to avoid deep copy.
+                    data['ID'] = "DOID:"+row['DOID-ID']
+                    data['NAME'] = row['NAME']
+                    data['NAMESUGGEST'] = {}
+                    data['NAMESUGGEST']['input'] = [row['NAME']]
+                    data['NAMESUGGEST']['input'].extend(row['NAME'].split())
+                    data['NAMESUGGEST']['contexts'] = {"set":['DOID']}
+                    action = {"_index": INDEX_NAME, '_source': data}
+                    es_data.append(action)
+                    if len(es_data) > 10000:
+                        helpers.bulk(es, es_data, stats_only=False)
+                        es_data = []
+                        print("now =" + str(datetime.now()) + ': indexed ' + str(10000*n_doc) + ' documents')
+                        n_doc += 1
+
+                
+                if len(es_data) > 0:
+                    helpers.bulk(es, es_data, stats_only=False)
+                    print("now =" + str(datetime.now()) + ': indexed DOID completed!')
 
 if __name__ == "__main__":
     index_open990()
@@ -639,6 +741,6 @@ if __name__ == "__main__":
     index_msh()
     index_icd10()
     index_umls()
-    index_autosuggest()
     index_ohdsi()
     index_hpo()
+    index_autosuggest()

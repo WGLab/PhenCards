@@ -37,10 +37,7 @@ def phencards():
         # get manually entered HPO IDs
         else:
             
-            if form.phenname.data:
-                phen_name = form.phenname.data
-
-            # use autophenname in case there is an input.
+            # use autocomplete.
             if form.typeahead.data:
                 phen_name = form.typeahead.data
 
