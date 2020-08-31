@@ -519,7 +519,7 @@ def index_hpo(INDEX_NAME='hpo',INDEX_NAME2='hpolink',path_to_hpo='/media/databas
 
     return es_dataf, es_datag
 
-def index_autosuggest(INDEX_NAME='autosuggest',path_to_icd10='/media/database/ICD10_data_result/ICD10-DATA.txt',path_to_phenotype='/media/database/HPO/phenotype_annotations.tsv'):
+def index_autosuggest(INDEX_NAME='autosuggest',path_to_hpo='/media/database/HPO/terms.tsv',path_to_icd10='/media/database/ICD10_data_result/ICD10-DATA.txt',path_to_phenotype='/media/database/HPO/phenotype_annotations.tsv'):
     request_body = {
         "settings": {
             "analysis": {
@@ -549,7 +549,13 @@ def index_autosuggest(INDEX_NAME='autosuggest',path_to_icd10='/media/database/IC
                 },
                 "NAMESUGGEST":{ 
                     "type" : "completion",
-                    "analyzer" : "rebuilt_stop"
+                    "analyzer" : "rebuilt_stop",
+                    "contexts" : [
+                    {
+                        "name": "set",
+                        "type": "category"
+                    },
+                ]
                 },
                 "ABBR": {
                     "type": "text",
@@ -561,6 +567,33 @@ def index_autosuggest(INDEX_NAME='autosuggest',path_to_icd10='/media/database/IC
     if es is not None:
             es.indices.delete(index=INDEX_NAME, ignore=404)
             es.indices.create(index=INDEX_NAME, body=request_body)
+            es_data = []
+            n_doc = 0
+            with open(path_to_hpo, "r") as ftxt:
+                dictfile = DR(ftxt, dialect='excel-tab')
+                """
+                id      name    alt_id  children        comment created_by      creation_date   definition      parent_ids      subset  synonym xref
+                """
+                for row in dictfile:
+                    data = {}
+                    data['ID'] = row['id']
+                    data['NAME'] = row['name']
+                    data['NAMESUGGEST'] = {}
+                    data['NAMESUGGEST']['input'] = [row['name']]
+                    data['NAMESUGGEST']['input'].extend(row['name'].split())
+                    data['NAMESUGGEST']['contexts'] = {"set":['HPO']}
+                    action = {"_index": INDEX_NAME, '_source': data}
+                    es_data.append(action)
+                    if len(es_data) > 10000:
+                        helpers.bulk(es, es_data, stats_only=False)
+                        es_data = []
+                        print("now =" + str(datetime.now()) + ': indexed ' + str(10000*n_doc) + ' documents')
+                        n_doc += 1
+                
+                if len(es_data) > 0:
+                    helpers.bulk(es, es_data, stats_only=False)   
+                    print("now =" + str(datetime.now()) + ': indexed HPO is completed!')
+
             es_data = []
             n_doc = 0
             with open(path_to_icd10, "r") as ftxt:
@@ -578,6 +611,7 @@ def index_autosuggest(INDEX_NAME='autosuggest',path_to_icd10='/media/database/IC
                     data['NAMESUGGEST'] = {}
                     data['NAMESUGGEST']['input'] = [eles[4]]
                     data['NAMESUGGEST']['input'].extend(eles[4].split())
+                    data['NAMESUGGEST']['contexts'] = {"set":['ICD-10']}
                     action = {"_index": INDEX_NAME, '_source': data}
                     es_data.append(action)
                     if len(es_data) > 10000:
@@ -605,19 +639,7 @@ def index_autosuggest(INDEX_NAME='autosuggest',path_to_icd10='/media/database/IC
                     data['NAMESUGGEST'] = {}
                     data['NAMESUGGEST']['input'] = [eles[1]]
                     data['NAMESUGGEST']['input'].extend(eles[1].split())
-                    action = {"_index": INDEX_NAME, '_source': data}
-                    es_data.append(action)
-                    # HPO ID
-                    data = {} # init to avoid deep copy.
-                    data['ID'] = eles[3]
-                    try:
-                        data['NAME'] = eles[4]
-                    except IndexError:
-                        print(data)
-                    data['ABBR'] = ''
-                    data['NAMESUGGEST'] = {}
-                    data['NAMESUGGEST']['input'] = [eles[1]]
-                    data['NAMESUGGEST']['input'].extend(eles[1].split())
+                    data['NAMESUGGEST']['contexts'] = {"set":['HPOlink']}
                     action = {"_index": INDEX_NAME, '_source': data}
                     es_data.append(action)
                     if len(es_data) > 10000:
@@ -633,12 +655,12 @@ def index_autosuggest(INDEX_NAME='autosuggest',path_to_icd10='/media/database/IC
 
 
 if __name__ == "__main__":
-    index_open990()
-    index_irs990()
-    index_doid()
-    index_msh()
-    index_icd10()
-    index_umls()
+    # index_open990()
+    # index_irs990()
+    # index_doid()
+    # index_msh()
+    # index_icd10()
+    # index_umls()
+    # index_ohdsi()
+    # index_hpo()
     index_autosuggest()
-    index_ohdsi()
-    index_hpo()

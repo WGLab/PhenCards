@@ -12,10 +12,25 @@ $(document).ready(function () {
                             "completion": {
                                 "field": "NAMESUGGEST",
                                 "fuzzy": {
-                                    "fuzziness": 1
+                                    "fuzziness": 2
                                 },
                                 "skip_duplicates": true,
                                 "size": 10,
+                                "contexts": {
+                                    "set": [
+                                    {
+                                    "context": "HPO",
+                                    "boost": 3
+                                    },
+                                    //"context": "HPOlink",
+                                    //"boost": 3
+                                    //},
+                                    {
+                                    "context": "ICD-10",
+                                    "boost": 2
+                                    }
+                                    ]
+                                }
                             }
                         }
                     },
