@@ -11,5 +11,5 @@ RUN mkdir /media/database
 RUN apk add --update \
     curl \
     && rm -rf /var/cache/apk/*
-RUN chmod 777 /code/app_init.sh
-ENTRYPOINT /code/app_init.sh
+RUN chmod 755 /code/app_init.sh
+ENTRYPOINT sh /code/app_init.sh

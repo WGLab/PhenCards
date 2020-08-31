@@ -20,10 +20,13 @@ services:
         ports:
             - "5005:5005" # Expose flask port
         environment: # Set ENV vars
+            - FLASK_APP=app.py
+            - FLASK_DEBUG=1
             - NODE_ENV=local
             - ES_HOST=elasticsearch
         volumes: # Attach local book data directory
             - /media/database:/media/database
+            - .:/code
         depends_on:
             - elasticsearch
 
