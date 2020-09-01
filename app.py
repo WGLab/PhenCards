@@ -44,6 +44,7 @@ def phencards():
                 phen_name = form.typeahead.data
 
         session['HPOquery']=phen_name
+        session['HPOclinical']=phen_name
         return redirect(url_for('generate_results_page'))
     return render_template('index.html', form=form)
 
@@ -97,11 +98,10 @@ def generate_cohd_page():
 # clinical trials results
 @app.route('/clinical')
 def generate_clinical_page():
-    HPOquery=session['HPOquery']
     if 'HPOclinical' in session:
         clinicaljson=API.clinical_page(session['HPOclinical'])
     else:
-        clinicaljson=API.clinical_page(HPOquery)
+        clinicaljson={}
     return render_template('clinical.html', clinicaljson=clinicaljson)
 
 # literature (pubmed) results
