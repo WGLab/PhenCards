@@ -48,26 +48,33 @@ th {
 .img-hpo {
   filter: grayscale(1) invert(1);
 }
+.navbar-dark .nav-item > a.active {
+  color:white;
+}
 
 </style>
 </head>
 
 {% block nav %}
-    <div class="collapse navbar-collapse flex-column" id="navbarCollapse">
-        <ul class="navbar-nav ml-auto small">
-          <li class="nav-item active"><a class="page-scroll scroll" href="#Aliases">Aliases</a></li>
+<div class="w3-white notranslate">
+    <div class="collapse navbar-collapse flex-row" id="navbartop">
+        <ul class="navbar-nav ml-auto medium">
+          <li class="nav-item active"><a class="page-scroll scroll active" href="#Aliases">Aliases</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Related_Terms">Related Terms</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Diseases">Diseases</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Genes">Genes</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Pathway">Pathway</a></li>
         </ul>
-        <ul class="navbar-nav flex-row ml-auto small">
+    </div>
+    <div class="collapse navbar-collapse flex-row" id="navbarbottom">
+        <ul class="navbar-nav flex-row ml-auto medium">
           <li class="nav-item"><a class="page-scroll scroll" href="#Drugs">Drugs</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Literature">Literature</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Companies_n_Foundations">Companies & Foundations</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Clinical_Trials">Clinical Trials</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Citations_n_Licenses">Citations & Licenses</a></li>
         </ul>
+    </div>
 </div>
 
 {% endblock %}
@@ -619,5 +626,16 @@ $(document).ready(function(){
     }
   });
 });
+
+$(document).ready(function(){
+ $('nav a').click(function(){
+   $('nav a').removeClass('active');
+   $(this).addClass('active');
+   let link=$(this).attr('href');
+   window.location.href=link;
+ });
+});
+
 </script>
+
 {% endblock %}

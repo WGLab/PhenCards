@@ -72,18 +72,13 @@
 </head>
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-        <a class="navbar-brand text-light">PhenCards</a>
+        <a class="navbar-brand text-light" id="nav-home" href="{{ url_for('phencards') }}">PhenCards</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
             aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
-                <a class="nav-item nav-link active" id="nav-home" href="{{ url_for('phencards') }}">Home</a>
-                <a class="nav-item nav-link" href="https://github.com/WGLab/Project_PhenCards" target="_blank"
-                    rel="noopener noreferrer">PhenCards GitHub Code</a>
-                <a class="nav-item nav-link" id="knowledge-base" data-toggle="modal" data-target="#KBModal"
-                    style="cursor: pointer;">HPO2Gene KnowledgeBase</a>
                 <a class="nav-item nav-link" id="contact" data-toggle="modal" data-target="#contactModal"
                     style="cursor: pointer;">Contact</a>
             </div>
