@@ -1,14 +1,17 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="jumbotron text-center">
-    <h1 class="display-4"><b><i class="material-icons" style="font-size: 40px">book</i>PhenCards</b></h1>
-	<p class="lead">PhenCards is a real-time phenotype-based information search engine.</p>
+<div class="container">
+<br>
+<div class="jumbotron-fluid text-center">
+    <h1 class="display-4" style="font-family:'Roboto', sans-serif; font-weight: 500"><b><i class="material-icons" style="vertical-align: bottom; font-size: 56px">book</i>PhenCards</b></h1>
+	<p class="lead" style="font-weight: 300;">PhenCards is a real-time phenotype-based information search engine for compiling information related to phenotype terms. Simply begin typing a phenotype term whether it is fitness type, disease or symptom (e.g. cleft palate, epilepsy, Marfan syndrome), and autocompletion will help you. Your query does not have to match a preexisting term. Alternatively, you can submit patient notes through HTTPS to Doc2HPO for parsing out HPO terms.</p>
+<hr>
+</div>
 </div>
 
 <div class="container">
 	<form action="{{ url_for('phencards') }}" method="post" ENCTYPE="multipart/form-data" role="form" >
-		<hr class="my-4">
 
                 <!-- invisible checkbox that is checked if using doc2hpo, unchecked otherwise -->
                 <div class="form-check" style="display:none;">
@@ -51,11 +54,6 @@
 		<!-- submit and reset buttons -->
 		<div class="form-group">
 			{{ form.csrf_token }}
-            <input type="radio" id="huey" name="weight_model" value="pn" checked>
-            <label for="huey">Search for Concept Name &nbsp;</label>
-            <input type="radio" id="dewey" name="weight_model" value="hpo">
-            <label for="dewey">Search for Database ID</label>
-            <br><br>
             <button type="reset" class="btn btn-success" style="margin-right: 16px"><i class="material-icons" style="font-size: 16px">redo</i>Reset</button>
             <button type="submit" class="btn btn-info"><i class="material-icons" style="font-size: 16px">send</i>Search</button>
         </div>

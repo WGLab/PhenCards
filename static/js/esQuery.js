@@ -20,7 +20,7 @@ $(document).ready(function () {
                                     "set": [
                                     {
                                     "context": "HPO",
-                                    "boost": 4
+                                    "boost": 5
                                     },
                                     {
                                     "context": "OHDSI",
@@ -28,7 +28,7 @@ $(document).ready(function () {
                                     },
                                     {
                                     "context": "MeSH",
-                                    "boost": 2
+                                    "boost": 5
                                     },
                                     {
                                     "context": "DOID",
@@ -40,7 +40,7 @@ $(document).ready(function () {
                                     },
                                     {
                                     "context": "ICD-10",
-                                    "boost": 2
+                                    "boost": 4
                                     }
                                     ]
                                 }
