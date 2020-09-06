@@ -1,13 +1,6 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="container">
-<br>
-<div class="jumbotron-fluid text-center" style="background-color:white;">
-	<h2 class="display-5" style="font-family:'Roboto', sans-serif;"><i class="material-icons" style="vertical-align: bottom; font-size:38px;">assessment</i>Patient Results</h2>
-<hr>
-</div>
-</div>
 
 <head>
 <style>
@@ -37,10 +30,10 @@ th {
 </head>
 
 {% block nav %}
-<div class="collapse navbar-collapse flex-column sticky-top" id="navbarcon">
+<div class="collapse navbar-collapse flex-column sticky-top bg-dark" id="navbarcon">
     <div class="flex-row" id="navbartop">
         <ul class="navbar-nav mr-auto medium">
-          <li class="nav-item active"><a class="page-scroll scroll active" href="#Patient_Results">HPO terms</a></li>
+          <li class="nav-item active"><a class="page-scroll scroll active" href="#Patient_Terms">HPO terms</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Diseases">Diseases</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Genes">Genes</a></li>
         </ul>
@@ -58,11 +51,13 @@ th {
 {% endblock %}
 
 <div class="container" id="bar">
+
+<h2 style="text-align: center; margin-top: 80px; font-family:'Roboto', sans-serif;"><i class="material-icons" style="vertical-align: bottom; font-size:38px;">assessment</i>Patient Results</h2>
 <hr>
 </div>
 
-<div class="container" id="Patient_Results">	
-	<h1><span style="color: #efa50e; "><b>HPO terms</b></span></h1>
+<div class="container medium" id="Patient_Terms">
+    <h1><span style="color: #efa50e; "><b>HPO terms</b></span></h1>
 	<div class="ui basic segment">
 		<p id="parsingResults" style="white-space: pre-wrap">Pellentesque
 			habitant morbi tristique senectus et netus et malesuada fames ac
@@ -184,8 +179,8 @@ $(document).ready(function(){
 });
 
 $(document).ready(function(){
- $('nav a').click(function(){
-   $('nav a').removeClass('active');
+ $('li a').click(function(){
+   $('li a').removeClass('active');
    $(this).addClass('active');
  });
 });
@@ -194,8 +189,8 @@ $(window).on('scroll', function() {
     $('.container.medium').each(function() {
         if($(window).scrollTop() >= $(this).offset().top - $("#navbarcon").height()){
             var id = $(this).attr('id');
-            $('nav a').removeClass('active');
-            $('nav a[href="#'+ id +'"]').addClass('active');
+            $('li a').removeClass('active');
+            $('li a[href="#'+ id +'"]').addClass('active');
         }
     });
 });

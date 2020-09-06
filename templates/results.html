@@ -1,13 +1,6 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="container">
-<br>
-<div class="jumbotron-fluid text-center" style="background-color:white;">
-	<h2 class="display-5" style="font-family:'Roboto', sans-serif;"><i class="material-icons" style="vertical-align: bottom; font-size:38px;">assessment</i>Results</h2>
-<hr>
-</div>
-</div>
 
 
 <head>
@@ -33,16 +26,11 @@ th {
 .img-hpo {
   filter: grayscale(1) invert(1);
 }
-.navbar-dark .nav-item > a.active {
-  color:black;
-  background-color:white;
-}
-
 </style>
 </head>
 
 {% block nav %}
-<div class="collapse navbar-collapse flex-column sticky-top" id="navbarcon">
+<div class="collapse navbar-collapse flex-column sticky-top bg-dark" id="navbarcon">
     <div class="flex-row" id="navbartop">
         <ul class="navbar-nav mr-auto medium">
           <li class="nav-item active"><a class="page-scroll scroll active" href="#Aliases">Aliases</a></li>
@@ -64,6 +52,11 @@ th {
 </div>
 
 {% endblock %}
+
+<div class="container" id="bar">
+<h2 style="text-align: center; margin-top: 80px; font-family:'Roboto', sans-serif;"><i class="material-icons" style="vertical-align: bottom; font-size:38px;">assessment</i>Results</h2>
+<hr>
+</div>
 
 <div class="container medium" id="Aliases">
     <h1><span style="color: #efa50e; "><b>Aliases</b></span></h1>
@@ -250,7 +243,7 @@ th {
     <br><br>
     {% if doid %}
         {% set url = "https://disease-ontology.org/term/" %}
-        <table id="icd10" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+        <table id="doid" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
             <td>Disease Name</td>
@@ -609,8 +602,8 @@ $(document).ready(function(){
 });
 
 $(document).ready(function(){
- $('nav a').click(function(){
-   $('nav a').removeClass('active');
+ $('li a').click(function(){
+   $('li a').removeClass('active');
    $(this).addClass('active');
  });
 });
@@ -619,11 +612,17 @@ $(window).on('scroll', function() {
     $('.container.medium').each(function() {
         if($(window).scrollTop() >= $(this).offset().top - $("#navbarcon").height()){
             var id = $(this).attr('id');
-            $('nav a').removeClass('active');
-            $('nav a[href="#'+ id +'"]').addClass('active');
+            $('li a').removeClass('active');
+            $('li a[href="#'+ id +'"]').addClass('active');
         }
     });
 });
+
+//for mobile
+if ($(window).width() < 1060) {
+ $(".nav-item").css('font-size', '1.8em');
+ $(".navbar").css('height', '200px');
+}
 
 </script>
 
