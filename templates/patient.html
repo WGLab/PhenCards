@@ -81,7 +81,7 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Genes">
+<div class="container medium" id="Genes">
     <h1><span style="color: #efa50e; "><b>Genes</b></span></h1>
     <br><br>
     <tr><th><span style="color: black; ">Here are the related genes referenced from <a href="https://phen2gene.wglab.org">Phen2Gene web application</a><sup><a href="#p2g-cite">2</a></sup>:</span></th></tr>
@@ -93,7 +93,7 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Clinical_Trials">
+<div class="container medium" id="Clinical_Trials">
     <h1><span style="color: #efa50e; "><b>Clinical Trials</b></span></h1>
     <br><br>
     <a target="_blank" id="nav-clinical" href="{{ url_for('generate_clinical_page') }}" style="font-size: 25px">ClinicalTrials.gov</a><sup><a href="#clinical-cite">3</a></sup>
@@ -103,7 +103,7 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Citations_n_Licenses">
+<div class="container medium" id="Citations_n_Licenses">
     <h1><span style="color: #efa50e; "><b>Citations & Licenses</b></span></h1>
     <br><br>
     <ol style="list-style-type: numeric">
@@ -188,6 +188,16 @@ $(document).ready(function(){
    $('nav a').removeClass('active');
    $(this).addClass('active');
  });
+});
+
+$(window).on('scroll', function() {
+    $('.container.medium').each(function() {
+        if($(window).scrollTop() >= $(this).offset().top - $("#navbarcon").height()){
+            var id = $(this).attr('id');
+            $('nav a').removeClass('active');
+            $('nav a[href="#'+ id +'"]').addClass('active');
+        }
+    });
 });
 </script>
 {% endblock %}

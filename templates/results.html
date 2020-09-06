@@ -65,7 +65,7 @@ th {
 
 {% endblock %}
 
-<div class="container" id="Aliases">
+<div class="container medium" id="Aliases">
     <h1><span style="color: #efa50e; "><b>Aliases</b></span></h1>
     <br><br>
     <tr><th><span style="color: black; ">Here are the aliases referenced from <a target="_blank" href="https://athena.ohdsi.org">OHDSI database</a><sup><a href="#ohdsi-cite">1</a></sup>, you can click below to learn more about the vocabulary terms:</span></th></tr>
@@ -201,7 +201,7 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Related_Terms">
+<div class="container medium" id="Related_Terms">
     <h1><span style="color: #efa50e; "><b>Related Terms</b></span></h1>
     <br><br>
     <span style="color: black; ">These are the terms from <a target="_blank" href="http://cohd.io/index.html"> Columbia Open Health Data (COHD)</a><sup><a href="#cohd-cite">6</a></sup>, sorted by patient count:</span>
@@ -243,7 +243,7 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Diseases">
+<div class="container medium" id="Diseases">
     <h1><span style="color: #efa50e; "><b>Diseases</b></span></h1>
     <br><br>
     <tr><th><span style="color: black; ">Here are the diseases from the <a target="_blank" href="https://disease-ontology.org">Disease Ontology (DO) database</a><sup><a href="#doid-cite">7</a></sup>, you can click on the result to explore more about the phenotype names:</span></th></tr>
@@ -310,7 +310,7 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Genes">
+<div class="container medium" id="Genes">
     <h1><span style="color: #efa50e; "><b>Genes</b></span></h1>
     <br><br>
     <tr><th><span style="color: black; ">Here are the related genes referenced from <a target="_blank" href="https://phen2gene.wglab.org">Phen2Gene web application</a><sup><a href="#p2g-cite">8</a></sup>:</span></th></tr>
@@ -326,7 +326,7 @@ th {
 <div class="container" id="bar">
 <hr>
 </div>
-<div class="container" id="Pathway">
+<div class="container medium" id="Pathway">
     <h1><span style="color: #efa50e; "><b>Pathway</b></span></h1>
     <br><br>
     <a target="_blank" id="nav-pathway" href="{{ url_for('generate_pathway_page') }}" style="font-size: 25px">
@@ -339,7 +339,7 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Drugs">
+<div class="container medium" id="Drugs">
     <h1><span style="color: #efa50e; "><b>Drugs</b></span></h1>
     <br><br>
     <table>
@@ -361,7 +361,7 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Literature">
+<div class="container medium" id="Literature">
     <h1><span style="color: #efa50e; "><b>Literature</b></span></h1>
     <br><br>
     <a target="_blank" id="nav-literature" href="{{ url_for('generate_literature_page') }}" style="font-size: 25px">
@@ -374,7 +374,7 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Companies_n_Foundations">
+<div class="container medium" id="Companies_n_Foundations">
     <h1><span style="color: #efa50e; "><b>Companies & Foundations</b></span></h1>
     <br><br>
     <tr><th><span style="color: black; ">Here are the nonprofits (990s) for this search term from the 2019 <a target="_blank" href="https://docs.opendata.aws/irs-990/readme.html">IRS AWS database</a><sup><a href="#irs-cite">12</a></sup>, you can click on the links to reach the public XMLs with more details:</span></th></tr>
@@ -479,7 +479,7 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Clinical_Trials">
+<div class="container medium" id="Clinical_Trials">
     <h1><span style="color: #efa50e; "><b>Clinical Trials</b></span></h1>
     <br><br>
     <a target="_blank" id="nav-clinical" href={{ url_for('generate_clinical_page') }} style="font-size: 25px">
@@ -491,7 +491,7 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Citations_n_Licenses">
+<div class="container medium" id="Citations_n_Licenses">
     <h1><span style="color: #efa50e; "><b>Citations & Licenses</b></span></h1>
     <ol style="list-style-type: numeric">
     <li id="ohdsi-cite">From the ATHENA/OHDSI resource. <u>Citation</u>: Hripcsak G, Duke JD, Shah NH, et al. Observational Health Data Sciences and Informatics (OHDSI): Opportunities for Observational Researchers. Stud Health Technol Inform. 2015;216:574-578.</li>
@@ -613,6 +613,16 @@ $(document).ready(function(){
    $('nav a').removeClass('active');
    $(this).addClass('active');
  });
+});
+
+$(window).on('scroll', function() {
+    $('.container.medium').each(function() {
+        if($(window).scrollTop() >= $(this).offset().top - $("#navbarcon").height()){
+            var id = $(this).attr('id');
+            $('nav a').removeClass('active');
+            $('nav a[href="#'+ id +'"]').addClass('active');
+        }
+    });
 });
 
 </script>
