@@ -9,43 +9,64 @@ from collections import defaultdict
 
 es = Elasticsearch(["localhost:9200"], timeout=60, retry_on_timeout=True)
 #es = Elasticsearch([Config.elasticsearch_url], timeout=60, retry_on_timeout=True)
-
+stopwords=["a","an","and","are","as","at","be","but","by","for","if","in","into","is","it","no","not","of","on","or","such","that","the","their","then","there","these","they","this","to","was","will","with","syndrome","syndromes","disorder","disorders","disease","diseases"]
+es_settings={
+            "number_of_shards": 1,
+            "analysis": {
+                "filter": { 
+                    "english_poss_stemmer": {
+                        "type": "stemmer",
+                        "name": "possessive_english"
+                        },
+                        "ngramfilter": {
+                        "type": "edge_ngram",
+                        "min_gram": 3,
+                        "max_gram": 20,
+                        "token_chars": ["letter","digit", "whitespace"]
+                        }
+                    },
+                "analyzer": {
+                    "ngram_analyzer": {
+                        "filter": ["lowercase","english_poss_stemmer","ngramfilter"],
+                        "tokenizer": "standard"
+                        },
+                    "stop_analyzer": {
+                        "type": "stop",
+                        "stopwords": stopwords,
+                        "filter": ["lowercase","ngramfilter"],
+                        "tokenizer": "standard"
+                        },
+                    "normal_analyzer": {
+                        "filter": ["lowercase","ngramfilter"],
+                        "tokenizer": "standard"
+                        }
+                    }
+                }
+            }
+search_settings={
+                    "type": "text",
+                    "analyzer": "ngram_analyzer",
+                    "search_analyzer": "stop_analyzer"
+}
+exact_settings={
+                    "type": "text",
+                    "analyzer": "normal_analyzer",
+                    "search_analyzer": "normal_analyzer"
+}
 def index_doid(INDEX_NAME='doid',path_to_doid='/media/database/DOID_data_result/DOID-DATA.txt'):
     request_body = {
-        "settings": { 
-            "index":{
-                "max_ngram_diff": 20
-                    },
-    "analysis": {
-      "analyzer": {
-        "my_analyzer": {
-          "type":"custom",
-          "tokenizer": "my_tokenizer"
-        }
-      },
-      "tokenizer": {
-        "my_tokenizer": {
-          "type": "ngram",
-          "min_gram": 2 ,
-          "max_gram": 10
-        }
-      }
-    }},
+        "settings": es_settings,
         "mappings": {
             "properties": {
                 "ID": {
                     "type": "text"
                 },
-                "NAME": { # Disease Name
-                    "type": "text"
-                },
-                "NGRAM":{ 
-                    "type" : "text",
-                    "analyzer" : "my_analyzer"
-                },
+                "NAME": search_settings, # Disease Name
+                "NAMEEXACT": exact_settings, # Disease Name
             }
         }
     }
+
     if es is not None:
             es.indices.delete(index=INDEX_NAME, ignore=404)
             es.indices.create(index=INDEX_NAME, body=request_body)
@@ -60,6 +81,7 @@ def index_doid(INDEX_NAME='doid',path_to_doid='/media/database/DOID_data_result/
                     data = {} # init to avoid deep copy.
                     data['ID'] = row['DOID-ID']
                     data['NAME'] = row['NAME']
+                    data['NAMEEXACT'] = row['NAME']
                     action = {"_index": INDEX_NAME, '_source': data}
                     es_data.append(action)
                     if len(es_data) > 1000:
@@ -70,15 +92,14 @@ def index_doid(INDEX_NAME='doid',path_to_doid='/media/database/DOID_data_result/
 
 def index_msh(INDEX_NAME='msh',path_to_mesh='/media/database/MSH_data_result/MSH-DATA.txt'):
     request_body = {
-        "settings": {},
+        "settings": es_settings,
         "mappings": {
             "properties": {
                 "ID": {
                     "type": "text"
                 },
-                "NAME": { # msh term name/string
-                    "type": "text"
-                }
+                "NAME": search_settings, # msh term name/string
+                "NAMEEXACT": exact_settings # msh term name/string
             }
         }
     }
@@ -95,6 +116,7 @@ def index_msh(INDEX_NAME='msh',path_to_mesh='/media/database/MSH_data_result/MSH
                     data = {} # init to avoid deep copy.
                     data['ID'] = row['DescriptorUI']
                     data['NAME'] = row['DescriptorName']
+                    data['NAMEEXACT'] = row['DescriptorName']
                     action = {"_index": INDEX_NAME, '_source': data}
                     es_data.append(action)
                     if len(es_data) > 1000:
@@ -105,15 +127,14 @@ def index_msh(INDEX_NAME='msh',path_to_mesh='/media/database/MSH_data_result/MSH
 
 def index_icd10(INDEX_NAME='icd10',path_to_icd='/media/database/ICD10_data_result/ICD10-DATA.txt'):
     request_body = {
-        "settings": {},
+        "settings": es_settings,
         "mappings": {
             "properties": {
                 "ID": {
                     "type": "text"
                 },
-                "NAME": { # disease name
-                    "type": "text"
-                },
+                "NAME": search_settings, #disease_name
+                "NAMEEXACT": exact_settings, #disease_name
                 "ABBR": {
                     "type": "text"
                 }
@@ -134,6 +155,7 @@ def index_icd10(INDEX_NAME='icd10',path_to_icd='/media/database/ICD10_data_resul
                     data = {} # init to avoid deep copy.
                     data['ID'] = row['ICD10-ID']
                     data['NAME'] = row['NAME']
+                    data['NAMEEXACT'] = row['NAME']
                     data['ABBR'] = row['ABBREV']
                     action = {"_index": INDEX_NAME, '_source': data}
                     es_data.append(action)
@@ -145,15 +167,14 @@ def index_icd10(INDEX_NAME='icd10',path_to_icd='/media/database/ICD10_data_resul
 
 def index_umls(INDEX_NAME='umls',path_to_umls='/media/database/UMLS-DATA.txt'):
     request_body = {
-        "settings": {},
+        "settings": es_settings,
         "mappings": {
             "properties": {
                 "ID": {
                     "type": "text"
                 },
-                "NAME": { # concept string umls
-                    "type": "text"
-                },
+                "NAME": search_settings, # concept string umls
+                "NAMEEXACT": exact_settings, # concept string umls
                 "Source ID": {
                     "type": "text"
                 },
@@ -183,6 +204,7 @@ def index_umls(INDEX_NAME='umls',path_to_umls='/media/database/UMLS-DATA.txt'):
                     data = {} # init to avoid deep copy.
                     data['ID'] = row['CUI']
                     data['NAME'] = row['STR']
+                    data['NAMEEXACT'] = row['STR']
                     data['Source ID'] = row['SDUI']
                     data['Source Name'] = row['SAB']
                     data['Source Type'] = row['TTY']
@@ -199,12 +221,11 @@ def index_umls(INDEX_NAME='umls',path_to_umls='/media/database/UMLS-DATA.txt'):
 
 def index_irs990(INDEX_NAME='irs990',path_to_irs="/media/database/IRS990/index_2019.csv"): #update to 2020 in future, when updated
     request_body = {
-        "settings": {},
+        "settings": es_settings,
         "mappings": {
             "properties": {
-                "NAME": { # taxpaying foundation name
-                    "type": "text"
-                },
+                "NAME": search_settings, # taxpaying foundation name
+                "NAMEEXACT": exact_settings, # taxpaying foundation name
                 "EIN": {
                     "type": "text"
                 },
@@ -229,6 +250,7 @@ def index_irs990(INDEX_NAME='irs990',path_to_irs="/media/database/IRS990/index_2
             for row in dictfile:
                 data = {} # init to avoid deep copy.
                 data['NAME'] = row['TAXPAYER_NAME']
+                data['NAMEEXACT'] = row['TAXPAYER_NAME']
                 data['EIN'] = row['EIN']
                 data['Date'] = row['SUB_DATE']
                 data['ObjLink'] = row['OBJECT_ID'] # link = 'https://s3.amazonaws.com/irs-form-990/'+OBJECT_ID+'_public.xml'
@@ -247,12 +269,11 @@ def index_open990(INDEX_NAME='open990f',INDEX_NAME2='open990g',path_to_foundatio
 , path_to_grants="/media/database/Open990/Open990_SnackSet_Foundations_Grants/Grants.csv"):
     
     request_body = {
-        "settings": {},
+        "settings": es_settings,
         "mappings": {
             "properties": {
-                "NAME": { # Foundation Name
-                    "type": "text"
-                },
+                "NAME": search_settings, # Foundation Name
+                "NAMEEXACT": exact_settings, # Foundation Name
                 "Address": {
                     "type": "text"
                 },
@@ -285,6 +306,7 @@ def index_open990(INDEX_NAME='open990f',INDEX_NAME2='open990g',path_to_foundatio
             for row in dictfile:
                 data = {} # init to avoid deep copy.
                 data['NAME'] = row['Foundation name']
+                data['NAMEEXACT'] = row['Foundation name']
                 data['Address'] = ",".join([row['Street'],row['City'],row['State'],row['ZIP']])
                 data['Website'] = row['Website']
                 data['Email'] = row['Email']
@@ -300,12 +322,11 @@ def index_open990(INDEX_NAME='open990f',INDEX_NAME2='open990g',path_to_foundatio
                 helpers.bulk(es, es_dataf, stats_only=False)    
 
     request_body2 = {
-        "settings": {},
+        "settings": es_settings,
         "mappings": {
             "properties": {
-                "NAME": { # Foundation name
-                    "type": "text"
-                },
+                "NAME": search_settings, # Foundation name
+                "NAME": exact_settings, # Foundation name
                 "Grantee": {
                     "type": "text"
                 },
@@ -337,6 +358,7 @@ def index_open990(INDEX_NAME='open990f',INDEX_NAME2='open990g',path_to_foundatio
             for row in dictfile:
                 data = {} # init to avoid deep copy.
                 data['NAME'] = row['Foundation name']
+                data['NAMEEXACT'] = row['Foundation name']
                 data['Grantee'] = row['Grantee']
                 data['Grantee Location'] = ",".join([row['City'],row['State']])
                 data['Grant Purpose'] = row['Purpose']
@@ -355,12 +377,11 @@ def index_open990(INDEX_NAME='open990f',INDEX_NAME2='open990g',path_to_foundatio
 
 def index_ohdsi(INDEX_NAME='ohdsi',path_to_ohdsi="/media/database/OHDSI/CONCEPT.csv"): #update to 2020 in future, when updated
     request_body = {
-        "settings": {},
+        "settings": es_settings,
         "mappings": {
             "properties": {
-                "NAME": { # Concept Name
-                    "type": "text"
-                },
+                "NAME": search_settings, # Concept Name
+                "NAMEEXACT": exact_settings, # Concept Name
                 "Concept ID": {
                     "type": "text"
                 },
@@ -391,6 +412,7 @@ def index_ohdsi(INDEX_NAME='ohdsi',path_to_ohdsi="/media/database/OHDSI/CONCEPT.
             for row in dictfile:
                 data = {} # init to avoid deep copy.
                 data['NAME'] = row['concept_name']
+                data['NAMEEXACT'] = row['concept_name']
                 data['Concept ID'] = row['concept_id']
                 data['Domain'] = row['domain_id']
                 data['Vocabulary of Origin'] = row['vocabulary_id']
@@ -410,15 +432,14 @@ def index_ohdsi(INDEX_NAME='ohdsi',path_to_ohdsi="/media/database/OHDSI/CONCEPT.
 def index_hpo(INDEX_NAME='hpo',INDEX_NAME2='hpolink',path_to_hpo='/media/database/HPO/terms.tsv', path_to_phenotype='/media/database/HPO/phenotype_annotations.tsv'):
    # used https://github.com/macarthur-lab/obo_parser from MacArthur-Lab to format OBO file into terms.tsv, rest is in ipynb books
     request_body = {
-        "settings": {},
+        "settings": es_settings,
         "mappings": {
             "properties": {
                 "HPO ID": {
                     "type": "text"
                 },
-                "NAME": { # HPO term name/string
-                    "type": "text"
-                },
+                "NAME": search_settings, # HPO term name/string
+                "NAMEEXACT": exact_settings, # HPO term name/string
                 "Alternate ID": {
                     "type": "text"
                 },
@@ -454,6 +475,7 @@ def index_hpo(INDEX_NAME='hpo',INDEX_NAME2='hpolink',path_to_hpo='/media/databas
                 data = defaultdict(str) # init to avoid deep copy.
                 data['HPO ID'] = row['id']
                 data['NAME'] = row['name']
+                data['NAMEEXACT'] = row['name']
                 data['Alternate ID'] = row['alt_id']
                 data['Child IDs'] = row['children']
                 data['Definition'] = row['definition']
@@ -470,7 +492,7 @@ def index_hpo(INDEX_NAME='hpo',INDEX_NAME2='hpolink',path_to_hpo='/media/databas
                 helpers.bulk(es, es_dataf, stats_only=False)    
 
     request_body2 = {
-        "settings": {},
+        "settings": es_settings,
         "mappings": {
             "properties": {
                 "Related Database ID": {
@@ -479,9 +501,8 @@ def index_hpo(INDEX_NAME='hpo',INDEX_NAME2='hpolink',path_to_hpo='/media/databas
                 "Database Name": {
                     "type": "text"
                 },
-                "NAME": { # disease name
-                    "type": "text"
-                },
+                "NAME": search_settings, # disease name
+                "NAMEEXACT": exact_settings, # disease name
                 "Linked HPO ID": {
                     "type": "text"
                 },
@@ -506,6 +527,7 @@ def index_hpo(INDEX_NAME='hpo',INDEX_NAME2='hpolink',path_to_hpo='/media/databas
                 data['Related Database ID'] = dbid
                 data['Database Name'] = dbname
                 data['NAME'] = row['DiseaseName']
+                data['NAMEEXACT'] = row['DiseaseName']
                 data['Linked HPO ID'] = row['HPO-ID']
                 data['Linked HPO term'] = row['HPO-Name']
                 
@@ -545,7 +567,7 @@ def index_autosuggest(INDEX_NAME='autosuggest', path_to_hpo='/media/database/HPO
                     "type": "text"
                 },
                 "NAME": {
-                    "type": "text",
+                    "type": "text"
                 },
                 "NAMESUGGEST":{ 
                     "type" : "completion",
@@ -578,6 +600,7 @@ def index_autosuggest(INDEX_NAME='autosuggest', path_to_hpo='/media/database/HPO
                     data = {}
                     data['ID'] = row['id']
                     data['NAME'] = row['name']
+                    data['NAMEEXACT'] = row['name']
                     data['NAMESUGGEST'] = {}
                     data['NAMESUGGEST']['input'] = [row['name']]
                     data['NAMESUGGEST']['input'].extend(row['name'].split())

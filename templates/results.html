@@ -537,18 +537,13 @@ th {
 <!-- make nice table with multiple pages -->
 <script type="text/javascript">
 	$(document).ready(function () {
-	  	$('#results-table1').DataTable({
-	  		"order": [],
+	  	$('#hpolink').DataTable({
+	  		"order": [[ 5, "desc" ]],
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
 	  	});
-	  	$('#results-table2OMIM, #results-table2D, #results-table2OR, #results-table3, #phen2gene-api, #results-snomed, #results-drugs').DataTable({
+	  	$('#phen2gene-api').DataTable({
 	  		"order": [[ 1, "asc" ]],
-	  		"pageLength": 5,
-	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
-	  	});
-	  	$('#clinical-table').DataTable({
-	  		"order": [[ 0, "asc" ]],
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
 	  	});
@@ -562,7 +557,7 @@ th {
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
 	  	});
-	  	$('#hpolink, #irs990').DataTable({
+	  	$('#irs990').DataTable({
 	  		"order": [[ 4, "desc" ]],
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
