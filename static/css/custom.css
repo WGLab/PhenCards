@@ -4,6 +4,11 @@ hr {
     color:gray;
     background-color:gray
 }
+hr.vertical {
+    height:100%; /* you might need some positioning for this to work, see other questions about 100% height */
+    width:0;
+    border:1px solid black;
+}
 .innerbar {
     height:1px;
     border-width:0;
@@ -17,11 +22,40 @@ hr {
   width: 100%;
   height: 100px;
   top: 0;
-/*
-*/
 }
-a.hover{
-    border-bottom: 1px dotted black
+/*basically makes the underline*/
+[data-title] {
+  border-bottom: black dotted 1px; /*optional styling*/
+  
+  position: relative;
+  cursor: help;
+}
+/*this is how the text box gets there*/
+[data-title]:hover::before {
+  content: attr(data-title);
+  position: absolute;
+  top: 2em;
+  display: block;
+  padding: 3px 6px;
+  border-radius: 1px;
+  background: #000;
+  color: #fff;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+  white-space: wrap;
+  width: 800px;
+}
+/*this is where the little arrow comes from*/
+[data-title]:hover::after {
+  content: '';
+  position: relative;
+  top: -5px;
+  left: 2px;
+  display: inline-block;
+  color: #fff;
+  border: 3px solid transparent;    
+  border-bottom: 3px solid #000;
+  -webkit-transform: rotate(180deg);
 }
 body {
   padding-top: 50px;
