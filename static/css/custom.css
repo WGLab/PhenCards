@@ -20,6 +20,9 @@ hr {
 /*
 */
 }
+a.hover{
+    border-bottom: 1px dotted black
+}
 body {
   padding-top: 50px;
 }

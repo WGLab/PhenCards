@@ -135,7 +135,6 @@ th {
             <td>Alternate ID</td>
             <td>Child IDs</td>
             <td>Parent IDs</td>
-            <td>Definition</td>
             <td>External IDs</td>
             <td>Score</td>
             </tr>
@@ -143,12 +142,11 @@ th {
             <tbody>
             {% for result in hpo %}
                 <tr>
-                    <td>{{result["_source"]["NAME"]}}</td>
+                    <td><a class="hover" data-toggle="tooltip" data-placement="top" title="{{result["_source"]["Definition"]}}">{{result["_source"]["NAME"]}}</a></td>
                     <td><a target="_blank" href={{ url ~ result["_source"]["HPO ID"] }}>{{result["_source"]["HPO ID"]}}</a></td>
                     <td>{{result["_source"]["Alternate ID"]}}</td>
                     <td>{{result["_source"]["Child IDs"]}}</td>
                     <td>{{result["_source"]["Parent IDs"]}}</td>
-                    <td>{{result["_source"]["Definition"]}}</td>
                     <td>{{result["_source"]["External IDs"]}}</td>
                     <td>{{result["_score"]}}</td>
                 </tr>
@@ -563,7 +561,7 @@ th {
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
 	  	});
 	  	$('#hpo').DataTable({
-	  		"order": [[ 7, "desc" ]],
+	  		"order": [[ 6, "desc" ]],
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
 	  	});
@@ -618,6 +616,10 @@ if ($(window).width() < 1060) {
  $(".nav-item").css('font-size', '1.8em');
  $(".navbar").css('height', '200px');
 }
+
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip();   
+});
 
 </script>
 
