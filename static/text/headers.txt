@@ -1,0 +1,12 @@
+db	term	definition
+HPO	HPO Term	The full name of the Human Phenotype Ontology term matching the query
+HPO	HPO ID	The unique ID for the HPO term in the HPO database
+HPO	Alternate ID	Alternative or other unique IDs for the term in the HPO database
+HPO	Child IDs	The leaf or child term IDs of this term in the ontology
+HPO	Parent IDs	The ancestor or parent term IDs for this term in the ontology
+HPO	External IDs	The unique IDs for this same term in other databases
+HPO	Score	The elasticsearch score for the query term.  The higher this score, the more likely it is what you were looking for.
+ICD-10	ICD-10 Name	The official ICD-10 name for the term matching the query
+ICD-10	ICD-10 ID	The unique ID for the term in the ICD-10 nomenclature
+ICD-10	Abbreviated Name	The sometimes abbreviated name of the official ICD-10 name, often the same
+ICD-10	Score	The elasticsearch score for the query term.  The higher this score, the more likely it is what you were looking for.

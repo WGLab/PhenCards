@@ -9,6 +9,7 @@ from config import Config
 import API
 
 from lib.esQuery import indexquery
+from lib.style import generate_headers
 
 def connect_to_db(path_to_db):
 
@@ -111,15 +112,18 @@ def results_page(HPOquery):
     }
 
     # indices: doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi
-    hpo = indexquery(query_json,index='hpo',size=100)['hits']['hits']
+    headers=generate_headers()
+    hpo = {'result': indexquery(query_json,index='hpo',size=100)['hits']['hits']} # list of results line by line in "_source"
+    hpo['header']=headers['HPO']
     try:
-        session['HPOID']=hpo[0]['_source']['HPO ID']
+        session['HPOID']=hpo['result'][0]['_source']['HPO ID']
     except IndexError:
         session['HPOID']=""
     hpolink = indexquery(query_json,index='hpolink',size=100)['hits']['hits']
     doid = indexquery(query_json,index='doid',size=100)['hits']['hits']
     msh = indexquery(query_json,index='msh',size=100)['hits']['hits']
-    icd10 = indexquery(query_json,index='icd10',size=100)['hits']['hits']
+    icd10 = {'result': indexquery(query_json,index='icd10',size=100)['hits']['hits']}
+    icd10['header']=headers['ICD-10']
     umls = indexquery(query_json,index='umls',size=100)['hits']['hits']
     ohdsi = indexquery(query_json,index='ohdsi',size=100)['hits']['hits']
     open990f = indexquery(query_json,index='open990f',size=100)['hits']['hits']
