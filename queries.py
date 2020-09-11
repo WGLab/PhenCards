@@ -73,19 +73,40 @@ def doc2hpo(doc2hpo_notes):
 def results_page(HPOquery):
     query_json = \
     {'query': {
-        "match": {
-            "NAME": {
-                "query": HPOquery,
-                    "fuzziness": 2,
-                    },
-            "NAME": {
-                "query": HPOquery,
-                    #"operator": "or",
-                    "fuzziness": 0,
-                    "boost": 1.5
+        "bool": {
+            "should": [
+                {
+                "match": {
+                    "NAME": {
+                        "query": HPOquery,
+                        "fuzziness": "AUTO:0,3",
+                        "prefix_length" : 0,
+                        "max_expansions": 50,
+                        "boost": 1,
+                        "operator": "or",
+                        }
                     }
-                }
-        },
+                },
+                {
+                "match": {
+                    "NAME": {
+                        "query": HPOquery,
+                        "fuzziness": 0,
+                        "boost": 2,
+                    }
+                    }
+                },
+                {
+                "match_phrase": {
+                    "NAMEEXACT": {
+                        "query": HPOquery,
+                        "boost": 3,
+                    }
+                    }
+                },
+        ]
+        }
+    },
         "sort": {"_score": {"order": "desc"}}
     }
 

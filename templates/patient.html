@@ -1,30 +1,6 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div class="jumbotron text-center">
-	<h2 class="display-4"><i class="material-icons" style="font-size: 48px">assessment</i>Results </h1>
-    <p class="lead">Please export the results to see all the relative database results.</p>
-	<a href="{{ url_for('phencards') }}"><button type="button" class="btn btn-success" style="margin-right: 15px"><i class="material-icons" style="font-size: 16px;">redo</i>Re-analyze</button></a>
-
-	<a data-toggle="modal" data-target="#export-data"><button type="button" class="btn btn-info"><i class="material-icons" style="font-size: 16px">cloud_download</i>Export</button></a>
-</div>
-
-<div class="modal" tabindex="-1" role="dialog" id="export-data">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title">Export Results</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body">
-				<a href="{{url_for('download_json') }}"><button class='btn btn-primary'>JSON</button></a>
-			</div>
-		</div>
-	</div>
-</div>
-
 
 <head>
 <style>
@@ -35,6 +11,10 @@ h1 {
   color: #efa50e;
   font-size: 35px;
 }
+table {
+  table-layout: auto;
+  width: 100%
+}
 table, th, td {
   border: 2px #4b873f;
   border-collapse: collapse;
@@ -43,32 +23,45 @@ th {
   padding: 2px;
   text-align: center;
 }
+.navbar-dark .nav-item > a.active {
+  color:black;
+  background-color:white;
+}
+.navbar-nav {
+  display:flex;
+}
 </style>
 </head>
 
 {% block nav %}
-    <div class="collapse navbar-collapse flex-column" id="navbarCollapse">
-        <ul class="navbar-nav ml-auto small">
-          <li class="nav-item active"><a class="page-scroll scroll" href="#Patient_Results">HPO terms</a></li>
+<div class="collapse navbar-collapse flex-column sticky-top bg-dark" id="navbarcon">
+    <div class="flex-row" id="navbartop">
+        <ul class="navbar-nav mr-auto medium">
+          <li class="nav-item active"><a class="page-scroll scroll active" href="#Patient_Terms">HPO terms</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Diseases">Diseases</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Genes">Genes</a></li>
         </ul>
-        <ul class="navbar-nav flex-row ml-auto small">
+    </div>
+    <div class="flex-row" id="navbarbottom">
+        <ul class="navbar-nav mr-auto medium">
           <li class="nav-item"><a class="page-scroll scroll" href="#Clinical_Trials">Clinical Trials</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Literature">Literature</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Citations_n_Licenses">Citations & Licenses</a></li>
         </ul>
+    </div>
 </div>
 </nav>
 
 {% endblock %}
 
 <div class="container" id="bar">
+
+<h2 style="text-align: center; margin-top: 80px; font-family:'Roboto', sans-serif;"><i class="material-icons" style="vertical-align: bottom; font-size:38px;">assessment</i>Patient Results</h2>
 <hr>
 </div>
 
-<div class="container" id="Patient_Results">	
-	<h1><span style="color: #efa50e; "><b>HPO terms</b></span></h1>
+<div class="container medium" id="Patient_Terms">
+    <h1><span style="color: #efa50e; "><b>HPO terms</b></span></h1>
 	<div class="ui basic segment">
 		<p id="parsingResults" style="white-space: pre-wrap">Pellentesque
 			habitant morbi tristique senectus et netus et malesuada fames ac
@@ -87,7 +80,7 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Genes">
+<div class="container medium" id="Genes">
     <h1><span style="color: #efa50e; "><b>Genes</b></span></h1>
     <br><br>
     <tr><th><span style="color: black; ">Here are the related genes referenced from <a href="https://phen2gene.wglab.org">Phen2Gene web application</a><sup><a href="#p2g-cite">2</a></sup>:</span></th></tr>
@@ -99,7 +92,7 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Clinical_Trials">
+<div class="container medium" id="Clinical_Trials">
     <h1><span style="color: #efa50e; "><b>Clinical Trials</b></span></h1>
     <br><br>
     <a target="_blank" id="nav-clinical" href="{{ url_for('generate_clinical_page') }}" style="font-size: 25px">ClinicalTrials.gov</a><sup><a href="#clinical-cite">3</a></sup>
@@ -109,7 +102,7 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Citations_n_Licenses">
+<div class="container medium" id="Citations_n_Licenses">
     <h1><span style="color: #efa50e; "><b>Citations & Licenses</b></span></h1>
     <br><br>
     <ol style="list-style-type: numeric">
@@ -167,5 +160,43 @@ th {
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
 	  	});
 	});
+
+$(document).ready(function(){
+  // Add smooth scrolling to all links
+  $("a").on('click', function(event) {
+
+    // Make sure this.hash has a value before overriding default behavior
+    if (this.hash !== "") {
+      // Prevent default anchor click behavior
+      event.preventDefault();
+
+      // Store hash
+      var hash = this.hash;
+
+      // Using jQuery's animate() method to add smooth page scroll
+      // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
+      $('html, body').animate({
+        scrollTop: $(hash).offset().top - 50
+      }, 800);
+    }
+  });
+});
+
+$(document).ready(function(){
+ $('li a').click(function(){
+   $('li a').removeClass('active');
+   $(this).addClass('active');
+ });
+});
+
+$(window).on('scroll', function() {
+    $('.container.medium').each(function() {
+        if($(window).scrollTop() >= $(this).offset().top - $("#navbarcon").height()){
+            var id = $(this).attr('id');
+            $('li a').removeClass('active');
+            $('li a[href="#'+ id +'"]').addClass('active');
+        }
+    });
+});
 </script>
 {% endblock %}

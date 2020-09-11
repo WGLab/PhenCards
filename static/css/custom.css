@@ -4,6 +4,11 @@ hr {
     color:gray;
     background-color:gray
 }
+hr.vertical {
+    height:100%; /* you might need some positioning for this to work, see other questions about 100% height */
+    width:0;
+    border:1px solid black;
+}
 .innerbar {
     height:1px;
     border-width:0;
@@ -15,16 +20,74 @@ hr {
   background-color: #555;
   position: fixed;
   width: 100%;
-  height: 50px;
+  height: 100px;
   top: 0;
-/*
-*/
+}
+/*basically makes the underline*/
+.hasTooltip {
+  border-bottom: black dotted 1px; /*optional styling*/
+  position: relative;
+  cursor: help;
+}
+/*makes tip invisible inline.*/
+.hasTooltip span {
+  display: none;
+  color: #000;
+  text-decoration: none;
+  padding: 3px;
+}
+/*this is how the text box gets there*/
+.hasTooltip:hover span {
+  position: absolute;
+  top: 1.7em;
+  left: 100%;
+  display: inline-block;
+  padding: 3px 6px;
+  border-radius: 1px;
+  background: #000;
+  color: #fff;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+  white-space: wrap;
+  min-width: 400px;
+  max-width: 800px;
+  z-index: 100;
+}
+/*this is how the little arrow gets there*/
+.hasTooltip:hover::after {
+  content: '';
+  position: relative;
+  top: 1em;
+  left: 2px;
+  display: inline;
+  color: #fff;
+  border: 3px solid transparent;    
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  border-top: 3px solid #000;
 }
 body {
   padding-top: 50px;
 }
 nav li {
   padding: 4px;
+  font-weight:bold;
+  font-family: 'Roboto', sans-serif;
+}
+.nav-item > a.active {
+  color:black;
+  background-color:white;
+}
+.nav-item {
+    text-align: right;
+    font-size: 1.3em; !important
+}
+.navbar-collapse.show {
+    padding: 10px 10px;
+    background:#555;
+    width: -webkit-fit-content;
+    float: right;
+    text-align:right;
 }
 .verticaltable {
   border-right: 2px solid;

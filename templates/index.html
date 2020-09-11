@@ -1,14 +1,14 @@
 {% extends "layout.html" %}
 
+{% block nav %}
+{% endblock %}
 {% block content %}
-<div class="jumbotron text-center">
-    <h1 class="display-4"><b><i class="material-icons" style="font-size: 40px">book</i>PhenCards</b></h1>
-	<p class="lead">PhenCards is a real-time phenotype-based information search engine.</p>
+<div class="container">
+    <h1 class="display-4" style="text-align: center; margin-top: 80px; font-family:'Roboto', sans-serif; font-weight: 500"><b><i class="material-icons" style="vertical-align: bottom; font-size: 56px">book</i>PhenCards</b></h1>
+	<p class="lead" style="font-weight: 300;">PhenCards is a real-time phenotype-based information search engine for compiling information related to phenotype terms.</p>
 </div>
-
 <div class="container">
 	<form action="{{ url_for('phencards') }}" method="post" ENCTYPE="multipart/form-data" role="form" >
-		<hr class="my-4">
 
                 <!-- invisible checkbox that is checked if using doc2hpo, unchecked otherwise -->
                 <div class="form-check" style="display:none;">
@@ -20,7 +20,7 @@
                 <ul class="nav nav-tabs">
                     <!-- tab for autocompletion integration -->
                     <li class="nav-item">
-                        <a class="nav-link" id="auto-tab" href="#auto">Phenotype search</a>
+                        <a class="nav-link active" id="auto-tab" href="#auto">Phenotype search</a>
                     </li>
                     <!-- tab for Doc2Hpo integration -->
                     <li class="nav-item">
@@ -35,6 +35,11 @@
         
        <!-- text box to enter phenotype with autocompletion -->
 		<div class="form-group" id="auto" style="display:inline;">
+                <hr>
+                <div class="container" style="text-align:center">
+                <code style="font-weight: 300; background-color: #ffffff; color: #555555;">Start typing a phenotype term: fitness, disease or symptom (e.g. cleft palate, epilepsy, Rett syndrome). Our autocompletion will help you.<br>Your query does not have to match a preexisting term.</code>
+                </div>
+                <hr>
             <h3><i class="material-icons">book</i>Enter your phenotype term query here:</h3>
             {{ form.csrf_token }}
             <input name="typeahead" id="typeahead" class="form-control autocomplete" rows="4" placeholder="cleft palate">
@@ -43,6 +48,11 @@
 
 		<!-- text box to enter patient description -->
 		<div class="form-group" id="doc2hpo" style="display:none;">
+                <hr>
+                <div class="container" style="text-align:center">
+                <code style="font-weight: 300; background-color: #ffffff; color: #555555;">Here, you can submit patient notes through HTTPS to Doc2HPO for parsing out HPO terms.<br>By submitting here, you admit these are deidentified notes and take responsibility for the security of PHI.</code>
+                </div>
+                <hr>
 			<h3><i class="material-icons">assignment</i>Patient Description</h3>
 			<textarea class="form-control" name="doc2hpo_notes" id="doc2hpo_notes" rows="10" placeholder="Individual II-1 is a 10 year old boy. He does not have synophrys. He was born at term with normal birth parameters and good APGAR scores (9/10/10). The neonatal period was uneventful, and he had normal motor development during early childhood: he began to look up at 3 months, sit by himself at 5 months, stand up at 11 months, walk at 13 months, and speak at 17 months. He attended a regular kindergarten, without any signs of difference in intelligence, compared to his peers. Starting at age 6, the parents observed ever increasing behavioral disturbance for the boy, manifesting in multiple aspects of life. For example, he can no longer wear clothes by himself, cannot obey instruction from parents/teachers, can no longer hold subjects tightly in hand, which were all things that he could do before 6 years of age. In addition, he no longer liked to play with others; instead, he just preferred to stay by himself, and he sometimes fell down when he walked on the stairs, which had rarely happened at age 5. The proband continued to deteriorate: at age 9, he could not say a single word and had no action or response to any instruction given in clinical exams. Additionally, rough facial features were noted with a flat nasal bridge, a synophrys (unibrow), a long and smooth philtrum, thick lips and an enlarged mouth. He also had rib edge eversion, and it was also discovered that he was profoundly deaf and had completely lost the ability to speak. He also had loss of bladder control. The diagnosis of severe intellectual disability was made, based on Wechsler Intelligence Scale examination. Brain MRI demonstrated cortical atrophy with enlargement of the subarachnoid spaces and ventricular dilatation (Figure 2). Brainstem evoked potentials showed moderate abnormalities. Electroencephalography (EEG) showed abnormal sleep EEG."></textarea>
 			<span class="form-text text-muted">Please enter which category are you searching for:</span>
@@ -51,11 +61,6 @@
 		<!-- submit and reset buttons -->
 		<div class="form-group">
 			{{ form.csrf_token }}
-            <input type="radio" id="huey" name="weight_model" value="pn" checked>
-            <label for="huey">Search for Concept Name &nbsp;</label>
-            <input type="radio" id="dewey" name="weight_model" value="hpo">
-            <label for="dewey">Search for Database ID</label>
-            <br><br>
             <button type="reset" class="btn btn-success" style="margin-right: 16px"><i class="material-icons" style="font-size: 16px">redo</i>Reset</button>
             <button type="submit" class="btn btn-info"><i class="material-icons" style="font-size: 16px">send</i>Search</button>
         </div>
