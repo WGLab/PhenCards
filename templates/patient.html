@@ -67,8 +67,16 @@ th {
 <hr>
 </div>
 
-<div class="container" id="Patient_Results">
-    <h1><span style="color: #efa50e; "><b>HPO terms</b></span></h1>
+<div class="container" id="Patient_Results">	
+	<h1><span style="color: #efa50e; "><b>HPO terms</b></span></h1>
+	<div class="ui basic segment">
+		<p id="parsingResults" style="white-space: pre-wrap">Pellentesque
+			habitant morbi tristique senectus et netus et malesuada fames ac
+			turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies
+			eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas
+			semper. Aenean ultricies mi vitae est. Mauris placerat eleifend
+			leo.</p>
+	</div>
     <br><br>
     <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="https://hpo.jax.org/app/">HPO database</a> using Doc2HPO<sup><a href="#doc2hpo-cite">1</a></sup>, you can click on the result to explore more about the phenotype names:</span></th></tr>
     {{ patient_table|safe }}
@@ -142,6 +150,11 @@ th {
 <!-- make nice table with multiple pages -->
 <script type="text/javascript">
 	$(document).ready(function () {
+		var json = {{ json | tojson }};
+		var note = {{ note | tojson }};
+		console.log(json);
+		console.log(note);
+		highlight(note,json);
 	  	//$('#results-table1, #results-table2OMIM, #results-table2D, #results-table2OR, #results-table3, #results-gene-api, #results-umls, #results-snomed, #results-drugs').DataTable({
 	  	$('#doc2hpo-results, #phen2gene-api').DataTable({
 	  		"order": [[ 1, "asc" ]],
