@@ -68,7 +68,7 @@ def doc2hpo(doc2hpo_notes):
     for i in HPO_nset.difference(negated_names):
         HPO_names.append(i)
 
-    return HPO_list, HPO_names
+    return HPO_list, HPO_names, res, doc2hpo_notes
 
 def results_page(HPOquery):
     query_json = \
