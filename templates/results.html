@@ -37,7 +37,7 @@ th {
 {% block nav %}
 <div class="collapse navbar-collapse flex-column sticky-top bg-dark" id="navbarcon">
     <div class="flex-row" id="navbartop">
-        <ul class="navbar-nav mr-auto medium">
+        <ul class="navbar-nav mr-auto small">
           <li class="nav-item active"><a class="page-scroll scroll active" href="#Aliases">Aliases</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Related_Terms">Related Terms</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Diseases">Diseases</a></li>
@@ -46,7 +46,7 @@ th {
         </ul>
     </div>
     <div class="flex-row" id="navbarbottom">
-        <ul class="navbar-nav mr-auto medium">
+        <ul class="navbar-nav mr-auto small">
           <li class="nav-item"><a class="page-scroll scroll" href="#Drugs">Drugs</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Literature">Literature</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Companies_n_Foundations">Companies & Foundations</a></li>
@@ -616,9 +616,9 @@ $(window).on('scroll', function() {
 });
 
 //for mobile
-if ($(window).width() < 1060) {
- $(".nav-item").css('font-size', '1.8em');
- $(".navbar").css('height', '200px');
+if (/Mobi|Android/i.test(navigator.userAgent)) {
+         $(".nav-item").css('font-size', '1.8em');
+         $(".navbar").css('height', '120px');
 }
 
 </script>
