@@ -10,3 +10,14 @@ ICD-10	ICD-10 Name	The official ICD-10 name for the term matching the query
 ICD-10	ICD-10 ID	The unique ID for the term in the ICD-10 nomenclature
 ICD-10	Abbreviated Name	The sometimes abbreviated name of the official ICD-10 name, often the same
 ICD-10	Score	The elasticsearch score for the query term.  The higher this score, the more likely it is what you were looking for.
+OHDSI	Concept Name	
+OHDSI	Concept ID	
+OHDSI	Domain	
+OHDSI	Vocabulary of Origin	
+OHDSI	Concept Class	
+OHDSI	Original Vocab ID	
+OHDSI	Score	
+MeSH	Term Name	
+MeSH	MeSH ID	
+MeSH	Score	
+

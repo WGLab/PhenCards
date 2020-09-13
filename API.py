@@ -243,9 +243,7 @@ def phen2gene_page(HPOquery, patient=False):
         GeneAPI_JSON = {}
         print (e)
 
-    p2g_table = json2html.convert(json=GeneAPI_JSON,
-                    table_attributes="id=\"phen2gene-api\" class=\"table table-striped table-bordered table-sm\"")
-    return p2g_table
+    return GeneAPI_JSON
 
 def patient_page(HPOquery, HPO_names):
     phen_dict = defaultdict(list)

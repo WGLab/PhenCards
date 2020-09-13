@@ -15,6 +15,18 @@ hr.vertical {
     color:white;
     background-color:gray;
 }
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto;
+}
+.grid-item {
+  border: 1px solid rgba(0, 0, 0, 1);
+  padding: 20px;
+  text-align: center;
+  border-bottom: none;
+  border-top: none;
+  border-right: none;
+}
 .navbar {
   overflow: hidden;
   background-color: #555;
@@ -67,7 +79,7 @@ hr.vertical {
   border-top: 3px solid #000;
 }
 body {
-  padding-top: 50px;
+  padding-top: 100px;
 }
 nav li {
   padding: 4px;

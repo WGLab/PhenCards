@@ -86,7 +86,7 @@ $(document).ready(function () {
         })
         .data( "ui-autocomplete" )._renderItem = function( ul, item ) {
 			return $( "<li></li>" )
-				.data( "item.autocomplete", item )
+				.data( "ui-autocomplete-item", item )
                 .append( "<span style='color:grey'>" + item.label + "</span> " + "<span>" + item.value + "</span>")
 				.appendTo( ul );
 		};

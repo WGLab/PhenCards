@@ -128,7 +128,7 @@ def generate_apexbio_page():
 # return independent page for wikidata drugs information (not done yet)
 @app.route('/wikidata')
 def generate_wikidata_page():
-    link ="https://www.wikidata.org/w/index.php?search=drugs+for+" + "+".join(session['HPOquery'])
+    link ="https://www.wikidata.org/w/index.php?search=drugs+for+" + "+".join(session['HPOquery'].split())
     return redirect(link)
 
 @app.route('/download_json/')
