@@ -7,15 +7,15 @@
 
 <div class="container" >
     <br>
-    <tr><th><span style="color: black; ">Here are the top 25 Pubmed results based on citations in Pubmed, after a 200 article snapshot from <a target="_blank" href="https://pubmed.ncbi.nlm.nih.gov/help/#best-match-algorithm">Best Match algorithm sort using MeSH terms</a>, based on this query.  This takes a little while (~30 sec) because NCBI limits query rate.</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the top 25 PubMed results based on citations in PubMed, after a 200 article snapshot from <a target="_blank" href="https://pubmed.ncbi.nlm.nih.gov/help/#best-match-algorithm">Best Match algorithm sort using MeSH terms</a>, based on this query.  This takes a little while (~30 sec) because NCBI limits query rate.</span></th></tr>
     <br><br>
     {% if pubmed %}
         <table id="pubmed-table" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
-            <td>Pubmed ID</td>
-            <td>Publication Information</td>
-            <td>Times cited in Pubmed</td>
+                {% for heading in headers["Pubmed"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
             </tr>
             </thead>
             <tbody>

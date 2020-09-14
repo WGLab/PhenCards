@@ -12,10 +12,6 @@ h1 {
   color: #efa50e;
   font-size: 35px;
 }
-table {
-  table-layout: fixed;
-  width: auto;
-}
 table, th, td {
   border: 2px #4b873f;
   border-collapse: collapse;
@@ -37,7 +33,7 @@ th {
 {% block nav %}
 <div class="collapse navbar-collapse flex-column sticky-top bg-dark" id="navbarcon">
     <div class="flex-row" id="navbartop">
-        <ul class="navbar-nav mr-auto medium">
+        <ul class="navbar-nav mr-auto small">
           <li class="nav-item active"><a class="page-scroll scroll active" href="#Aliases">Aliases</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Related_Terms">Related Terms</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Diseases">Diseases</a></li>
@@ -46,7 +42,7 @@ th {
         </ul>
     </div>
     <div class="flex-row" id="navbarbottom">
-        <ul class="navbar-nav mr-auto medium">
+        <ul class="navbar-nav mr-auto small">
           <li class="nav-item"><a class="page-scroll scroll" href="#Drugs">Drugs</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Literature">Literature</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Companies_n_Foundations">Companies & Foundations</a></li>
@@ -59,7 +55,8 @@ th {
 {% endblock %}
 
 <div class="container" id="bar">
-<h2 style="text-align: center; margin-top: 80px; font-family:'Roboto', sans-serif;"><i class="material-icons" style="vertical-align: bottom; font-size:38px;">assessment</i>Results</h2>
+<h2 style="text-align: center; margin-top: 80px; font-family:'Roboto', sans-serif;"><i class="material-icons" style="vertical-align: bottom; font-size:38px;">assessment</i>Search Results</h2>
+<p style="text-align: center;">These are the database matches for your phenotype term query. There will be explanations in each section. Note that you can hover over text with a dotted underline <a class="hasTooltip">to learn more about it<span>For example, like this!</span></a>.<br>The navbar at the top will track where you are and jump between sections so you can always go back to your point of interest.  If you'd like to go back and try a different query, just click the PhenCards logo at the top.
 <hr>
 </div>
 
@@ -70,20 +67,16 @@ th {
     <br><br>
     {% if hpo %}
         {% set url = "https://hpo.jax.org/app/browse/term/" %}
-        <table id="hpo" style="white-space: pre-line" class="table table-striped table-bordered table-hover table-sm">
+        <table id="hpo" style="white-space: pre-line;" class="table table-striped table-bordered table-hover dataTable table-sm">
             <thead>
             <tr>
-            <td><a class="hasTooltip">HPO Term<span>The full name of the Human Phenotype Ontology term matching the query</span></a></td>
-            <td>HPO ID</td>
-            <td>Alternate ID</td>
-            <td>Child IDs</td>
-            <td>Parent IDs</td>
-            <td>External IDs</td>
-            <td>Score</td>
+                {% for heading in hpo["header"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
             </tr>
             </thead>
             <tbody>
-            {% for result in hpo %}
+            {% for result in hpo["result"] %}
                 <tr>
                     {% if result["_source"]["Definition"] %}
                         <td><a class="hasTooltip">{{result["_source"]["NAME"]}}<span>{{result["_source"]["Definition"]}}</span></a></td>
@@ -111,14 +104,13 @@ th {
         <table id="icd10" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
-            <td>ICD-10 Name</td>
-            <td>ICD-10 ID</td>
-            <td>Abbreviated Name</td>
-            <td>Score</td>
+                {% for heading in icd10["header"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
             </tr>
             </thead>
             <tbody>
-            {% for result in icd10 %}
+            {% for result in icd10["result"] %}
                 <tr>
                     <td>{{result["_source"]["NAME"]}}</td>
                     <td><a target="_blank" href={{ url ~ result["_source"]["ID"] }}>{{result["_source"]["ID"]}}</a></td>
@@ -139,17 +131,13 @@ th {
         <table id="ohdsi" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
-            <td>Concept Name</td>
-            <td>Concept ID</td>
-            <td>Domain</td>
-            <td>Vocabulary of Origin</td>
-            <td>Concept Class ID</td>
-            <td>Original Vocab ID</td>
-            <td>Score</td>
+                {% for heading in ohdsi["header"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
             </tr>
             </thead>
             <tbody>
-            {% for result in ohdsi %}
+            {% for result in ohdsi["result"] %}
                 <tr>
                     <td>{{result["_source"]["NAME"]}}</td>
                     <td><a target="_blank" href={{ url ~ result["_source"]["Concept ID"] }}>{{result["_source"]["Concept ID"]}}</a></td>
@@ -173,13 +161,13 @@ th {
         <table id="msh" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
-            <td>Term Name</td>
-            <td>MeSH ID</td>
-            <td>Score</td>
+                {% for heading in msh["header"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
             </tr>
             </thead>
             <tbody>
-            {% for result in msh %}
+            {% for result in msh["result"] %}
                 <tr>
                     <td>{{result["_source"]["NAME"]}}</td>
                     <td><a target="_blank" href={{ url ~ result["_source"]["ID"] }}>{{result["_source"]["ID"]}}</a></td>
@@ -197,7 +185,7 @@ th {
     <tr><th><span><a target="_blank" href="{{ url_for('umls_login') }}" style="font-size: 25px">UMLS API</a></span></th></tr>
 </div>
 
-<div class="container" id="bar" >
+<div class="container" id="bar">
 <hr>
 </div>
 
@@ -210,17 +198,13 @@ th {
         <table id="cohd" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
-            <td>Concept Name</td>
-            <td>Concept ID</td>
-            <td>Concept Count</td>
-            <td>Vocabulary ID</td>
-            <td>Domain ID</td>
-            <td>Concept Class ID</td>
-            <td>Concept Code</td>
+                {% for heading in cohd["header"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
             </tr>
             </thead>
             <tbody>
-            {% for result in cohd %}
+            {% for result in cohd["result"] %}
                 <tr>
                     <td>{{result["concept_name"]}}</td>
                     <td><a target="_blank" href={{ url_for('generate_cohd_page', concept=result["concept_id"]) }}>{{result["concept_id"]}}</a></td>
@@ -253,13 +237,13 @@ th {
         <table id="doid" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
-            <td>Disease Name</td>
-            <td>DO ID</td>
-            <td>Score</td>
+                {% for heading in doid["header"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
             </tr>
             </thead>
             <tbody>
-            {% for result in doid %}
+            {% for result in doid["result"] %}
                 <tr>
                     <td>{{result["_source"]["NAME"]}}</td>
                     <td><a target="_blank" href={{ url ~ "DOID:" ~ result["_source"]["ID"] }}>{{"DOID:" ~ result["_source"]["ID"]}}</a></td>
@@ -279,16 +263,13 @@ th {
         <table id="hpolink" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
-            <td>Disease Name</td>
-            <td>Related Database ID</td>
-            <td>Database Name</td>
-            <td>Linked HPO Term</td>
-            <td>Linked HPO ID</td>
-            <td>Score</td>
+                {% for heading in hpolink["header"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
             </tr>
             </thead>
             <tbody>
-            {% for result in hpolink %}
+            {% for result in hpolink["result"] %}
                 <tr>
                     <td>{{result["_source"]["NAME"]}}</td>
                     <td><a target="_blank" href={{ url ~ result["_source"]["Database Name"] ~ ":" ~ result["_source"]["Related Database ID"] }}>{{result["_source"]["Related Database ID"]}}</a></td>
@@ -314,13 +295,31 @@ th {
     <h1><span style="color: #efa50e; "><b>Genes</b></span></h1>
     <br><br>
     <tr><th><span style="color: black; ">Here are the related genes referenced from <a target="_blank" href="https://phen2gene.wglab.org">Phen2Gene web application</a><sup><a href="#p2g-cite">8</a></sup>:</span></th></tr>
-</div>
-<br>
+<br><br>
 {# gene list return 04/26/2020 #}
-<div class="container" >
-
-	{{ phen2gene|safe }}
-
+    {% if phen2gene %}
+        <table id="phen2gene" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+                {% for heading in phen2gene["header"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in phen2gene["result"] %}
+                <tr>
+                    <td>{{result["Gene"]}}</td>
+                    <td>{{result["Rank"]}}</td>
+                    <td>{{result["Score"]}}</td>
+                    <td>{{result["Status"]}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the first ranked HPO term in Phen2Gene.
+    {% endif %}
 </div>
 
 <div class="container" id="bar">
@@ -329,8 +328,8 @@ th {
 <div class="container medium" id="Pathway">
     <h1><span style="color: #efa50e; "><b>Pathway</b></span></h1>
     <br><br>
-    <a target="_blank" id="nav-pathway" href="{{ url_for('generate_pathway_page') }}" style="font-size: 25px">
-        KEGG<sup><a href="#pathway-cite">9</a></sup>
+    <a target="_blank" id="nav-kegg" href="{{ url_for('generate_kegg_page') }}" style="font-size: 25px">
+        KEGG<sup><a href="#kegg-cite">9</a></sup>
     </a>
 
 </div>
@@ -342,19 +341,17 @@ th {
 <div class="container medium" id="Drugs">
     <h1><span style="color: #efa50e; "><b>Drugs</b></span></h1>
     <br><br>
-    <table style="width: 50%;">
-    <tr>
-    <td class="verticaltable"><a target="_blank" id="nav-tocris" href="{{ url_for('generate_tocris_page') }}" style="font-size: 25px">
+    <div class="grid-container">
+    <div class="grid-item" style="border-left: none"><a target="_blank" id="nav-tocris" href="{{ url_for('generate_tocris_page') }}" style="font-size: 25px">
         Tocris
-    </a></td>
-    <td class="verticaltable"><a target="_blank" id="nav-apexbio" href="{{ url_for('generate_apexbio_page') }}" style="font-size: 25px">
+    </a></div>
+    <div class="grid-item"><a target="_blank" id="nav-apexbio" href="{{ url_for('generate_apexbio_page') }}" style="font-size: 25px">
         APExBio
-    </a></td>
-    <td class="verticaltable"><a target="_blank" id="nav-wikidata" href="{{ url_for('generate_wikidata_page') }}" style="font-size: 25px">
+    </a></div>
+    <div class="grid-item"><a target="_blank" id="nav-wikidata" href="{{ url_for('generate_wikidata_page') }}" style="font-size: 25px">
         Wikidata<sup><a href="#fda-cite">10</a></sup>
-    </a></td>
-    </tr>
-    </table>
+    </a></div>
+    </div>
 </div>
 
 <div class="container" id="bar">
@@ -384,15 +381,13 @@ th {
         <table id="irs990" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
-            <td>Foundation Name</td>
-            <td>EIN</td>
-            <td>Filing Date</td>
-            <td>URL</td>
-            <td>Score</td>
+                {% for heading in irs990["header"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
             </tr>
             </thead>
             <tbody>
-            {% for result in irs990 %}
+            {% for result in irs990["result"] %}
                 <tr>
                     <td>{{result["_source"]["NAME"]}}</td>
                     <td>{{result["_source"]["EIN"]}}</td>
@@ -414,25 +409,21 @@ th {
         <table id="open990f" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
-            <td>Foundation Name</td>
-            <td>Address</td>
-            <td>Website</td>
-            <td>Email</td>
-            <td>Phone</td>
-            <td>EIN</td>
-            <td>Score</td>
+                {% for heading in open990f["header"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
             </tr>
             </thead>
             <tbody>
-            {% for result in open990f %}
+            {% for result in open990f["result"] %}
                 <tr>
                     <td>{{result["_source"]["NAME"]}}</td>
                     <td>{{result["_source"]["Address"]}}</td>
-                    <td><a target="_blank" href={{"http://" ~ result["_source"]["Website"]}}>{{result["_source"]["Website"]}}</a></td>
-                    <td>{{result["_source"]["Email"]}}</td>
                     <td>{{result["_source"]["Phone"]}}</td>
                     <td>{{result["_source"]["EIN"]}}</td>
                     <td>{{result["_score"]}}</td>
+                    <td><a target="_blank" href={{"http://" ~ result["_source"]["Website"]}}>{{result["_source"]["Website"]}}</a></td>
+                    <td>{{result["_source"]["Email"]}}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -447,17 +438,13 @@ th {
         <table id="open990g" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
-            <td>Foundation Name</td>
-            <td>Grantee</td>
-            <td>Grantee Location</td>
-            <td>Grant Purpose</td>
-            <td>Grant Amount</td>
-            <td>EIN</td>
-            <td>Score</td>
+                {% for heading in open990g["header"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
             </tr>
             </thead>
             <tbody>
-            {% for result in open990g %}
+            {% for result in open990g["result"] %}
                 <tr>
                     <td>{{result["_source"]["NAME"]}}</td>
                     <td>{{result["_source"]["Grantee"]}}</td>
@@ -502,7 +489,7 @@ th {
     <li id="cohd-cite">The Columbia Open Health Data (COHD) resource. This is freely available under the <a target="_blank" href="http://www.apache.org/licenses/LICENSE-2.0.html">APACHE 2.0 License</a>. <u>Citation</u>: Ta, Casey N.; Dumontier, Michel; Hripcsak, George; P. Tatonetti, Nicholas; Weng, Chunhua (2018): Columbia Open Health Data, a database of EHR prevalence and co-occurrence of conditions, drugs, and procedures. figshare. Collection. https://doi.org/10.6084/m9.figshare.c.4151252.v1</li>
     <li id="doid-cite">The Disease Ontology (DO) database. This is public domain (CC0 1.0 license). <u>Citation</u>: Schriml, L. M., Arze, C., Nadendla, S., Chang, Y. W., Mazaitis, M., Felix, V., Feng, G., & Kibbe, W. A. (2012). Disease Ontology: a backbone for disease semantic integration. Nucleic acids research, 40(Database issue), D940–D946. https://doi.org/10.1093/nar/gkr972.</li>
     <li id="p2g-cite">Phen2Gene and the H2GKB resources. This is <a target="_blank" href="https://github.com/WGLab/Phen2Gene/blob/master/LICENSE">MIT license</a>. <u>Citation</u>: Zhao M., Havrilla J. M., Fang L., Chen Y., Peng J., Liu C., Wu C., Sarmady M., Botas P., Isla J., Lyon G., Weng C., Wang K. (2020). Phen2Gene: Rapid Phenotype-Driven Gene Prioritization for Rare Diseases. NAR Genomics and Bioinformatics, 2(2), lqaa032. doi:10.1093/nargab/lqaa032.</li>
-    <li id="pathway-cite">Pathway Commons resource. This is <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0 license</a>. <u>Citation</u>: Cerami, E. G., Gross, B. E., Demir, E., Rodchenkov, I., Babur, O., Anwar, N., Schultz, N., Bader, G. D., & Sander, C. (2011). Pathway Commons, a web resource for biological pathway data. Nucleic acids research, 39(Database issue), D685–D690. https://doi.org/10.1093/nar/gkq1039.</li>
+    <li id="kegg-cite">Pathway Commons resource. This is <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0 license</a>. <u>Citation</u>: Cerami, E. G., Gross, B. E., Demir, E., Rodchenkov, I., Babur, O., Anwar, N., Schultz, N., Bader, G. D., & Sander, C. (2011). Pathway Commons, a web resource for biological pathway data. Nucleic acids research, 39(Database issue), D685–D690. https://doi.org/10.1093/nar/gkq1039.</li>
     <li id="fda-cite">The FDA Adverse Event Reporting System (FAERS) resource for 2020. This is public domain. More about: <a target="_blank" href="https://fis.fda.gov/extensions/FPD-QDE-FAERS/FPD-QDE-FAERS.html">see here</a>.
     <li id="pubmed-cite">The PubMed database. This is public domain. <u>Citation</u>: Sayers E. The E-utilities In-Depth: Parameters, Syntax and More. 2009 May 29 [Updated 2018 Oct 24]. In: Entrez Programming Utilities Help [Internet]. Bethesda (MD): National Center for Biotechnology Information (US); 2010-. Available from: https://www.ncbi.nlm.nih.gov/books/NBK25499/.</li>
     <li id="irs-cite">The IRS 990 AWS resource.  This is <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0 license</a>. This can be freely used and is available courtesy of the Internal Revenue Service.
@@ -542,90 +529,9 @@ th {
 
 {% block scripts %}
 <!-- make nice table with multiple pages -->
-<script type="text/javascript">
-	$(document).ready(function () {
-	  	$('#hpolink').DataTable({
-	  		"order": [[ 5, "desc" ]],
-	  		"pageLength": 5,
-	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
-	  	});
-	  	$('#phen2gene-api').DataTable({
-	  		"order": [[ 1, "asc" ]],
-	  		"pageLength": 5,
-	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
-	  	});
-	  	$('#cohd, #msh, #doid').DataTable({
-	  		"order": [[ 2, "desc" ]],
-	  		"pageLength": 5,
-	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
-	  	});
-	  	$('#ohdsi, #open990f, #open990g').DataTable({
-	  		"order": [[ 6, "desc" ]],
-	  		"pageLength": 5,
-	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
-	  	});
-	  	$('#irs990').DataTable({
-	  		"order": [[ 4, "desc" ]],
-	  		"pageLength": 5,
-	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
-	  	});
-	  	$('#hpo').DataTable({
-	  		"order": [[ 6, "desc" ]],
-	  		"pageLength": 5,
-	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
-	  	});
-	  	$('#icd10').DataTable({
-	  		"order": [[ 3, "desc" ]],
-	  		"pageLength": 5,
-	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
-	  	});
-	});
+<script type="text/javascript" src="{{ url_for('static', filename='js/style.js')}}">>
 </script>
-<script>
-$(document).ready(function(){
-  // Add smooth scrolling to all links
-  $("a").on('click', function(event) {
-
-    // Make sure this.hash has a value before overriding default behavior
-    if (this.hash !== "") {
-      // Prevent default anchor click behavior
-      event.preventDefault();
-
-      // Store hash
-      var hash = this.hash;
-
-      // Using jQuery's animate() method to add smooth page scroll
-      // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
-      $('html, body').animate({
-        scrollTop: $(hash).offset().top - 50
-      }, 800);
-    }
-  });
-});
-
-$(document).ready(function(){
- $('li a').click(function(){
-   $('li a').removeClass('active');
-   $(this).addClass('active');
- });
-});
-
-$(window).on('scroll', function() {
-    $('.container.medium').each(function() {
-        if($(window).scrollTop() >= $(this).offset().top - $("#navbarcon").height()){
-            var id = $(this).attr('id');
-            $('li a').removeClass('active');
-            $('li a[href="#'+ id +'"]').addClass('active');
-        }
-    });
-});
-
-//for mobile
-if ($(window).width() < 1060) {
- $(".nav-item").css('font-size', '1.8em');
- $(".navbar").css('height', '200px');
-}
-
+<script type="text/javascript" src="{{ url_for('static', filename='js/resulttables.js')}}">>
 </script>
 
 {% endblock %}

@@ -52,11 +52,11 @@ def phencards():
 def generate_patient_page():
     HPOquery = session['HPOquery']
     HPO_names = session['HPOnames']
-    json =session['parsingJson']
+    d2hjson = session['parsingJson']
     doc2hpo_notes = session['doc2hpo_notes']
-    session['HPOclinical'], patient_table, phen2gene_table = API.patient_page(HPOquery, HPO_names)
+    session['HPOclinical'], phen2gene, headers = API.patient_page(HPOquery, HPO_names)
     print(HPOquery, file=sys.stderr)
-    return render_template('patient.html', patient_table=patient_table, phen2gene_table=phen2gene_table, json=json, note=doc2hpo_notes)
+    return render_template('patient.html', phen2gene=phen2gene, d2hjson=d2hjson, headers=headers, note=doc2hpo_notes)
 
 @app.route('/results')
 def generate_results_page():
@@ -82,53 +82,53 @@ def generate_umls_page():
         return redirect(url_for('generate_results_page'))
 
 # pathway results
-@app.route('/pathway')
-def generate_pathway_page():
+@app.route('/kegg')
+def generate_kegg_page():
     HPOquery=session['HPOquery']
-    dispath=API.pathway_page(HPOquery)
-    return render_template('pathways.html', dispath=dispath)
+    dispath, headers = API.kegg_page(HPOquery)
+    return render_template('kegg.html', dispath=dispath, headers=headers)
 
 # cohd results
 @app.route('/cohd')
 def generate_cohd_page():
     concept_id=request.args.get('concept')
-    ancestors, conditions, drugs, procedures = API.cohd_page(concept_id)
-    return render_template('cohd.html', conditions=conditions,drugs=drugs,procedures=procedures,ancestors=ancestors)
+    ancestors, conditions, drugs, procedures, headers = API.cohd_page(concept_id)
+    return render_template('cohd.html', conditions=conditions, drugs=drugs, procedures=procedures, ancestors=ancestors, headers=headers)
 
 # clinical trials results
 @app.route('/clinical')
 def generate_clinical_page():
     if 'HPOclinical' in session:
-        clinicaljson=API.clinical_page(session['HPOclinical'])
+        clinicaljson, headers = API.clinical_page(session['HPOclinical'])
     else:
         clinicaljson={}
-    return render_template('clinical.html', clinicaljson=clinicaljson)
+    return render_template('clinical.html', clinicaljson=clinicaljson, headers=headers)
 
 # literature (pubmed) results
 @app.route('/literature')
 def generate_literature_page():
     HPOquery=session['HPOquery']
-    pubmed=API.literature_page(HPOquery)
-    return render_template('literature.html',pubmed=pubmed)
+    pubmed, headers = API.literature_page(HPOquery)
+    return render_template('literature.html',pubmed=pubmed, headers=headers)
 
 # return independent page for tocris drugs information
 @app.route('/tocris')
 def generate_tocris_page():
     HPOquery=session['HPOquery']
-    tocris=API.tocris_drugs_api(HPOquery)
-    return render_template('tocris.html', tocris=tocris)
+    tocris, headers = API.tocris_drugs_api(HPOquery)
+    return render_template('tocris.html', tocris=tocris, headers=headers)
 
 # return independent page for apexbio drugs information
 @app.route('/apexbio')
 def generate_apexbio_page():
     HPOquery=session['HPOquery']
-    apex=API.apexbt_drugs_api(HPOquery)
-    return render_template('apexbio.html', apex=apex)
+    apex, headers = API.apexbt_drugs_api(HPOquery)
+    return render_template('apexbio.html', apex=apex, headers=headers)
 
 # return independent page for wikidata drugs information (not done yet)
 @app.route('/wikidata')
 def generate_wikidata_page():
-    link ="https://www.wikidata.org/w/index.php?search=drugs+for+" + "+".join(session['HPOquery'])
+    link ="https://www.wikidata.org/w/index.php?search=drugs+for+" + "+".join(session['HPOquery'].split())
     return redirect(link)
 
 @app.route('/download_json/')

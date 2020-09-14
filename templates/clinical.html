@@ -15,18 +15,16 @@
         <table id="clinical-table" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
-            <td>Rank</td>
-            <td>CT ID</td>
-            <td>Title of Study</td>
-            <td>Condition</td>
-            <td>Intervention Name</td>
+                {% for heading in headers["Clinical"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
             </tr>
             </thead>
             <tbody>
             {% for field in study %}
                 <tr>
                     <td>{{field["Rank"]}}</td>
-                    <td><a href={{ ''.join(['https://clinicaltrials.gov/ct2/show/',field["NCTId"][0]]) }}>{{field["NCTId"][0]}}</a></td>
+                    <td><a target="_blank" href={{ ''.join(['https://clinicaltrials.gov/ct2/show/',field["NCTId"][0]]) }}>{{field["NCTId"][0]}}</a></td>
                     <td>{{field["BriefTitle"][0]}}</td>
                     <td>{{"\n".join(field["Condition"])}}</td>
                     <td>{{"\n".join(field["InterventionName"])}}</td>

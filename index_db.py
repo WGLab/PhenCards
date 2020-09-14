@@ -11,7 +11,6 @@ es = Elasticsearch(["localhost:9200"], timeout=60, retry_on_timeout=True)
 #es = Elasticsearch([Config.elasticsearch_url], timeout=60, retry_on_timeout=True)
 stopwords=["a","an","and","are","as","at","be","but","by","for","if","in","into","is","it","no","not","of","on","or","such","that","the","their","then","there","these","they","this","to","was","will","with","syndrome","syndromes","disorder","disorders","disease","diseases"]
 es_settings={
-            "number_of_shards": 1,
             "analysis": {
                 "filter": { 
                     "english_poss_stemmer": {
@@ -43,6 +42,36 @@ es_settings={
                     }
                 }
             }
+auto_settings={
+            "analysis": {
+                "filter": { 
+                        "shinglefilter": {
+                            "type": "shingle",
+                            "min_shingle_size": 3,
+                            "max_shingle_size": 5
+                            }
+                    },
+                "analyzer": {
+                    "stop_analyzer": {
+                        "type": "stop",
+                        "stopwords": "_english_",
+                        "filter": ["lowercase", "reverse", "shinglefilter"],
+                        "tokenizer": "whitespace"
+                        },
+                    }
+                }
+            }
+autosearch_settings={
+                    "type" : "completion",
+                    "analyzer": "stop_analyzer",
+                    "search_analyzer": "stop_analyzer",
+                    "contexts" : [
+                    {
+                        "name": "set",
+                        "type": "category"
+                    },
+                ]
+                }
 search_settings={
                     "type": "text",
                     "analyzer": "ngram_analyzer",
@@ -543,24 +572,7 @@ def index_hpo(INDEX_NAME='hpo',INDEX_NAME2='hpolink',path_to_hpo='/media/databas
 
 def index_autosuggest(INDEX_NAME='autosuggest', path_to_hpo='/media/database/HPO/terms.tsv', path_to_icd10='/media/database/ICD10_data_result/ICD10-DATA.txt', path_to_phenotype='/media/database/HPO/phenotype_annotations.tsv', path_to_ohdsi='/media/database/OHDSI/CONCEPT.csv', path_to_mesh='/media/database/MSH_data_result/MSH-DATA.txt', path_to_doid='/media/database/DOID_data_result/DOID-DATA.txt'):
     request_body = {
-        "settings": {
-            "analysis": {
-                "filter": {
-                    "english_stop": {
-                        "type": "stop",
-                        "stopwords":  "_english_"
-                        }
-                },
-                "analyzer": {
-                    "rebuilt_stop": {
-                    "tokenizer": "lowercase",
-                    "filter": [
-                        "english_stop","lowercase"          
-                    ]
-                    }
-                }
-            }
-        },
+        "settings": auto_settings,
         "mappings": {
             "properties": {
                 "ID": {
@@ -569,16 +581,7 @@ def index_autosuggest(INDEX_NAME='autosuggest', path_to_hpo='/media/database/HPO
                 "NAME": {
                     "type": "text"
                 },
-                "NAMESUGGEST":{ 
-                    "type" : "completion",
-                    "analyzer" : "rebuilt_stop",
-                    "contexts" : [
-                    {
-                        "name": "set",
-                        "type": "category"
-                    },
-                ]
-                },
+                "NAMESUGGEST": autosearch_settings,
                 "ABBR": {
                     "type": "text",
                 }
@@ -600,7 +603,6 @@ def index_autosuggest(INDEX_NAME='autosuggest', path_to_hpo='/media/database/HPO
                     data = {}
                     data['ID'] = row['id']
                     data['NAME'] = row['name']
-                    data['NAMEEXACT'] = row['name']
                     data['NAMESUGGEST'] = {}
                     data['NAMESUGGEST']['input'] = [row['name']]
                     data['NAMESUGGEST']['input'].extend(row['name'].split())
@@ -758,12 +760,12 @@ def index_autosuggest(INDEX_NAME='autosuggest', path_to_hpo='/media/database/HPO
                     print("now =" + str(datetime.now()) + ': indexed DOID completed!')
 
 if __name__ == "__main__":
-    index_open990()
-    index_irs990()
-    index_doid()
-    index_msh()
-    index_icd10()
-    index_umls()
-    index_ohdsi()
-    index_hpo()
+    # index_open990()
+    # index_irs990()
+    # index_doid()
+    # index_msh()
+    # index_icd10()
+    # index_umls()
+    # index_ohdsi()
+    # index_hpo()
     index_autosuggest()

@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+
+{#<h1>print</h1>#}
+
+<div class="container" >
+    <br><br>
+    Here are the pathways for diseases linked to the search term from <a href="https://www.kegg.jp">KEGG</a>:
+	<br><br>
+    {% if dispath %}
+        <table id="pathway" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+                {% for heading in headers["KEGG"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for path in dispath %}
+                <tr>
+                    <td>{{"\n".join(dispath[path][0])}}</td>
+                    <td><a href={{dispath[path][1]}}>{{path}}</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the search term.
+    {% endif %}
+
+</div>
+
+<!-- make nice table with multiple pages -->
+<script type="text/javascript">
+        $(document).ready(function () {
+                $('#pathway').DataTable({
+                        "order": [[ 0, "asc" ]],
+                        "pageLength": 5,
+                        "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
+                });
+        });
+
+</script>
+
+{% endblock %}

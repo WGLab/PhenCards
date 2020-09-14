@@ -6,6 +6,7 @@ import sys
 import xml.etree.ElementTree as ET
 import time
 from lib.json import format_json_table
+from lib.style import generate_headers
 from json2html import json2html
 import re
 from collections import defaultdict
@@ -53,6 +54,8 @@ def cohd_page(concept_id):
         if rsearch.status_code == requests.status_codes.codes.OK:
             results[domain] = rsearch.json()
             results[domain] = sorted(results[domain]['results'], key=lambda k: k['chi_square'], reverse=True)
+            for i in results[domain]:
+                i['chi_square'] = str(round(float(i['chi_square']),2))
         else:
             results[domain] = []
 
@@ -60,11 +63,13 @@ def cohd_page(concept_id):
     conditions = results['Condition']
     drugs = results['Drug']
     procedures = results['Procedure']
-    return ancestors, conditions, drugs, procedures
+    headers=generate_headers()
+    headers={"COHDC": headers['COHDC'], "COHDA": headers['COHDA']}
+    return ancestors, conditions, drugs, procedures, headers
 
 # pathway page generator
 
-def pathway_page(phenname):
+def kegg_page(phenname):
     phenname=phenname.replace("_", "+").replace(" ","+")
     diseases=requests.get('http://rest.kegg.jp/find/disease/'+phenname, verify=False, stream=True)
     diseases=[x.split("\t") for x in diseases.text.strip().split("\n")]
@@ -84,8 +89,10 @@ def pathway_page(phenname):
             if re.search("NAME\s*", line):
                 name=re.split("\w*\s*",line,1)[-1].split("-")[0]
         dispath[name]=[paths[pid],link]
+    headers=generate_headers()
+    headers={"KEGG": headers['KEGG']}
 
-    return dispath
+    return dispath, headers
 
 # pubmed page generator
 def literature_page(HPOquery):
@@ -170,7 +177,9 @@ def literature_page(HPOquery):
         if title:
             publication = title + " " + authors + ". " + journal + " " + pubdate + volume + issue + pages + ". " + doi
         pubmed[id1]=[publication,top25[id1]]
-    return pubmed
+    headers=generate_headers()
+    headers={"Pubmed": headers['Pubmed']}
+    return pubmed, headers
 
 # tocris drugs page generator
 def tocris_drugs_api(query):
@@ -185,11 +194,9 @@ def tocris_drugs_api(query):
             item = item[:idx] + "https://www.tocris.com/" + item[idx+1:] #+1 removes extra slash
             drugs.append(item)
 
-    drugs = format_json_table(drugs, 'DRUG')
-    drugs = json2html.convert(json=drugs,
-          table_attributes="id=\"results-drugs\" class=\"table table-striped table-bordered table-sm\"",
-          escape=False)
-    return drugs
+    headers=generate_headers()
+    headers={"Tocris": headers['Tocris']}
+    return drugs, headers
 
 # apexbio page generator
 def apexbt_drugs_api(query):
@@ -203,8 +210,10 @@ def apexbt_drugs_api(query):
             link=item.split("\"")[1]
             drug=item.split("<span class=\"product-list-name\">")[1].split("<")[0]
             drugs.append([link,drug])
-            
-    return drugs
+
+    headers=generate_headers()
+    headers={"APEX": headers['APEX']}
+    return drugs, headers
 
 # clinical trial page generator
 def clinical_page(HPOquery):
@@ -226,7 +235,10 @@ def clinical_page(HPOquery):
         clinicaljson = clinicaljson.json()['StudyFieldsResponse']
     except:
         clinicaljson = {}
-    return clinicaljson
+
+    headers=generate_headers()
+    headers={"Clinical": headers['Clinical']}
+    return clinicaljson, headers
 
 # phen2gene api call
 def phen2gene_page(HPOquery, patient=False):
@@ -243,22 +255,15 @@ def phen2gene_page(HPOquery, patient=False):
         GeneAPI_JSON = {}
         print (e)
 
-    p2g_table = json2html.convert(json=GeneAPI_JSON,
-                    table_attributes="id=\"phen2gene-api\" class=\"table table-striped table-bordered table-sm\"")
-    return p2g_table
+    return GeneAPI_JSON
 
 def patient_page(HPOquery, HPO_names):
-    phen_dict = defaultdict(list)
-    for i, (HPOId, HPOName) in enumerate(zip(HPOquery, HPO_names)):
-        phen_dict[i].extend([HPOId, HPOName])
-    results = format_json_table(phen_dict, 'patient')
-    patient_table = json2html.convert(json=results,
-                                    table_attributes="id=\"doc2hpo-results\" class=\"table table-striped table-bordered table-sm\"")
-
     HPOclinical="+OR+".join([s.replace(" ", "+") for s in HPO_names])
     phen2gene_table = phen2gene_page(HPOquery,patient=True)
+    headers=generate_headers()
+    headers={"HPOPatient": headers["HPOPatient"], "P2G": headers['P2G']}
 
-    return HPOclinical, patient_table, phen2gene_table
+    return HPOclinical, phen2gene_table, headers
 
 def umls_auth(user="username", password="wouldntyoulovetoknow"):
     data = {"licenseCode": "NLM-323530719", # from uts profile

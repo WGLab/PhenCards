@@ -10,16 +10,9 @@
         <table id="ancestors" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
-            <td>Concept Name</td>
-            <td>Ancestor Concept ID</td>
-            <td>Concept Count</td>
-            <td>Vocabulary ID</td>
-            <td>Domain ID</td>
-            <td>Concept Class ID</td>
-            <td>Concept Code</td>
-            <td>Standard Concept</td>
-            <td>Max Levels of Separation</td>
-            <td>Min Levels of Separation</td>
+                {% for heading in headers["COHDA"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
             </tr>
             </thead>
             <tbody>
@@ -57,12 +50,9 @@
         <table id="conditions" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
-            <td>Concept 2 Name</td>
-            <td>Concept 2 Domain</td>
-            <td>Concept 2 ID</td>
-            <td>Chi-Square value</td>
-            <td>p-value</td>
-            <td>Concept 1 ID</td>
+                {% for heading in headers["COHDC"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
             </tr>
             </thead>
             <tbody>
@@ -97,12 +87,9 @@
         <table id="drugs" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
-            <td>Concept 2 Name</td>
-            <td>Concept 2 Domain</td>
-            <td>Concept 2 ID</td>
-            <td>Chi-Square value</td>
-            <td>p-value</td>
-            <td>Concept 1 ID</td>
+                {% for heading in headers["COHDC"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
             </tr>
             </thead>
             <tbody>
@@ -136,12 +123,9 @@
         <table id="procedures" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
-            <td>Concept 2 Name</td>
-            <td>Concept 2 Domain</td>
-            <td>Concept 2 ID</td>
-            <td>Chi-Square value</td>
-            <td>p-value</td>
-            <td>Concept 1 ID</td>
+                {% for heading in headers["COHDC"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
             </tr>
             </thead>
             <tbody>

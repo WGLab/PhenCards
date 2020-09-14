@@ -1,0 +1,98 @@
+db	term	definition
+HPO	HPO Term	The full name of the Human Phenotype Ontology term matching the query.
+HPO	HPO ID	The unique ID for the HPO term in the HPO database.
+HPO	Alternate ID	Alternative or other unique IDs for the term in the HPO database.
+HPO	Child IDs	The leaf or child term IDs of this term in the ontology.
+HPO	Parent IDs	The ancestor or parent term IDs for this term in the ontology.
+HPO	External IDs	The unique IDs for this same term in other databases.
+HPO	Score	The elasticsearch score for the query term.  The higher this score, the more likely it is what you were looking for.
+ICD-10	ICD-10 Name	The official name for the International Classification of Diseases (10th revision) term matching the query.  These are effectively billing classifications of diseases in the healthcare system, but they contain extremely specific and useful information that can be used in research or as a clinical standard.
+ICD-10	ICD-10 ID	The unique ID for the term in the ICD-10 nomenclature.
+ICD-10	Abbreviated Name	The sometimes abbreviated name of the official ICD-10 name, often the same.
+ICD-10	Score	The elasticsearch score for the query term.  The higher this score, the more likely it is what you were looking for.
+OHDSI	Concept Name	The full name of the Observational Health Data Sciences and Informatics database term matching the query.  This term could be in several different databases, and may look identical.  This is the result of the Observational Medical Outcomes Partnership (OMOP) Common Data Model, but each database term gets a unique ID.
+OHDSI	Concept ID	The unique ID of this term in the OHDSI database.  There is a corresponding ID in the original database so you can always trace it back.
+OHDSI	Domain	The domain of knowledge from where this term is derived. Could be a drug, a condition, a measurement, observation, device, or procedure.
+OHDSI	Vocabulary of Origin	There are well over 100 different vocabularies merged into the OHDSI database. This is the original vocabulary database name.
+OHDSI	Concept Class	This is how the term is classified in the OHDSI database with respect to its original database. Most of the terminology is unique to OHDSI, but some is from the original databases.
+OHDSI	Original Vocab ID	This is the unique ID for the term in its original database of origin.	
+OHDSI	Score	The elasticsearch score for the query term.  The higher this score, the more likely it is what you were looking for.	
+MeSH	Term Name	The full official name for the term in the Medical Subject Headings vocabulary, maintained by the National Laboratory of Medicine and used to make PubMed article searches more accurate.
+MeSH	MeSH ID	The unique of the term in the MeSH database.
+MeSH	Score	The elasticsearch score for the query term.  The higher this score, the more likely it is what you were looking for.
+UMLS	Concept Name	The full name of the Unified Medical Language System term matching the query. Interestingly, unlike OHDSI, when the term is duplicated, if it is the same it is still assigned the same unique ID despite being from a different database.  This system has been going since the 1980s and is a powerful tool for natural language processing of medical text.
+UMLS	Concept ID	The unique ID of the term in the UMLS database.
+UMLS	Source ID	The original source ID, where applicable, of the term in the UMLS database.
+UMLS	Source Name	The original database where the UMLS term came from, abbreviated.
+UMLS	Source Type	The abbreviation for the term type in the source vocabulary, for example PN (Metathesaurus Preferred Name) or CD (Clinical Drug). 
+UMLS	Language	The original Language of the term.
+UMLS	Score	The elasticsearch score for the query term.  The higher this score, the more likely it is what you were looking for.
+COHD	Concept Name	This is the name of the OHDSI term in the Columbia Open Health Data database.  The term is unique because COHD only uses filtered SNOMED terms as the patient data comes from Columbia University Medical Center, at least for the time being.  This data is up-to-date constantly as it comes directly from the API.
+COHD	Concept ID	The unique ID of the OHDSI term in the COHD database.  Corresponds to one OHDSI term.
+COHD	Concept Count	The number of times this term appears in patient notes (not per patient) in the COHD database.
+COHD	Vocabulary ID	The original vocabulary of origin for the OHDSI term in COHD.  Should be SNOMED, but may be some exceptions in the future.
+COHD	Domain ID	The OHDSI domain for the term, most likely a condition, but can be other things, like drugs, procedures.
+COHD	Concept Class ID	The unique classification ID for the OHDSI concept.  Should be mostly clinical findings, but can be other things as well.
+COHD	Concept Code	The unique ID of the concept in the original database.
+DO	Disease Name	The full name of the disease term in the Disease Ontology database.  Maintained mostly by the University of Maryland currently and linked to several other disease and medical term databases.
+DO	DO ID	The unique ID of the term in the DO database.
+DO	Score	The elasticsearch score for the query term.  The higher this score, the more likely it is what you were looking for.
+HPOlink	Disease Name	The name of the disease matching the phenotype term query and linked to the HPO term also matching the phenotype query.
+HPOlink	Related Database ID	The unique ID of the term in the database linked to the HPO term.
+HPOlink	Database Name	The name of the original disease database (Online Mendelian Inheritance in Man, DECIPHER DatabasE of genomiC varIation and Phenotype in Humans using Ensembl Resources, or ORPHANET) linked to the phenotypically descriptive HPO term on the right.
+HPOlink	Linked HPO term	This term is the HPO term linked to the phenotype term query but is also used as part of the elasticsearch query.
+HPOlink	Linked HPO ID	The unique ID for the linked HPO term.
+HPOlink	Score	The elasticsearch score for the query term.  The higher this score, the more likely it is what you were looking for.
+P2G	Gene	The HGNC approved gene name for the gene linked to the first ranked HPO term for your phenotype term query, courtesy of Phen2Gene.
+P2G	Rank	This is the Phen2Gene rank for the gene on the left.  The lower, the better, and the more likely it is to be related to your phenotype term in a potential patient.
+P2G	Score	This is the Phen2Gene score for this gene's relationship with the HPO term.  The higher the better.  Factors into the rank calculation directly.  Not particularly human interpretable, but scales from 0 to 1.
+P2G	Status	This tells the user if the gene came from the first step of the Phen2Gene process, linking diseases and genes, called "SeedGene," or the second step, which links gene-gene relationships, called "Predicted."
+IRS	Foundation Name	This is the name of the 990-filing non-profit foundation that has a relationship with the phenotype term query.  Check the score on the right and be sure it is related.  Surprisingly a lot of them are.  This is public domain data that comes straight from the IRS.
+IRS	EIN	This is the unique employer number for the company's tax purposes.  Type this in Google, and you will find a lot of information about their business.
+IRS	Filing Date	This is just the date they filed their taxes (currently for 2019).
+IRS	URL	This is a link out to a public XML file on AWS hosted by the IRS.  This has a ton of information about the company, like who runs it, what the address is, phone numbers, et cetera.  Check it out.
+IRS	Score	The elasticsearch score for the query term.  The higher this score, the more likely it is what you were looking for.
+990F	Foundation Name	This is the name of the 990-filing non-profit foundation that has a relationship with the phenotype term query.  Check the score on the right and be sure it is related.  Surprisingly a lot of them are.  This data was parsed from the IRS public XML files by Open990, a for-profit company that has done a decent job parsing some of this data into CSV files.
+990F	Address	The address of the non-profit foundation.
+990F	Phone	The phone number of the foundation.
+990F	EIN	 This is the unique employer number for the company's tax purposes.  Type this in Google, and you will find a lot of information about their business.
+990F	Score	The elasticsearch score for the query term.  The higher this score, the more likely it is what you were looking for.
+990F	Website	The website of the non-profit foundation.  Often not there, unfortunately.
+990F	Email	The e-mail address of the non-profit foundation.  Often not there, unfortunately.
+990G	Foundation Name	This is the name of the 990-filing non-profit foundation that has a relationship with the phenotype term query.  Check the score on the right and be sure it is related.
+990G	Grantee	To whom or to what company the grant was given.
+990G	Grantee Location	Where the grantee is located.
+990G	Grant Purpose	Why the grant was given to the grantee.
+990G	Grant Amount	How much money the grant was.
+990G	EIN	This is the unique employer number for the foundation granting the money's tax purposes.  Type this in Google, and you will find a lot of information about their business.
+990G	Score	The elasticsearch score for the query term.  The higher this score, the more likely it is what you were looking for.
+Tocris	Drug	Name of the drug in the Tocris company website that is linked to the phenotype term query.
+APEX	Drug	Name of the drug in the APExBio company website that is linked to the phenotype term query.
+KEGG	Diseases	Name of the disease term in KEGG database linked to the phenotype term query.
+KEGG	Pathway	Name of the pathway in the KEGG database linked to the corresponding disease term in KEGG on the left.
+Clinical	Rank	The best match rank for the phenotype term query according to ClinicalTrials.gov's search algorithm.
+Clinical	CT ID	The unique clinical trial ID for this trial.  Links out to the full page for this clinical trial on ClinicalTrials.gov.
+Clinical	Title of Study	The name of the clinical trial study, often contains what it involves doing.
+Clinical	Condition	The name of the phenotypic condition for which the trial was performed. Also what the phenotype search term was matched against.
+Clinical	Intervention Name	This is what was actually used in the clinical trial as treatment.  Could be anything, could just be an educational study, could be surgery, or a drug.
+Pubmed	PubMed ID	The unique ID of the article in PubMed.  Links out to the actual paper on the PubMed site.
+Pubmed	Publication Information	The formatted citation for the article in PubMed for convenience.
+Pubmed	Times cited in PubMed	This is a count of how many times other articles also archived in PubMed have cited this.  This is a more accurate number than Google Scholar, and is how the we have sorted and ranked these articles in combination with the Best Match algorithm at PubMed.
+HPOPatient	HPO ID	The unique ID for the HPO term in the HPO database.
+HPOPatient	HPO Term	The full name of the Human Phenotype Ontology term matching the ID.
+COHDC	Concept 2 ID	The unique ID of the OHDSI term related to the search term through co-occurrence in the COHD database.  Corresponds to one OHDSI term.
+COHDC	Concept 2 Domain	The OHDSI domain for the related term, a condition, drug, or procedure.
+COHDC	Concept 2 Name	This is the name of the OHDSI term in the Columbia Open Health Data database related to the search term through co-occurrence in patient notes. The term is unique because COHD only uses filtered SNOMED terms as the patient data comes from Columbia University Medical Center, at least for the time being.  This data is up-to-date constantly as it comes directly from the API.
+COHDC	Chi-Square value	This value is calculated using a 2x2 contigency table with four values: The number of patients with the first term and the second term, the number of patients without the first term but with the second term, the number of patients who have the first term but not the second term, and the number of patients that don't have the either term (which is a very large number, usually).  The samples must be random, and the observations independent of one another, which they mostly are.  The one disadvantage of this calculation is it is artificially inflated by the fourth number.
+COHDC	p-value	This is the p-value or probability value of the chi-square test mentioned on the left.  The likelihood that these results occurred by random chance, assuming the null hypothesis is correct.
+COHDC	Concept 1 ID	The unique ID of your original search term in OHDSI, in the COHD database.  Corresponds to one OHDSI term.
+COHDA	Concept Name	This is the name of the ancestral OHDSI term in the Columbia Open Health Data database.  The term is unique because COHD only uses filtered SNOMED terms as the patient data comes from Columbia University Medical Center, at least for the time being.  This data is up-to-date constantly as it comes directly from the API.
+COHDA	Ancestor Concept ID	The unique ID of the ancestral OHDSI term in the COHD database.  Corresponds to one OHDSI term that is a direct ancestor of the original term query.
+COHDA	Concept Count	The number of times this ancestral term appears in patient notes (not per patient) in the COHD database.
+COHDA	Vocabulary ID	The original vocabulary of origin for the ancestral OHDSI term in COHD.  Should be SNOMED, but may be some exceptions in the future.
+COHDA	Domain ID	The OHDSI domain for the ancestral term, most likely a condition, but can be other things, like drugs, procedures.
+COHDA	Concept Class ID	The unique classification ID for the ancestral OHDSI concept.  Should be mostly clinical findings, but can be other things as well.
+COHDA	Concept Code	The unique ID of the ancestral concept in the original database.
+COHDA	Standard Concept	Indicates whether the ancestral term is standardized or not, S indicates that it is.
+COHDA	Max Levels of Separation	The maximum number of ancestral nodes this term is above the query term in the OHDSI vocabulary tree.  Depends on the route you travel.
+COHDA	Min Levels of Separation	The minimum number of ancestral nodes this term is above the query term in the OHDSI vocabulary tree.  Depends on the route you travel.
