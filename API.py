@@ -177,7 +177,9 @@ def literature_page(HPOquery):
         if title:
             publication = title + " " + authors + ". " + journal + " " + pubdate + volume + issue + pages + ". " + doi
         pubmed[id1]=[publication,top25[id1]]
-    return pubmed
+    headers=generate_headers()
+    headers={"Pubmed": headers['Pubmed']}
+    return pubmed, headers
 
 # tocris drugs page generator
 def tocris_drugs_api(query):

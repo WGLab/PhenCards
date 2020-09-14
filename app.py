@@ -108,8 +108,8 @@ def generate_clinical_page():
 @app.route('/literature')
 def generate_literature_page():
     HPOquery=session['HPOquery']
-    pubmed=API.literature_page(HPOquery)
-    return render_template('literature.html',pubmed=pubmed)
+    pubmed, headers = API.literature_page(HPOquery)
+    return render_template('literature.html',pubmed=pubmed, headers=headers)
 
 # return independent page for tocris drugs information
 @app.route('/tocris')

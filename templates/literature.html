@@ -13,9 +13,9 @@
         <table id="pubmed-table" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
-            <td>PubMed ID</td>
-            <td>Publication Information</td>
-            <td>Times cited in PubMed</td>
+                {% for heading in headers["Pubmed"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
             </tr>
             </thead>
             <tbody>
