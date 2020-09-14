@@ -14,12 +14,6 @@ $(document).ready(function () {
                 "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
                 "order": [[ col, sort ]],
                 responsive: true,
-                columnDefs: [
-                    { width: 200, targets: 0 }
-                ]
             });
-        if(!$(this).parent().hasClass("table-responsive")){
-            $(this).wrap("<div class='table-responsive'></div>");
-            }
         });
 });

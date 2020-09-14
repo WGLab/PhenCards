@@ -40,13 +40,7 @@ $(document).ready(function () {
                 "pageLength": 5,
                 "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
                 "order": [[ col, sort ]],
-                responsive: true,
-                columnDefs: [
-                    { width: 200, targets: 0 }
-                ]
+                "responsive": "true"
             });
-        if(!$(this).parent().hasClass("table-responsive")){
-            $(this).wrap("<div class='table-responsive'></div>");
-            }
         });
 });

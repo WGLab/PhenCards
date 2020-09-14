@@ -114,21 +114,29 @@ def results_page(HPOquery):
     # indices: doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi
     headers=generate_headers()
     hpo = {'result': indexquery(query_json,index='hpo',size=100)['hits']['hits']} # list of results line by line in "_source"
-    hpo['header']=headers['HPO']
+    hpo['header'] = headers['HPO']
     try:
         session['HPOID']=hpo['result'][0]['_source']['HPO ID']
     except IndexError:
         session['HPOID']=""
-    hpolink = indexquery(query_json,index='hpolink',size=100)['hits']['hits']
-    doid = indexquery(query_json,index='doid',size=100)['hits']['hits']
-    msh = indexquery(query_json,index='msh',size=100)['hits']['hits']
+    hpolink = {'result': indexquery(query_json,index='hpolink',size=100)['hits']['hits']}
+    hpolink['header'] = headers['HPOlink']
+    doid = {'result': indexquery(query_json,index='doid',size=100)['hits']['hits']}
+    doid['header'] = headers['DO']
+    msh = {'result': indexquery(query_json,index='msh',size=100)['hits']['hits']}
+    msh['header'] = headers['MeSH']
     icd10 = {'result': indexquery(query_json,index='icd10',size=100)['hits']['hits']}
-    icd10['header']=headers['ICD-10']
-    umls = indexquery(query_json,index='umls',size=100)['hits']['hits']
-    ohdsi = indexquery(query_json,index='ohdsi',size=100)['hits']['hits']
-    open990f = indexquery(query_json,index='open990f',size=100)['hits']['hits']
-    open990g = indexquery(query_json,index='open990g',size=100)['hits']['hits']
-    irs990 = indexquery(query_json,index='irs990',size=100)['hits']['hits']
+    icd10['header'] = headers['ICD-10']
+    umls = {'result': indexquery(query_json,index='umls',size=100)['hits']['hits']}
+    umls['header'] = headers['UMLS']
+    ohdsi = {'result': indexquery(query_json,index='ohdsi',size=100)['hits']['hits']}
+    ohdsi['header'] = headers['OHDSI']
+    open990f = {'result': indexquery(query_json,index='open990f',size=100)['hits']['hits']}
+    open990f['header'] = headers['990F']
+    open990g = {'result': indexquery(query_json,index='open990g',size=100)['hits']['hits']}
+    open990g['header'] = headers['990G']
+    irs990 = {'result': indexquery(query_json,index='irs990',size=100)['hits']['hits']}
+    irs990['header'] = headers['IRS']
 
     # only allow internal redirect to results page
     # <wiki link> https://en.wikipedia.org/wiki/Waterhouse%E2%80%93Friderichsen_syndrome
@@ -137,10 +145,12 @@ def results_page(HPOquery):
     # <HPO ID link> https://hpo.jax.org/app/browse/search?q=HP:0000377&navFilter=all
     # <HPO string> https://hpo.jax.org/app/browse/search?q=DiGeorge%20syndrome&navFilter=all
 
-    cohd = API.generate_cohd_list(HPOquery)
-    phen2gene=API.phen2gene_page(session['HPOID'], patient=False)
+    cohd = {'result': API.generate_cohd_list(HPOquery)}
+    cohd['header'] = headers['COHD']
+    phen2gene = {'result': API.phen2gene_page(session['HPOID'], patient=False)}
+    phen2gene['header'] = headers['P2G']
 
-    session['HPOquery']=HPOquery.replace("_", "+").replace(" ","+")
+    session['HPOquery'] = HPOquery.replace("_", "+").replace(" ","+")
 
     return doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, cohd
 
