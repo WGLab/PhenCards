@@ -6,6 +6,7 @@ import sys
 import xml.etree.ElementTree as ET
 import time
 from lib.json import format_json_table
+from lib.style import generate_headers
 from json2html import json2html
 import re
 from collections import defaultdict
@@ -53,6 +54,8 @@ def cohd_page(concept_id):
         if rsearch.status_code == requests.status_codes.codes.OK:
             results[domain] = rsearch.json()
             results[domain] = sorted(results[domain]['results'], key=lambda k: k['chi_square'], reverse=True)
+            for i in results[domain]:
+                i['chi_square'] = str(round(float(i['chi_square']),2))
         else:
             results[domain] = []
 
@@ -60,7 +63,9 @@ def cohd_page(concept_id):
     conditions = results['Condition']
     drugs = results['Drug']
     procedures = results['Procedure']
-    return ancestors, conditions, drugs, procedures
+    headers=generate_headers()
+    headers={"COHDC": headers['COHDC'], "COHDA": headers['COHDA']}
+    return ancestors, conditions, drugs, procedures, headers
 
 # pathway page generator
 

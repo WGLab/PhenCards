@@ -92,8 +92,8 @@ def generate_pathway_page():
 @app.route('/cohd')
 def generate_cohd_page():
     concept_id=request.args.get('concept')
-    ancestors, conditions, drugs, procedures = API.cohd_page(concept_id)
-    return render_template('cohd.html', conditions=conditions,drugs=drugs,procedures=procedures,ancestors=ancestors)
+    ancestors, conditions, drugs, procedures, headers = API.cohd_page(concept_id)
+    return render_template('cohd.html', conditions=conditions, drugs=drugs, procedures=procedures, ancestors=ancestors, headers=headers)
 
 # clinical trials results
 @app.route('/clinical')
