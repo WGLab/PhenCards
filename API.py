@@ -198,7 +198,10 @@ def tocris_drugs_api(query):
     drugs = json2html.convert(json=drugs,
           table_attributes="id=\"results-drugs\" class=\"table table-striped table-bordered table-sm\"",
           escape=False)
-    return drugs
+
+    headers=generate_headers()
+    headers={"Tocris": headers['Tocris']}
+    return drugs, headers
 
 # apexbio page generator
 def apexbt_drugs_api(query):
@@ -212,8 +215,10 @@ def apexbt_drugs_api(query):
             link=item.split("\"")[1]
             drug=item.split("<span class=\"product-list-name\">")[1].split("<")[0]
             drugs.append([link,drug])
-            
-    return drugs
+
+    headers=generate_headers()
+    headers={"APEX": headers['APEX']}
+    return drugs, headers
 
 # clinical trial page generator
 def clinical_page(HPOquery):
@@ -235,7 +240,10 @@ def clinical_page(HPOquery):
         clinicaljson = clinicaljson.json()['StudyFieldsResponse']
     except:
         clinicaljson = {}
-    return clinicaljson
+
+    headers=generate_headers()
+    headers={"Clinical": headers['Clinical']}
+    return clinicaljson, headers
 
 # phen2gene api call
 def phen2gene_page(HPOquery, patient=False):

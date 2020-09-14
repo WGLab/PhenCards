@@ -99,10 +99,10 @@ def generate_cohd_page():
 @app.route('/clinical')
 def generate_clinical_page():
     if 'HPOclinical' in session:
-        clinicaljson=API.clinical_page(session['HPOclinical'])
+        clinicaljson, headers = API.clinical_page(session['HPOclinical'])
     else:
         clinicaljson={}
-    return render_template('clinical.html', clinicaljson=clinicaljson)
+    return render_template('clinical.html', clinicaljson=clinicaljson, headers=headers)
 
 # literature (pubmed) results
 @app.route('/literature')
@@ -115,15 +115,15 @@ def generate_literature_page():
 @app.route('/tocris')
 def generate_tocris_page():
     HPOquery=session['HPOquery']
-    tocris=API.tocris_drugs_api(HPOquery)
-    return render_template('tocris.html', tocris=tocris)
+    tocris, headers = API.tocris_drugs_api(HPOquery)
+    return render_template('tocris.html', tocris=tocris, headers=headers)
 
 # return independent page for apexbio drugs information
 @app.route('/apexbio')
 def generate_apexbio_page():
     HPOquery=session['HPOquery']
-    apex=API.apexbt_drugs_api(HPOquery)
-    return render_template('apexbio.html', apex=apex)
+    apex, headers = API.apexbt_drugs_api(HPOquery)
+    return render_template('apexbio.html', apex=apex, headers=headers)
 
 # return independent page for wikidata drugs information (not done yet)
 @app.route('/wikidata')
