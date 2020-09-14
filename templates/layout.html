@@ -64,26 +64,23 @@
     src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.es6.min.js"></script>
     <script type="text/javascript"
 	src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/0.10.0/lodash.min.js"></script>
-        <!-- Font Awesome -->
-    <link
-      rel="stylesheet"
-      href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
-      integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
-      crossorigin="anonymous"
-    />
-
-    
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+    <script>
+    WebFont.load({
+    google: {
+      families: ['Open Sans:500', 'Roboto:300']
+        }
+    });
+    </script> 
 
 </head>
-
-<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&family=Roboto:wght@300&display=swap" rel="stylesheet">
 
     <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
         <a class="navbar-brand text-light ml-0" id="nav-home" style="font-family: 'Open Sans', sans-serif; font-size: xx-large;" href="{{ url_for('phencards') }}">PhenCards</a>
         <a class="nav-link text-light ml-0" style="cursor: pointer; font-family: 'Open Sans', sans-serif; font-size: x-large;" id="contact" data-toggle="modal" data-target="#contactModal" style="cursor: pointer;">Contact</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarcon"
             aria-controls="navbarcon" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="fas fa-bars mr-0"></span>
+            <span class="navbar-toggler-icon"></span>
         </button>
         {% block nav %}
         {% endblock %}

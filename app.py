@@ -54,9 +54,9 @@ def generate_patient_page():
     HPO_names = session['HPOnames']
     json =session['parsingJson']
     doc2hpo_notes = session['doc2hpo_notes']
-    session['HPOclinical'], patient_table, phen2gene_table = API.patient_page(HPOquery, HPO_names)
+    session['HPOclinical'], patient_table, phen2gene = API.patient_page(HPOquery, HPO_names)
     print(HPOquery, file=sys.stderr)
-    return render_template('patient.html', patient_table=patient_table, phen2gene_table=phen2gene_table, json=json, note=doc2hpo_notes)
+    return render_template('patient.html', patient_table=patient_table, phen2gene=phen2gene, json=json, note=doc2hpo_notes)
 
 @app.route('/results')
 def generate_results_page():

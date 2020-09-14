@@ -597,7 +597,10 @@ th {
 	  		"pageLength": 5,
 	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
 	  		"order": [[ col, sort ]],
-                        responsive: true
+                        responsive: true,
+                        columnDefs: [
+                            { width: 200, targets: 0 }
+                        ]
                     });
                 if(!$(this).parent().hasClass("table-responsive")){
                     $(this).wrap("<div class='table-responsive'></div>");
@@ -649,6 +652,13 @@ if (/Mobi|Android/i.test(navigator.userAgent)) {
          $(".nav-item").css('font-size', '1.8em');
          $(".navbar").css('height', '120px');
 }
+
+$(window).resize(function(){
+    width = $(window).width();
+    $('.table').each(function() {
+        $(this)
+    }); 
+    });
 
 </script>
 
