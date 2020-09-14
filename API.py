@@ -194,11 +194,6 @@ def tocris_drugs_api(query):
             item = item[:idx] + "https://www.tocris.com/" + item[idx+1:] #+1 removes extra slash
             drugs.append(item)
 
-    drugs = format_json_table(drugs, 'DRUG')
-    drugs = json2html.convert(json=drugs,
-          table_attributes="id=\"results-drugs\" class=\"table table-striped table-bordered table-sm\"",
-          escape=False)
-
     headers=generate_headers()
     headers={"Tocris": headers['Tocris']}
     return drugs, headers
