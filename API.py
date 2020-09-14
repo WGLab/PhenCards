@@ -260,8 +260,10 @@ def phen2gene_page(HPOquery, patient=False):
 def patient_page(HPOquery, HPO_names):
     HPOclinical="+OR+".join([s.replace(" ", "+") for s in HPO_names])
     phen2gene_table = phen2gene_page(HPOquery,patient=True)
+    headers=generate_headers()
+    headers={"HPOPatient": headers["HPOPatient"], "P2G": headers['P2G']}
 
-    return HPOclinical, phen2gene_table
+    return HPOclinical, phen2gene_table, headers
 
 def umls_auth(user="username", password="wouldntyoulovetoknow"):
     data = {"licenseCode": "NLM-323530719", # from uts profile
