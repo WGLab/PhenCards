@@ -52,11 +52,11 @@ def phencards():
 def generate_patient_page():
     HPOquery = session['HPOquery']
     HPO_names = session['HPOnames']
-    json =session['parsingJson']
+    d2hjson = session['parsingJson']
     doc2hpo_notes = session['doc2hpo_notes']
-    session['HPOclinical'], patient_table, phen2gene = API.patient_page(HPOquery, HPO_names)
+    session['HPOclinical'], phen2gene = API.patient_page(HPOquery, HPO_names)
     print(HPOquery, file=sys.stderr)
-    return render_template('patient.html', patient_table=patient_table, phen2gene=phen2gene, json=json, note=doc2hpo_notes)
+    return render_template('patient.html', phen2gene=phen2gene, d2hjson=d2hjson, note=doc2hpo_notes)
 
 @app.route('/results')
 def generate_results_page():

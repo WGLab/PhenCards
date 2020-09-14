@@ -246,17 +246,10 @@ def phen2gene_page(HPOquery, patient=False):
     return GeneAPI_JSON
 
 def patient_page(HPOquery, HPO_names):
-    phen_dict = defaultdict(list)
-    for i, (HPOId, HPOName) in enumerate(zip(HPOquery, HPO_names)):
-        phen_dict[i].extend([HPOId, HPOName])
-    results = format_json_table(phen_dict, 'patient')
-    patient_table = json2html.convert(json=results,
-                                    table_attributes="id=\"doc2hpo-results\" class=\"table table-striped table-bordered table-sm\"")
-
     HPOclinical="+OR+".join([s.replace(" ", "+") for s in HPO_names])
     phen2gene_table = phen2gene_page(HPOquery,patient=True)
 
-    return HPOclinical, patient_table, phen2gene_table
+    return HPOclinical, phen2gene_table
 
 def umls_auth(user="username", password="wouldntyoulovetoknow"):
     data = {"licenseCode": "NLM-323530719", # from uts profile
