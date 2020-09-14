@@ -82,11 +82,11 @@ def generate_umls_page():
         return redirect(url_for('generate_results_page'))
 
 # pathway results
-@app.route('/pathway')
-def generate_pathway_page():
+@app.route('/kegg')
+def generate_kegg_page():
     HPOquery=session['HPOquery']
-    dispath=API.pathway_page(HPOquery)
-    return render_template('pathways.html', dispath=dispath)
+    dispath, headers = API.kegg_page(HPOquery)
+    return render_template('kegg.html', dispath=dispath, headers=headers)
 
 # cohd results
 @app.route('/cohd')

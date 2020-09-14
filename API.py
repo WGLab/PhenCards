@@ -69,7 +69,7 @@ def cohd_page(concept_id):
 
 # pathway page generator
 
-def pathway_page(phenname):
+def kegg_page(phenname):
     phenname=phenname.replace("_", "+").replace(" ","+")
     diseases=requests.get('http://rest.kegg.jp/find/disease/'+phenname, verify=False, stream=True)
     diseases=[x.split("\t") for x in diseases.text.strip().split("\n")]
@@ -89,8 +89,10 @@ def pathway_page(phenname):
             if re.search("NAME\s*", line):
                 name=re.split("\w*\s*",line,1)[-1].split("-")[0]
         dispath[name]=[paths[pid],link]
+    headers=generate_headers()
+    headers={"KEGG": headers['KEGG']}
 
-    return dispath
+    return dispath, headers
 
 # pubmed page generator
 def literature_page(HPOquery):
