@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from flask import Flask, Response, render_template, redirect, url_for, request, jsonify, abort, flash, session, app
+from flask import Flask, Response, render_template, redirect, url_for, request, jsonify, abort, flash, session, app, send_from_directory
 import sys
 from datetime import timedelta
 import API
@@ -8,10 +8,15 @@ import queries
 from forms import PhenCardsForm
 from config import Config
 from lib.esQuery import indexquery
+import os
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static/ico'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 @app.before_request
 def make_session_permanent():
     session.permanent = True
