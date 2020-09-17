@@ -48,8 +48,11 @@ def phencards():
             if form.typeahead.data:
                 phen_name = form.typeahead.data
 
-        session['HPOquery']=phen_name
-        session['HPOclinical']=phen_name
+        session['HPOquery']=session['HPOclinical']=phen_name
+        return redirect(url_for('generate_results_page'))
+    term = request.args.get('term')
+    if term:
+        session['HPOquery']=session['HPOclinical']=term
         return redirect(url_for('generate_results_page'))
     return render_template('index.html', form=form)
 
