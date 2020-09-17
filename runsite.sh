@@ -1,5 +1,8 @@
 #loginctl enable-linger $USER
 #systemctl --user start docker
-# can be replaced by docker-compose
-#docker run -v /media/database:/database -d -p 5000:5000 phencards:test
-docker-compose up -d
+# use docker-compose now, site is too complex for just docker.
+docker-compose up -d # to run everything and check for new builds
+# to just re-up production app (prod) or dev (app)
+#docker-compose up -d prod
+# to build just one of the images
+#docker compose build -d prod

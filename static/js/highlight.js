@@ -28,14 +28,19 @@ function highlight(note, parsingJson) {
 	var context = document.querySelector("#parsingResults");
 
 	// using https://markjs.io/
-	rangeArray = []
+        var options = {}
+	var instance = new Mark(context);
 	for ( var key in parsingJson) {
 		subObj = _.pick(parsingJson[key], [ 'start', 'length' ]);
-		rangeArray.push(subObj);
-	}
-	var options = {
+                if (parsingJson[key]['negated']){
+                    neg = "negated";
+                }
+                else {
+                    neg = "term";
+                }
+	        options = {
 		"element" : "mark",
-		"className" : "",
+		"className" : neg,
 		"exclude" : [],
 		"iframes" : true,
 		"iframesTimeout" : 5000,
@@ -60,8 +65,8 @@ function highlight(note, parsingJson) {
 		},
 		"debug" : false,
 		"log" : window.console
+            }
+	    instance.markRanges([subObj], options);
 	};
-	var instance = new Mark(context);
-	instance.markRanges(rangeArray, options);
 	// instance.mark('Individual');
 }
