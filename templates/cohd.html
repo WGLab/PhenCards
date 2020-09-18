@@ -2,6 +2,13 @@
 
 {% block content %}
 
+<div class="container" id="bar">
+
+<h2 style="text-align: center; margin-top: 80px; font-family:'Roboto', sans-serif;"><i class="material-icons" style="vertical-align: bottom; font-size:38px;">assessment</i>COHD Results</h2>
+<p style="text-align: center;">These are the co-occurrence data and ancestor term data for your search term in patient notes. There will be explanations in each section. Note that you can hover over text with a dotted underline <a class="hasTooltip">to learn more about it<span>For example, like this!</span></a>.<br>It is important to note that this data uses the temporal beta dataset (id 4) which has ~4.5 million (4536187) patients currently. If a term occurs in a patient note at all, it is only counted once for the patient.  Not multiple times.</p>
+<hr>
+</div>
+
 <div class="container" id="Ancestor Terms">
     <h1><span style="color: #efa50e; "><b>Ancestor Terms</b></span></h1>
     <span style="color: black; ">These are ancestor terms from <a target="_blank" href="http://cohd.io/index.html"> Columbia Open Health Data (COHD)</a>, for the selected concept, sorted by patient count:</span>
@@ -63,6 +70,7 @@
                     <td>{{result["concept_id_2"]}}</td>
                     <td>{{result["chi_square"]}}</td>
                     <td>{{result["p-value"]}}</td>
+                    <td>{{result["adj_p-value"]}}</td>
                     <td>{{result["concept_id_1"]}}</td>
                 </tr>
             {% endfor %}
@@ -100,6 +108,7 @@
                     <td>{{result["concept_id_2"]}}</td>
                     <td>{{result["chi_square"]}}</td>
                     <td>{{result["p-value"]}}</td>
+                    <td>{{result["adj_p-value"]}}</td>
                     <td>{{result["concept_id_1"]}}</td>
                 </tr>
             {% endfor %}
@@ -136,6 +145,7 @@
                     <td>{{result["concept_id_2"]}}</td>
                     <td>{{result["chi_square"]}}</td>
                     <td>{{result["p-value"]}}</td>
+                    <td>{{result["adj_p-value"]}}</td>
                     <td>{{result["concept_id_1"]}}</td>
                 </tr>
             {% endfor %}
