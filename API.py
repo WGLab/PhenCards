@@ -1,5 +1,3 @@
-# use kegg API to get data
-
 import requests
 from bs4 import BeautifulSoup
 import sys
@@ -67,7 +65,7 @@ def cohd_page(concept_id):
     headers={"COHDC": headers['COHDC'], "COHDA": headers['COHDA']}
     return ancestors, conditions, drugs, procedures, headers
 
-# pathway page generator
+# kegg page generator
 
 def kegg_page(phenname):
     phenname=phenname.replace("_", "+").replace(" ","+")
@@ -281,3 +279,36 @@ def umls_auth(user="username", password="wouldntyoulovetoknow"):
     except Exception as e:
         print (e)
         return False
+
+# pathway commons page generator
+
+def pcommons_page(HPOquery):
+    try:
+        params = {
+        'q': HPOquery, # needs "+" for spaces or %20
+        'type': "Pathway",
+        'organism': "Homo+sapiens",
+        'page': 0} # default, gives first page only, max 100 hits per page, would have to manually go page by page to see all results. top 100 is fine in my opinion, though I wrote code to grab it all just in case
+        payload = "&".join("%s=%s" % (k,v) for k,v in params.items()) # prevents URL encoding of "+"
+        pathjson = requests.get('https://www.pathwaycommons.org/pc2/search.json', params=payload, verify=False)
+        pathjson = pathjson.json()
+        numHits = pathjson['numHits']
+        maxHits = pathjson['maxHitsPerPage']
+        pathways = pathjson['searchHit']
+        count = 0
+        while numHits - count*100 > maxHits:
+            count+=1
+            params['page']+=1
+            payload = "&".join("%s=%s" % (k,v) for k,v in params.items()) # prevents URL encoding of "+"
+            pathjson = requests.get('https://www.pathwaycommons.org/pc2/search.json', params=payload, verify=False)
+            print (pathjson.url, params)
+            pathjson = pathjson.json()
+            pathways.extend(pathjson['searchHit'])
+            
+    except:
+        pathways = []
+    
+    headers=generate_headers()
+    # 'uri' for link, 'name' for pathway, 'pathway' for ancestral paths, 'numParticpants', 'numProcesses'
+    headers={"PCommons": headers['PCommons']}
+    return pathways, headers

@@ -63,18 +63,17 @@ th {
 
 <div class="container medium" id="Patient_Terms">
     <h1><span style="color: #efa50e; "><b>HPO terms</b></span></h1>
+        <br><br>
+        <p>These are the Human Phenotype Ontology terms extracted from the patient note query.  Red indicates a <mark class='negated'>negated</mark> term, green indicates an <mark class='term'>accepted</mark> term.</p>
+        <div class="box-highlight">
 	<div class="ui basic segment">
-        <br>
-		<p id="parsingResults" style="white-space: pre-wrap">Pellentesque
-			habitant morbi tristique senectus et netus et malesuada fames ac
-			turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies
-			eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas
-			semper. Aenean ultricies mi vitae est. Mauris placerat eleifend
-			leo.</p>
+		<p id="parsingResults" style="white-space: pre-wrap">Your highlighted patient notes will appear here shortly.</p>
 	</div>
-    <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="https://hpo.jax.org/app/">HPO database</a> using Doc2HPO<sup><a href="#doc2hpo-cite">1</a></sup>, you can click on the result to explore more about the phenotype names:</span></th></tr>
+        </div>
+    <tr><th><span style="color: black; ">Here are the aliases referenced from <a href="https://hpo.jax.org/app/">HPO database</a> using Doc2HPO<sup><a href="#doc2hpo-cite">1</a></sup>, you can click on the ID to explore more about the phenotype terms or search the names in the phenotype search function of this site to learn more still:</span></th></tr>
     <br><br>
     {% if d2hjson %}
+        {% set url = "https://hpo.jax.org/app/browse/term/" %}
         <table id="patient_terms" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
@@ -86,8 +85,8 @@ th {
             <tbody>
             {% for result in d2hjson %}
                 <tr>
-                    <td>{{result["hpoId"]}}</td>
-                    <td>{{result["hpoName"]}}</td>
+                    <td><a target="_blank" href={{ url ~ result["hpoId"] }}>{{result["hpoId"]}}</a></td>
+                    <td> <a target="_blank" href={{ url_for('phencards', term=result["hpoName"]) }}>{{result["hpoName"]}}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -104,10 +103,11 @@ th {
 <div class="container medium" id="Genes">
     <h1><span style="color: #efa50e; "><b>Genes</b></span></h1>
     <br><br>
-    <tr><th><span style="color: black; ">Here are the related genes referenced from <a target="_blank" href="https://phen2gene.wglab.org">Phen2Gene web application</a><sup><a href="#p2g-cite">8</a></sup>:</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the related genes referenced from <a target="_blank" href="https://phen2gene.wglab.org">Phen2Gene web application</a><sup><a href="#p2g-cite">2</a></sup>. The gene symbol links out to the Genetics Home Reference, courtesy of the National Library of Medicine.</span></th></tr>
 <br>
 {# gene list return 04/26/2020 #}
     {% if phen2gene %}
+        {% set url = "https://ghr.nlm.nih.gov/gene/" %}
         <table id="phen2gene" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
@@ -119,7 +119,7 @@ th {
             <tbody>
             {% for result in phen2gene %}
                 <tr>
-                    <td>{{result["Gene"]}}</td>
+                    <td><a target="_blank" href={{ url ~ result["Gene"] }}>{{result["Gene"]}}</a></td>
                     <td>{{result["Rank"]}}</td>
                     <td>{{result["Score"]}}</td>
                     <td>{{result["Status"]}}</td>

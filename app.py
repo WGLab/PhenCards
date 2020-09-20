@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from flask import Flask, Response, render_template, redirect, url_for, request, jsonify, abort, flash, session, app
+from flask import Flask, Response, render_template, redirect, url_for, request, jsonify, abort, flash, session, app, send_from_directory
 import sys
 from datetime import timedelta
 import API
@@ -8,10 +8,15 @@ import queries
 from forms import PhenCardsForm
 from config import Config
 from lib.esQuery import indexquery
+import os
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static/ico'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 @app.before_request
 def make_session_permanent():
     session.permanent = True
@@ -43,8 +48,11 @@ def phencards():
             if form.typeahead.data:
                 phen_name = form.typeahead.data
 
-        session['HPOquery']=phen_name
-        session['HPOclinical']=phen_name
+        session['HPOquery']=session['HPOclinical']=phen_name
+        return redirect(url_for('generate_results_page'))
+    term = request.args.get('term')
+    if term:
+        session['HPOquery']=session['HPOclinical']=term
         return redirect(url_for('generate_results_page'))
     return render_template('index.html', form=form)
 
@@ -81,12 +89,19 @@ def generate_umls_page():
         flash('Invalid credentials')
         return redirect(url_for('generate_results_page'))
 
-# pathway results
+# kegg pathway results
 @app.route('/kegg')
 def generate_kegg_page():
     HPOquery=session['HPOquery']
     dispath, headers = API.kegg_page(HPOquery)
     return render_template('kegg.html', dispath=dispath, headers=headers)
+
+# pathway commons results
+@app.route('/pcommons')
+def generate_pcommons_page():
+    HPOquery=session['HPOquery']
+    pathways, headers = API.pcommons_page(HPOquery)
+    return render_template('pcommons.html', pathways=pathways, headers=headers)
 
 # cohd results
 @app.route('/cohd')
