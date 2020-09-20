@@ -29,7 +29,7 @@ $(document).ready(function(){
 
 $(window).on('scroll', function() {
     $('.container.medium').each(function() {
-        if($(window).scrollTop() >= $(this).offset().top - $("#navbarcon").height()){
+        if($(window).scrollTop() >= $(this).offset().top - $("#navbarcon").height() - 100){
             var id = $(this).attr('id');
             $('li a').removeClass('active');
             $('li a[href="#'+ id +'"]').addClass('active');

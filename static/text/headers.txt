@@ -97,3 +97,7 @@ COHDA	Concept Code	The unique ID of the ancestral concept in the original databa
 COHDA	Standard Concept	Indicates whether the ancestral term is standardized or not, S indicates that it is.
 COHDA	Max Levels of Separation	The maximum number of ancestral nodes this term is above the query term in the OHDSI vocabulary tree.  Depends on the route you travel.
 COHDA	Min Levels of Separation	The minimum number of ancestral nodes this term is above the query term in the OHDSI vocabulary tree.  Depends on the route you travel.
+PCommons	Pathway	Name of the pathway in the database linked to Pathway Commons (often Reactome, could be PANTHER, HumanCyc, or others).
+PCommons	Number of Participants	The number of participating molecules.  From the Pathway Commons paper: "counts of ‘PhysicalEntity’ class instances from the BioPAX ontology, which includes the classes: complexes, DNA, DNARegion, Protein, RNA, RNARegion and SmallMolecule, including the possibility of multiple molecular states per gene (e.g. phosphorylated proteins, proteins in the nucleus)."
+PCommons	Number of Processes	The number of interactions and pathways involved in the pathway named on the left.
+PCommons	Ancestral Pathways	Only in Reactome (which is most of the results): parental pathways related to the linked pathway on the left.

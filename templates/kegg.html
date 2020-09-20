@@ -22,7 +22,7 @@
             {% for path in dispath %}
                 <tr>
                     <td>{{"\n".join(dispath[path][0])}}</td>
-                    <td><a href={{dispath[path][1]}}>{{path}}</a></td>
+                    <td><a target="_blank" href={{dispath[path][1]}}>{{path}}</a></td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -39,7 +39,8 @@
                 $('#pathway').DataTable({
                         "order": [[ 0, "asc" ]],
                         "pageLength": 5,
-                        "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
+                        "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
+                        "responsive": true
                 });
         });
 

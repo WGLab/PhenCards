@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="container" >
+    <br><br>
+    Here are the pathways linked to the search term from <a href="http://www.pathwaycommons.org">Pathway Commons</a>.  Click the links to learn more about them and explore.  The results have been limited to Homo sapiens, which constitute nearly all of the databases, as recommended by Pathway Commons.
+	<br><br>
+    {% if pathways %}
+        <table id="pathway" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+                {% for heading in headers["PCommons"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in pathways %}
+                <tr>
+                    <td><a target="_blank" href={{result["uri"]}}>{{result["name"]}}</a></td>
+                    <td>{{result["numParticipants"]}}</td>
+                    <td>{{result["numProcesses"]}}</td>
+                    <td>
+                    {% for path in result["pathway"][:-1] %}
+                        <a target="_blank" href={{path}}>{{path}}</a>,
+                    {% endfor %}
+                    <a target="_blank" href={{result["pathway"][-1]}}>{{result["pathway"][-1]}}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the search term.
+    {% endif %}
+
+</div>
+
+<!-- make nice table with multiple pages -->
+<script type="text/javascript">
+        $(document).ready(function () {
+                $('#pathway').DataTable({
+                        "bSort": false, // already sorted by Pathway Commons
+                        "pageLength": 5,
+                        "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
+                        "responsive": true
+                });
+        });
+
+</script>
+
+{% endblock %}

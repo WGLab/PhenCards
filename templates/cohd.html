@@ -163,12 +163,14 @@
                 $('#ancestors').DataTable({
                         "order": [[ 2, "desc" ]],
                         "pageLength": 5,
-                        "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
+                        "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
+                        "responsive": true
                 });
                 $('#conditions, #procedures, #drugs').DataTable({
                         "order": [[ 3, "desc" ]],
                         "pageLength": 5,
-                        "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]]
+                        "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
+                        "responsive": true
                 });
         });
 

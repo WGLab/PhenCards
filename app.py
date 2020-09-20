@@ -89,12 +89,19 @@ def generate_umls_page():
         flash('Invalid credentials')
         return redirect(url_for('generate_results_page'))
 
-# pathway results
+# kegg pathway results
 @app.route('/kegg')
 def generate_kegg_page():
     HPOquery=session['HPOquery']
     dispath, headers = API.kegg_page(HPOquery)
     return render_template('kegg.html', dispath=dispath, headers=headers)
+
+# pathway commons results
+@app.route('/pcommons')
+def generate_pcommons_page():
+    HPOquery=session['HPOquery']
+    pathways, headers = API.pcommons_page(HPOquery)
+    return render_template('pcommons.html', pathways=pathways, headers=headers)
 
 # cohd results
 @app.route('/cohd')
