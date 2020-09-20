@@ -70,8 +70,8 @@ def generate_patient_page():
 def generate_results_page():
     global umls
     HPOquery=session['HPOquery']
-    doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, cohd = queries.results_page(HPOquery)
-    return render_template('results.html', doid=doid, msh=msh, icd10=icd10, irs990=irs990, open990f=open990f, open990g=open990g, hpo=hpo, hpolink=hpolink, ohdsi=ohdsi, phen2gene=phen2gene, cohd=cohd)
+    doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, cohd, nihfoa = queries.results_page(HPOquery)
+    return render_template('results.html', doid=doid, msh=msh, icd10=icd10, irs990=irs990, open990f=open990f, open990g=open990g, hpo=hpo, hpolink=hpolink, ohdsi=ohdsi, phen2gene=phen2gene, cohd=cohd, nihfoa=nihfoa)
 
 @app.route('/umlslogin')
 def umls_login():

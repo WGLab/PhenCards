@@ -101,3 +101,11 @@ PCommons	Pathway	Name of the pathway in the database linked to Pathway Commons (
 PCommons	Number of Participants	The number of participating molecules.  From the Pathway Commons paper: "counts of ‘PhysicalEntity’ class instances from the BioPAX ontology, which includes the classes: complexes, DNA, DNARegion, Protein, RNA, RNARegion and SmallMolecule, including the possibility of multiple molecular states per gene (e.g. phosphorylated proteins, proteins in the nucleus)."
 PCommons	Number of Processes	The number of interactions and pathways involved in the pathway named on the left.
 PCommons	Ancestral Pathways	Only in Reactome (which is most of the results): parental pathways related to the linked pathway on the left.
+NIHFOA	Title	The title of the NIH Funding Opportunity Announcement.  We have collected active funding announcements only.
+NIHFOA	Document Number	The unique number of the grant announcement.  Could be a PA, RFA, PAS or PAR.  (PA: parent announcement, more broad; PAS: program announcement with set-aside funds; PAR: program announcement special receipt, referral, and/or review considerations, the usual route; RFA: request for applications)
+NIHFOA	Primary IC	The name of the institute or center that is the primary funder of the FOA.
+NIHFOA	Sponsors	The other participating NIH Organizations of the NIH FOA.
+NIHFOA	Open Date	The date upon which this FOA first opened.
+NIHFOA	Application Date	The dates when one can apply for this FOA.
+NIHFOA	Expiration Date	The last day this FOA is open.
+NIHFOA	Score	The elasticsearch score for the query term.  The higher this score, the more likely it is what you were looking for.

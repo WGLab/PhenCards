@@ -45,7 +45,7 @@ th {
         <ul class="navbar-nav mr-auto small">
           <li class="nav-item"><a class="page-scroll scroll" href="#Drugs">Drugs</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Literature">Literature</a></li>
-          <li class="nav-item"><a class="page-scroll scroll" href="#Companies_n_Foundations">Companies & Foundations</a></li>
+          <li class="nav-item"><a class="page-scroll scroll" href="#Foundations_n_Grants">Foundations & Grants</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Clinical_Trials">Clinical Trials</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Citations_n_Licenses">Citations & Licenses</a></li>
         </ul>
@@ -377,8 +377,8 @@ th {
 <hr>
 </div>
 
-<div class="container medium" id="Companies_n_Foundations">
-    <h1><span style="color: #efa50e; "><b>Companies & Foundations</b></span></h1>
+<div class="container medium" id="Foundations_n_Grants">
+    <h1><span style="color: #efa50e; "><b>Foundations & Grants</b></span></h1>
     <br><br>
     <tr><th><span style="color: black; ">Here are the nonprofits (990s) for this search term from the 2019 <a target="_blank" href="https://docs.opendata.aws/irs-990/readme.html">IRS AWS database</a><sup><a href="#irs-cite">12</a></sup>, you can click on the links to reach the public XMLs with more details:</span></th></tr>
     <br><br>
@@ -399,7 +399,6 @@ th {
                     <td>{{result["_source"]["EIN"]}}</td>
                     <td>{{result["_source"]["Date"]}}</td>
                     <td><a target="_blank" href={{ url ~ result["_source"]["ObjLink"] ~ "_public.xml" }}>{{result["_source"]["ObjLink"]}}</a></td>
-
                     <td>{{result["_score"]}}</td>
                 </tr>
             {% endfor %}
@@ -465,6 +464,37 @@ th {
         </table>
     {% else %}
         No results for the search term in Open990 Grants DB.
+    {% endif %}
+    <hr class="innerbar">
+    <tr><th><span style="color: black; ">Here are the open, active Funding Opportunity Announcements (FOAs) <a target="_blank" href="grants.nih.gov/funding/SearchGuide/index.html">from the NIH</a><sup><a href="#nihfoa-cite">15</a></sup>, for the search term. You can click on the links to reach the public FOAs with more details.</span></th></tr>
+    <br><br>
+    {% if nihfoa %}
+        {% set url = "https://grants.nih.gov/grants/guide/pa-files/" %}
+        <table id="nihfoa" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+                {% for heading in nihfoa["header"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in nihfoa["result"] %}
+                <tr>
+                    <td><a target="_blank" href={{ url ~ result["_source"]["filename"] }}>{{result["_source"]["title"]}}</a></td>
+                    <td>{{result["_source"]["docnum"]}}</td>
+                    <td>{{result["_source"]["primaryIC"]}}</td>
+                    <td><span>{% for name in result["_source"]["sponsors"][:-1] %} {{name}}, {% endfor %} {{result["_source"]["sponsors"][-1]}}</span></td>
+                    <td>{{result["_source"]["opendate"]}}</td>
+                    <td>{{result["_source"]["appreceiptdate"].split(".")[0]}}.</td>
+                    <td>{{result["_source"]["expdate"]}}</td>
+                    <td>{{result["_score"]}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the search term in the NIH active FOA database.
     {% endif %}
 </div>
 

@@ -312,3 +312,21 @@ def pcommons_page(HPOquery):
     # 'uri' for link, 'name' for pathway, 'pathway' for ancestral paths, 'numParticpants', 'numProcesses'
     headers={"PCommons": headers['PCommons']}
     return pathways, headers
+
+def generate_nihfoa_list(HPOquery):
+    params={
+    'query': HPOquery,
+    'type': "active",
+    }
+    # need to add https://grants.nih.gov/grants/guide/pa-files/results['filename']
+    rsearch=requests.get("https://search.grants.nih.gov/guide/api/data", params=params)
+    if rsearch.status_code == requests.status_codes.codes.OK:
+        results = rsearch.json()['data']['hits']['hits']
+        #print(results[0]["_source"].keys()) # we want 'title', 'docnum', 'primaryIC', 'sponsors', 'opendate', 'appreceiptdate', 'expdate' 'filename'
+        results=sorted(results, key=lambda k: k['_score'], reverse=True)
+    else:
+        results = []
+
+    return results
+
+generate_nihfoa_list("cleft+palate")
