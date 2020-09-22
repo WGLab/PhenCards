@@ -147,12 +147,14 @@ def results_page(HPOquery):
 
     cohd = {'result': API.generate_cohd_list(HPOquery)}
     cohd['header'] = headers['COHD']
+    nihfoa = {'result': API.generate_nihfoa_list(HPOquery)}
+    nihfoa['header'] = headers['NIHFOA']
     phen2gene = {'result': API.phen2gene_page(session['HPOID'], patient=False)}
     phen2gene['header'] = headers['P2G']
 
     session['HPOquery'] = HPOquery.replace("_", "+").replace(" ","+")
 
-    return doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, cohd
+    return doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, cohd, nihfoa
 
 def get_results_json():
 

@@ -31,6 +31,10 @@ $(document).ready(function () {
                 col = 6;
                 sort = "desc";
                 break;
+            case "nihfoa":
+                col = 7;
+                sort = "desc";
+                break;
             case "icd10":
                 col = 3; 
                 sort = "desc";

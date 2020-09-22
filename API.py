@@ -9,6 +9,7 @@ from json2html import json2html
 import re
 from collections import defaultdict
 import json
+import ray
 
 # cohd list generator
 def generate_cohd_list(HPOquery):
@@ -312,3 +313,180 @@ def pcommons_page(HPOquery):
     # 'uri' for link, 'name' for pathway, 'pathway' for ancestral paths, 'numParticpants', 'numProcesses'
     headers={"PCommons": headers['PCommons']}
     return pathways, headers
+
+def generate_nihfoa_list(HPOquery):
+    params={
+    'query': HPOquery,
+    'type': "active",
+    }
+    # need to add https://grants.nih.gov/grants/guide/pa-files/results['filename']
+    rsearch=requests.get("https://search.grants.nih.gov/guide/api/data", params=params)
+    if rsearch.status_code == requests.status_codes.codes.OK:
+        results = rsearch.json()['data']['hits']['hits']
+        #print(results[0]["_source"].keys()) # we want 'title', 'docnum', 'primaryIC', 'sponsors', 'opendate', 'appreceiptdate', 'expdate' 'filename'
+        results=sorted(results, key=lambda k: k['_score'], reverse=True)
+    else:
+        results = []
+
+    return results
+
+@ray.remote
+def reaction_synonyms(HPOquery):
+    params={
+    'search': "(receivedate:[20040101+TO+20200920])+AND+"+HPOquery,
+    'count': "patient.reaction.reactionmeddrapt.exact",
+    }
+    synonyms = openfda_query(params)
+
+    return synonyms
+
+@ray.remote
+def drugs_causing_reaction(HPOquery):
+    params={
+    'search': "(receivedate:[20040101+TO+20200920])+AND+"+HPOquery,
+    'count': "patient.drug.openfda.generic_name.exact",
+    }
+    drugs = openfda_query(params)
+
+    return drugs
+
+@ray.remote
+def forms_causing_reaction(HPOquery):
+    params={
+    'search': "(receivedate:[20040101+TO+20200920])+AND+"+HPOquery,
+    'count': "patient.drug.drugdosageform.exact",
+    }
+    forms = openfda_query(params)
+
+    return forms
+
+@ray.remote
+def weight_at_reaction(HPOquery):
+    params={
+    'search': "(receivedate:[20040101+TO+20200920])+AND+"+HPOquery,
+    'count': "patient.patientweight",
+    }
+    weights = openfda_query(params)
+
+    return weights
+
+@ray.remote
+def outcomes_of_reaction(HPOquery):
+    params={
+    'search': "(receivedate:[20040101+TO+20200920])+AND+"+HPOquery,
+    'count': "patient.reaction.reactionoutcome",
+    }
+    outcomes = openfda_query(params)
+    for i, outcome in enumerate(outcomes):
+        if outcome["term"] == 6:
+            outcomes[i]["term"] = "Unknown"
+        elif outcome["term"] == 1:
+            outcomes[i]["term"] = "Recovered/resolved"
+        elif outcome["term"] == 2:
+            outcomes[i]["term"] = "Recovering/resolving"
+        elif outcome["term"] == 3:
+            outcomes[i]["term"] = "Not recovered/not resolved"
+        elif outcome["term"] == 4:
+            outcomes[i]["term"] = "Recovered/resolved with sequelae (consequent health issues)"
+        elif outcome["term"] == 5:
+            outcomes[i]["term"] = "Fatal"
+
+    return outcomes
+
+@ray.remote
+def ages_at_reaction(HPOquery):
+    params={
+    'search': "(receivedate:[20040101+TO+20200920])+AND+"+HPOquery,
+    'count': "patient.patientagegroup",
+    }
+    ages = openfda_query(params)
+    for i, age in enumerate(ages):
+        if age["term"] == 6:
+            ages[i]["term"] = "Elderly"
+        elif age["term"] == 1:
+            ages[i]["term"] = "Neonate"
+        elif age["term"] == 2:
+            ages[i]["term"] = "Infant"
+        elif age["term"] == 3:
+            ages[i]["term"] = "Child"
+        elif age["term"] == 4:
+            ages[i]["term"] = "Adolescent"
+        elif age["term"] == 5:
+            ages[i]["term"] = "Adult"
+
+    return ages
+
+@ray.remote
+def routes_at_reaction(HPOquery):
+    params={
+    'search': "(receivedate:[20040101+TO+20200920])+AND+"+HPOquery,
+    'count': "patient.drug.openfda.route.exact",
+    }
+    routes = openfda_query(params)
+
+    return routes
+
+@ray.remote
+def drugs_for_indication(HPOquery):
+    params={
+    'search': "(receivedate:[20040101+TO+20200922])+AND+patient.drug.drugindication:"+HPOquery,
+    'count': "patient.drug.openfda.generic_name.exact",
+    }
+    drugi = openfda_query(params)
+
+    return drugi
+
+@ray.remote
+def reactions_for_indication(HPOquery):
+    params={
+    'search': "(receivedate:[20040101+TO+20200922])+AND+patient.drug.drugindication:"+HPOquery,
+    'count': "patient.reaction.reactionmeddrapt.exact",
+    }
+    reactioni = openfda_query(params)
+
+    return reactioni
+
+@ray.remote
+def routes_for_indication(HPOquery):
+    params={
+    'search': "(receivedate:[20040101+TO+20200922])+AND+patient.drug.drugindication:"+HPOquery,
+    'count': "patient.drug.openfda.route.exact",
+    }
+    routei = openfda_query(params)
+
+    return routei
+
+def openfda_query(params):
+    payload = "&".join("%s=%s" % (k,v) for k,v in params.items())
+    rsearch=requests.get("https://api.fda.gov/drug/event.json", params=payload)
+    print(rsearch.url)
+    if rsearch.status_code == requests.status_codes.codes.OK:
+        results = rsearch.json()['results']
+        #print(results[0].keys()) 
+    else:
+        results = []
+
+    return results
+
+def openfda_page(HPOquery):
+
+    # can also get individual patient queries WITHOUT using count like https://api.fda.gov/drug/event.json?search=(patient.drug.drugindication:"cleft+palate")ANDpatient.drug.openfda.generic_nameANDpatient.reaction.reactionmeddrapt.exact&limit=10
+    ray.init()
+    func=[reaction_synonyms, drugs_causing_reaction, forms_causing_reaction, weight_at_reaction, outcomes_of_reaction, ages_at_reaction, routes_at_reaction, drugs_for_indication, reactions_for_indication, routes_for_indication]
+    sy=func[0].remote(HPOquery)
+    dr=func[1].remote(HPOquery)
+    fr=func[2].remote(HPOquery)
+    wt=func[3].remote(HPOquery)
+    ot=func[4].remote(HPOquery)
+    ag=func[5].remote(HPOquery)
+    rt=func[6].remote(HPOquery)
+    dri=func[7].remote(HPOquery)
+    rei=func[8].remote(HPOquery)
+    rti=func[9].remote(HPOquery)
+    synonyms, drugs, forms, weights, outcomes, ages, routes, drugi, reactioni, routei = ray.get([sy, dr, fr, wt, ot, ag, rt, dri, rei, rti])
+    headers=generate_headers()
+    headers={"OpenFDA": headers['OpenFDA']}
+    ray.shutdown()
+
+    return synonyms, drugs, forms, weights, outcomes, ages, routes, drugi, reactioni, routei, headers
+

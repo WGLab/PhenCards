@@ -70,8 +70,8 @@ def generate_patient_page():
 def generate_results_page():
     global umls
     HPOquery=session['HPOquery']
-    doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, cohd = queries.results_page(HPOquery)
-    return render_template('results.html', doid=doid, msh=msh, icd10=icd10, irs990=irs990, open990f=open990f, open990g=open990g, hpo=hpo, hpolink=hpolink, ohdsi=ohdsi, phen2gene=phen2gene, cohd=cohd)
+    doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, cohd, nihfoa = queries.results_page(HPOquery)
+    return render_template('results.html', doid=doid, msh=msh, icd10=icd10, irs990=irs990, open990f=open990f, open990g=open990g, hpo=hpo, hpolink=hpolink, ohdsi=ohdsi, phen2gene=phen2gene, cohd=cohd, nihfoa=nihfoa)
 
 @app.route('/umlslogin')
 def umls_login():
@@ -141,10 +141,11 @@ def generate_apexbio_page():
     return render_template('apexbio.html', apex=apex, headers=headers)
 
 # return independent page for wikidata drugs information (not done yet)
-@app.route('/wikidata')
-def generate_wikidata_page():
-    link ="https://www.wikidata.org/w/index.php?search=drugs+for+" + "+".join(session['HPOquery'].split())
-    return redirect(link)
+@app.route('/openfda')
+def generate_openfda_page():
+    HPOquery=session['HPOquery']
+    synonyms, drugs, forms, weights, outcomes, ages, routes, drugi, reactioni, routei, headers = API.openfda_page(HPOquery) 
+    return render_template('openfda.html', synonyms=synonyms, drugs=drugs, forms=forms, weights=weights, outcomes=outcomes, ages=ages, routes=routes, drugi=drugi, reactioni=reactioni, routei=routei, headers=headers)
 
 @app.route('/download_json/')
 def download_json():
