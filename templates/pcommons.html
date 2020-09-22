@@ -21,7 +21,7 @@
                     <td><a target="_blank" href={{result["uri"]}}>{{result["name"]}}</a></td>
                     <td>{{result["numParticipants"]}}</td>
                     <td>{{result["numProcesses"]}}</td>
-                    <td><span>{% for path in result["pathway"][:-1] %} <a target="_blank" href={{path}}>{{path}}</a>, {% endfor %} <a target="_blank" href={{result["pathway"][-1]}}>{{result["pathway"][-1]}}</a></span>
+                    <td style="word-break: break-word"><span>{% for path in result["pathway"][:-1] %} <a target="_blank" href={{path}}>{{path}}</a>, {% endfor %} <a target="_blank" href={{result["pathway"][-1]}}>{{result["pathway"][-1]}}</a></span>
                     </td>
                 </tr>
             {% endfor %}

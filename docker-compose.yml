@@ -1,4 +1,4 @@
-version: '3'
+version: '3.5'
 
 services:
     elasticsearch: # Elasticsearch Instance
@@ -16,7 +16,8 @@ services:
             - "9200:9200"
     app: # flask app
         container_name: phencards
-        build: .
+        build:
+            context: .
         ports:
             - "5005:5005" # Expose flask port
         environment: # Set ENV vars
@@ -29,9 +30,14 @@ services:
             - .:/code
         depends_on:
             - elasticsearch
+        ulimits:
+            core:
+                hard: 0
+                soft: 0
     prod: # flask app
         container_name: phencards_production
-        build: .
+        build:
+            context: .
         ports:
             - "5010:5005" # Expose flask port
         environment: # Set ENV vars
@@ -43,6 +49,10 @@ services:
             - /media/database:/media/database
         depends_on:
             - elasticsearch
+        ulimits:
+            core:
+                hard: 0
+                soft: 0
 
 
 # volumes: # Define separate volume for Elasticsearch data

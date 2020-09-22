@@ -109,3 +109,5 @@ NIHFOA	Open Date	The date upon which this FOA first opened.
 NIHFOA	Application Date	The dates when one can apply for this FOA.
 NIHFOA	Expiration Date	The last day this FOA is open.
 NIHFOA	Score	The elasticsearch score for the query term.  The higher this score, the more likely it is what you were looking for.
+OpenFDA	Term	The query term result.
+OpenFDA	Count	The number of patients with this adverse/effect/drug.
