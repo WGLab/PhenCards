@@ -535,9 +535,8 @@ def index_hpo(INDEX_NAME='hpo',INDEX_NAME2='hpolink',path_to_hpo='/media/databas
                 "Linked HPO ID": {
                     "type": "text"
                 },
-                "Linked HPO term": {
-                    "type": "text"
-                }
+                "Linked HPO term": search_settings,
+                "Linked HPONameExact": exact_settings,
             }
         }
     }
@@ -767,5 +766,5 @@ if __name__ == "__main__":
     # index_icd10()
     # index_umls()
     # index_ohdsi()
-    # index_hpo()
-    index_autosuggest()
+     index_hpo()
+    # index_autosuggest()
