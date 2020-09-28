@@ -110,6 +110,73 @@ def results_page(HPOquery):
     },
         "sort": {"_score": {"order": "desc"}}
     }
+    hpo_query_json = \
+    {'query': {
+        "bool": {
+            "should": [
+                {
+                "match": {
+                    "NAME": {
+                        "query": HPOquery,
+                        "fuzziness": "AUTO:0,3",
+                        "prefix_length" : 0,
+                        "max_expansions": 50,
+                        "boost": 1,
+                        "operator": "or",
+                        }
+                    }
+                },
+                {
+                "match": {
+                    "Linked HPO term": {
+                        "query": HPOquery,
+                        "fuzziness": "AUTO:0,3",
+                        "prefix_length" : 0,
+                        "max_expansions": 50,
+                        "boost": 1,
+                        "operator": "or",
+                        }
+                    }
+                },
+                {
+                "match": {
+                    "NAME": {
+                        "query": HPOquery,
+                        "fuzziness": 0,
+                        "boost": 2,
+                    }
+                    }
+                },
+                {
+                "match": {
+                    "Linked HPO term": {
+                        "query": HPOquery,
+                        "fuzziness": 0,
+                        "boost": 2,
+                    }
+                    }
+                },
+                {
+                "match_phrase": {
+                    "NAMEEXACT": {
+                        "query": HPOquery,
+                        "boost": 3,
+                    }
+                    }
+                },
+                {
+                "match_phrase": {
+                    "Linked HPONameExact": {
+                        "query": HPOquery,
+                        "boost": 3,
+                    }
+                    }
+                },
+        ]
+        }
+    },
+        "sort": {"_score": {"order": "desc"}}
+    }
 
     # indices: doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi
     headers=generate_headers()
@@ -119,7 +186,7 @@ def results_page(HPOquery):
         session['HPOID']=hpo['result'][0]['_source']['HPO ID']
     except IndexError:
         session['HPOID']=""
-    hpolink = {'result': indexquery(query_json,index='hpolink',size=100)['hits']['hits']}
+    hpolink = {'result': indexquery(hpo_query_json,index='hpolink',size=100)['hits']['hits']}
     hpolink['header'] = headers['HPOlink']
     doid = {'result': indexquery(query_json,index='doid',size=100)['hits']['hits']}
     doid['header'] = headers['DO']
