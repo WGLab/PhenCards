@@ -496,6 +496,39 @@ th {
     {% else %}
         No results for the search term in the NIH active FOA database.
     {% endif %}
+    <hr class="innerbar">
+    <tr><th><span style="color: black; ">Here are the open, active scientific projects on <a target="_blank" href="https://federalreporter.nih.gov">Federal Reporter</a><sup><a href="#nihfoa-cite">15</a></sup> from all US government national funding agencies, for the search term. You can click on the links to reach the public project information with more details.</span></th></tr>
+    <br><br>
+    {% if nihreporter %}
+        {% set url = "https://projectreporter.nih.gov/project_info_description.cfm?projectnumber=" %}
+        <table id="nihreporter" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+                {% for heading in nihreporter["header"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in nihreporter["result"] %}
+                <tr>
+                    <td>{{result["title"]}}</td>
+                    <td><a target="_blank" href={{ url ~ result["projectNumber"] }}>{{result["projectNumber"]}}</a></td>
+                    <td>{{result["department"]}}</td>
+                    <td>{{result["agency"]}}</td>
+                    <td>{{result["ic"]}}</td>
+                    <td>{{result["totalCostAmount"]}}</td>
+                    <td>{{result["projectStartDate"].split("T")[0]}}</td>
+                    <td>{{result["projectEndDate"].split("T")[0]}}</td>
+                    <td>{{result["contactPi"]}}</td>
+                    <td>{{result["orgName"]}},{{result["orgCity"]}},{{result["orgState"]}},{{result["orgCountry"]}},{{result["orgZipCode"]}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the search term in the Federal Reporter database (or API may be down).
+    {% endif %}
 </div>
 
 <div class="container" id="bar">

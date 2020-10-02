@@ -39,12 +39,23 @@ $(document).ready(function () {
                 col = 3; 
                 sort = "desc";
                 break;
+            case "nihreporter":
+                col = "";
+                sort = "";
+                break;
+            }
+            if (col && sort) {
+                order = [[col, sort]];
+            }
+            else {
+                order = [];
             }
         $(this).DataTable({
                 "pageLength": 5,
                 "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
-                "order": [[ col, sort ]],
-                "responsive": "true"
+                "order": order,
+                "responsive": "true",
+                "columnDefs": [{ "width": "15%", "targets": 0 }]
             });
         });
 });

@@ -10,6 +10,7 @@ import re
 from collections import defaultdict
 import json
 import ray
+import datetime
 
 # cohd list generator
 def generate_cohd_list(HPOquery):
@@ -325,6 +326,24 @@ def generate_nihfoa_list(HPOquery):
         results = rsearch.json()['data']['hits']['hits']
         #print(results[0]["_source"].keys()) # we want 'title', 'docnum', 'primaryIC', 'sponsors', 'opendate', 'appreceiptdate', 'expdate' 'filename'
         results=sorted(results, key=lambda k: k['_score'], reverse=True)
+    else:
+        results = []
+
+    return results
+
+def generate_nihreporter_list(HPOquery):
+    now = datetime.datetime.now()
+    years = ",".join(map(str,range(now.year-5,now.year+1)))
+    params={
+    'query': "text:" + HPOquery + "$fy:" + years,
+    'searchMode': "Smart",
+    }
+    payload = "&".join("%s=%s" % (k,v) for k,v in params.items())
+    # https://api.federalreporter.nih.gov/v1/projects/search?query=text:cleft+palate$fy:2015,2016,2017,2018,2019,2020&searchMode=Smart
+    rsearch=requests.get("https://api.federalreporter.nih.gov/v1/projects/search", params=payload)
+    if rsearch.status_code == requests.status_codes.codes.OK:
+        results = rsearch.json()['items']
+        #print(results[0].keys())
     else:
         results = []
 
