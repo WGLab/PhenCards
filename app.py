@@ -62,9 +62,9 @@ def generate_patient_page():
     HPO_names = session['HPOnames']
     d2hjson = session['parsingJson']
     doc2hpo_notes = session['doc2hpo_notes']
-    session['HPOclinical'], phen2gene, headers = API.patient_page(HPOquery, HPO_names)
+    session['HPOclinical'], phen2gene, headers, linked_diseases = API.patient_page(HPOquery, HPO_names, d2hjson)
     print(HPOquery, file=sys.stderr)
-    return render_template('patient.html', phen2gene=phen2gene, d2hjson=d2hjson, headers=headers, note=doc2hpo_notes)
+    return render_template('patient.html', phen2gene=phen2gene, d2hjson=d2hjson, headers=headers, linked_diseases=linked_diseases, note=doc2hpo_notes)
 
 @app.route('/results')
 def generate_results_page():

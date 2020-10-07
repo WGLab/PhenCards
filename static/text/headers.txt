@@ -121,3 +121,5 @@ NIHREPORT	Contact PI	The lead PI on the project.
 NIHREPORT	Institution	The institution responsible for the project and its location.
 OpenFDA	Term	The query term result.
 OpenFDA	Count	The number of patients with this adverse/effect/drug.
+PatientDisease	Disease Name	The name of the disease matching the HPO term query and also linked to the HPO term query.
+PatientDisease	Score	The elasticsearch score for the query term.  The higher this score, the more likely it is what you were looking for.

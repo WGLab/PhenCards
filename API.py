@@ -6,6 +6,7 @@ import time
 from lib.json import format_json_table
 from lib.style import generate_headers
 from json2html import json2html
+from queries import elasticquery
 import re
 from collections import defaultdict
 import json
@@ -257,13 +258,27 @@ def phen2gene_page(HPOquery, patient=False):
 
     return GeneAPI_JSON
 
-def patient_page(HPOquery, HPO_names):
-    HPOclinical="+OR+".join([s.replace(" ", "+") for s in HPO_names])
+def patient_page(HPOquery, HPO_names, d2hjson):
+    HPOclinical = "+OR+".join([s.replace(" ", "+") for s in HPO_names])
     phen2gene_table = phen2gene_page(HPOquery,patient=True)
-    headers=generate_headers()
-    headers={"HPOPatient": headers["HPOPatient"], "P2G": headers['P2G']}
+    headers = generate_headers()
+    headers = {"HPOPatient": headers["HPOPatient"], "P2G": headers["P2G"], "PatientDisease": headers["PatientDisease"]}
+    linked_diseases = disease_table(d2hjson)
 
-    return HPOclinical, phen2gene_table, headers
+    return HPOclinical, phen2gene_table, headers, linked_diseases
+
+def disease_table(d2hjson):
+    results = defaultdict(float)
+    for HPOquery in d2hjson:
+        # print(HPOquery, file=sys.stderr)
+        # {'hpoId': 'HP:0000664', 'hpoName': 'synophrys', 'length': 9, 'negated': True, 'start': 48}
+        if HPOquery['negated']:
+            continue
+        eresults=elasticquery(HPOquery['hpoName'], 'hpolink', esettings="diseases")['result']
+        for eresult in eresults:
+            results[eresult['_source']['NAMEEXACT']]+=eresult['_score']
+
+    return results
 
 def umls_auth(user="username", password="wouldntyoulovetoknow"):
     data = {"licenseCode": "NLM-323530719", # from uts profile
