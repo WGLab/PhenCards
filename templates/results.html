@@ -497,7 +497,7 @@ th {
         No results for the search term in the NIH active FOA database.
     {% endif %}
     <hr class="innerbar">
-    <tr><th><span style="color: black; ">Here are the open, active scientific projects on <a target="_blank" href="https://federalreporter.nih.gov">Federal Reporter</a><sup><a href="#nihfoa-cite">15</a></sup> from all US government national funding agencies, for the search term. You can click on the links to reach the public project information with more details.</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the open, active scientific projects on <a target="_blank" href="https://federalreporter.nih.gov">Federal Reporter</a><sup><a href="#nihfoa-cite">15</a></sup> from all US government national funding agencies, for the search term. You can click on the links to reach the public project information with more details. Missing "None" or "null" values are due to missing values in the NIH API.</span></th></tr>
     <br><br>
     {% if nihreporter %}
         {% set url = "https://projectreporter.nih.gov/project_info_description.cfm?projectnumber=" %}
@@ -510,7 +510,7 @@ th {
             </tr>
             </thead>
             <tbody>
-            {% for result in nihreporter["result"] %}
+            {% for result in nihreporter["result"] if result %}
                 <tr>
                     <td>{{result["title"]}}</td>
                     <td><a target="_blank" href={{ url ~ result["projectNumber"] }}>{{result["projectNumber"]}}</a></td>
@@ -518,8 +518,13 @@ th {
                     <td>{{result["agency"]}}</td>
                     <td>{{result["ic"]}}</td>
                     <td>{{result["totalCostAmount"]}}</td>
-                    <td>{{result["projectStartDate"].split("T")[0]}}</td>
-                    <td>{{result["projectEndDate"].split("T")[0]}}</td>
+                    {% if result["projectStartDate"] %}
+                        <td>{{result["projectStartDate"].split("T")[0]}}</td>
+                        <td>{{result["projectEndDate"].split("T")[0]}}</td>
+                    {% else %}              
+                        <td>null</td>
+                        <td>null</td>
+                    {% endif %}              
                     <td>{{result["contactPi"]}}</td>
                     <td>{{result["orgName"]}},{{result["orgCity"]}},{{result["orgState"]}},{{result["orgCountry"]}},{{result["orgZipCode"]}}</td>
                 </tr>
