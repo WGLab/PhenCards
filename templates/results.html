@@ -294,11 +294,11 @@ th {
 <div class="container medium" id="Genes">
     <h1><span style="color: #efa50e; "><b>Genes</b></span></h1>
     <br><br>
-    <tr><th><span style="color: black; ">Here are the related genes referenced from <a target="_blank" href="https://phen2gene.wglab.org">Phen2Gene web application</a><sup><a href="#p2g-cite">8</a></sup>. The gene symbol links out to the Genetics Home Reference, courtesy of the National Library of Medicine.</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the related genes referenced from <a target="_blank" href="https://phen2gene.wglab.org">the Phen2Gene web application</a><sup><a href="#p2g-cite">8</a></sup>. The gene symbol links out to MedlinePlus, courtesy of the National Library of Medicine.</span></th></tr>
 <br><br>
 {# gene list return 04/26/2020 #}
     {% if phen2gene %}
-        {% set url = "https://ghr.nlm.nih.gov/gene/" %}
+        {% set url = "https://medlineplus.gov/genetics/gene/" %}
         <table id="phen2gene" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
             <thead>
             <tr>
@@ -495,6 +495,44 @@ th {
         </table>
     {% else %}
         No results for the search term in the NIH active FOA database.
+    {% endif %}
+    <hr class="innerbar">
+    <tr><th><span style="color: black; ">Here are the open, active scientific projects on <a target="_blank" href="https://federalreporter.nih.gov">Federal Reporter</a><sup><a href="#nihfoa-cite">15</a></sup> from all US government national funding agencies, for the search term. You can click on the links to reach the public project information with more details. Missing "None" or "null" values are due to missing values in the NIH API.</span></th></tr>
+    <br><br>
+    {% if nihreporter %}
+        {% set url = "https://projectreporter.nih.gov/project_info_description.cfm?projectnumber=" %}
+        <table id="nihreporter" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+                {% for heading in nihreporter["header"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in nihreporter["result"] if result %}
+                <tr>
+                    <td>{{result["title"]}}</td>
+                    <td><a target="_blank" href={{ url ~ result["projectNumber"] }}>{{result["projectNumber"]}}</a></td>
+                    <td>{{result["department"]}}</td>
+                    <td>{{result["agency"]}}</td>
+                    <td>{{result["ic"]}}</td>
+                    <td>{{result["totalCostAmount"]}}</td>
+                    {% if result["projectStartDate"] %}
+                        <td>{{result["projectStartDate"].split("T")[0]}}</td>
+                        <td>{{result["projectEndDate"].split("T")[0]}}</td>
+                    {% else %}              
+                        <td>null</td>
+                        <td>null</td>
+                    {% endif %}              
+                    <td>{{result["contactPi"]}}</td>
+                    <td>{{result["orgName"]}},{{result["orgCity"]}},{{result["orgState"]}},{{result["orgCountry"]}},{{result["orgZipCode"]}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the search term in the Federal Reporter database (or API may be down).
     {% endif %}
 </div>
 

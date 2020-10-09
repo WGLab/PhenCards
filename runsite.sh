@@ -5,4 +5,4 @@ docker-compose up -d # to run everything and check for new builds
 # to just re-up production app (prod) or dev (app)
 #docker-compose up -d prod
 # to build just one of the images
-#docker compose build -d prod
+#docker-compose build prod

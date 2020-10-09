@@ -62,16 +62,16 @@ def generate_patient_page():
     HPO_names = session['HPOnames']
     d2hjson = session['parsingJson']
     doc2hpo_notes = session['doc2hpo_notes']
-    session['HPOclinical'], phen2gene, headers = API.patient_page(HPOquery, HPO_names)
+    session['HPOclinical'], phen2gene, headers, linked_diseases = API.patient_page(HPOquery, HPO_names, d2hjson)
     print(HPOquery, file=sys.stderr)
-    return render_template('patient.html', phen2gene=phen2gene, d2hjson=d2hjson, headers=headers, note=doc2hpo_notes)
+    return render_template('patient.html', phen2gene=phen2gene, d2hjson=d2hjson, headers=headers, linked_diseases=linked_diseases, note=doc2hpo_notes)
 
 @app.route('/results')
 def generate_results_page():
     global umls
     HPOquery=session['HPOquery']
-    doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, cohd, nihfoa = queries.results_page(HPOquery)
-    return render_template('results.html', doid=doid, msh=msh, icd10=icd10, irs990=irs990, open990f=open990f, open990g=open990g, hpo=hpo, hpolink=hpolink, ohdsi=ohdsi, phen2gene=phen2gene, cohd=cohd, nihfoa=nihfoa)
+    doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, cohd, nihfoa, nihreporter = queries.results_page(HPOquery)
+    return render_template('results.html', doid=doid, msh=msh, icd10=icd10, irs990=irs990, open990f=open990f, open990g=open990g, hpo=hpo, hpolink=hpolink, ohdsi=ohdsi, phen2gene=phen2gene, cohd=cohd, nihfoa=nihfoa, nihreporter=nihreporter)
 
 @app.route('/umlslogin')
 def umls_login():

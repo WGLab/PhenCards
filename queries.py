@@ -71,7 +71,8 @@ def doc2hpo(doc2hpo_notes):
 
     return HPO_list, HPO_names, res, doc2hpo_notes
 
-def results_page(HPOquery):
+def elasticquery(HPOquery,index,esettings="standard"):
+    # default query
     query_json = \
     {'query': {
         "bool": {
@@ -110,100 +111,151 @@ def results_page(HPOquery):
     },
         "sort": {"_score": {"order": "desc"}}
     }
-    hpo_query_json = \
-    {'query': {
-        "bool": {
-            "should": [
-                {
-                "match": {
-                    "NAME": {
-                        "query": HPOquery,
-                        "fuzziness": "AUTO:0,3",
-                        "prefix_length" : 0,
-                        "max_expansions": 50,
-                        "boost": 1,
-                        "operator": "or",
+    # if looking at linked terms only
+    if esettings=="diseases":
+        query_json = \
+        {'query': {
+            "bool": {
+                "should": [
+                    {
+                    "match": {
+                        "Linked HPO term": {
+                            "query": HPOquery,
+                            "fuzziness": "AUTO:0,3",
+                            "prefix_length" : 0,
+                            "max_expansions": 50,
+                            "boost": 1,
+                            "operator": "or",
+                            }
                         }
-                    }
-                },
-                {
-                "match": {
-                    "Linked HPO term": {
-                        "query": HPOquery,
-                        "fuzziness": "AUTO:0,3",
-                        "prefix_length" : 0,
-                        "max_expansions": 50,
-                        "boost": 1,
-                        "operator": "or",
+                    },
+                    {
+                    "match": {
+                        "Linked HPO term": {
+                            "query": HPOquery,
+                            "fuzziness": 0,
+                            "boost": 2,
                         }
-                    }
-                },
-                {
-                "match": {
-                    "NAME": {
-                        "query": HPOquery,
-                        "fuzziness": 0,
-                        "boost": 2,
-                    }
-                    }
-                },
-                {
-                "match": {
-                    "Linked HPO term": {
-                        "query": HPOquery,
-                        "fuzziness": 0,
-                        "boost": 2,
-                    }
-                    }
-                },
-                {
-                "match_phrase": {
-                    "NAMEEXACT": {
-                        "query": HPOquery,
-                        "boost": 3,
-                    }
-                    }
-                },
-                {
-                "match_phrase": {
-                    "Linked HPONameExact": {
-                        "query": HPOquery,
-                        "boost": 3,
-                    }
-                    }
-                },
-        ]
+                        }
+                    },
+                    {
+                    "match_phrase": {
+                        "Linked HPONameExact": {
+                            "query": HPOquery,
+                            "boost": 3,
+                        }
+                        }
+                    },
+            ]
+            }
+        },
+            "sort": {"_score": {"order": "desc"}}
         }
-    },
-        "sort": {"_score": {"order": "desc"}}
-    }
+    # if looking at linked terms + disease names
+    if esettings=="hpolink":
+        query_json = \
+        {'query': {
+            "bool": {
+                "should": [
+                    {
+                    "match": {
+                        "NAME": {
+                            "query": HPOquery,
+                            "fuzziness": "AUTO:0,3",
+                            "prefix_length" : 0,
+                            "max_expansions": 50,
+                            "boost": 1,
+                            "operator": "or",
+                            }
+                        }
+                    },
+                    {
+                    "match": {
+                        "Linked HPO term": {
+                            "query": HPOquery,
+                            "fuzziness": "AUTO:0,3",
+                            "prefix_length" : 0,
+                            "max_expansions": 50,
+                            "boost": 1,
+                            "operator": "or",
+                            }
+                        }
+                    },
+                    {
+                    "match": {
+                        "NAME": {
+                            "query": HPOquery,
+                            "fuzziness": 0,
+                            "boost": 2,
+                        }
+                        }
+                    },
+                    {
+                    "match": {
+                        "Linked HPO term": {
+                            "query": HPOquery,
+                            "fuzziness": 0,
+                            "boost": 2,
+                        }
+                        }
+                    },
+                    {
+                    "match_phrase": {
+                        "NAMEEXACT": {
+                            "query": HPOquery,
+                            "boost": 3,
+                        }
+                        }
+                    },
+                    {
+                    "match_phrase": {
+                        "Linked HPONameExact": {
+                            "query": HPOquery,
+                            "boost": 3,
+                        }
+                        }
+                    },
+            ]
+            }
+        },
+            "sort": {"_score": {"order": "desc"}}
+        }
+
+    result = {'result': indexquery(query_json,index=index,size=100)['hits']['hits']} # list of results line by line in "_source"
+
+    return result
+    
+
+def results_page(HPOquery):
 
     # indices: doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi
     headers=generate_headers()
-    hpo = {'result': indexquery(query_json,index='hpo',size=100)['hits']['hits']} # list of results line by line in "_source"
+    hpo = elasticquery(HPOquery, 'hpo')
     hpo['header'] = headers['HPO']
+    hpolink = elasticquery(HPOquery, 'hpolink', esettings="hpolink")
+    hpolink['header'] = headers['HPOlink']
+    doid = elasticquery(HPOquery, 'doid')
+    doid['header'] = headers['DO']
+    msh = elasticquery(HPOquery, 'msh')
+    msh['header'] = headers['MeSH']
+    icd10 = elasticquery(HPOquery, 'icd10')
+    icd10['header'] = headers['ICD-10']
+    umls = elasticquery(HPOquery, 'umls')
+    umls['header'] = headers['UMLS']
+    ohdsi = elasticquery(HPOquery, 'ohdsi')
+    ohdsi['header'] = headers['OHDSI']
+    open990f = elasticquery(HPOquery, 'open990f')
+    open990f['header'] = headers['990F']
+    open990g = elasticquery(HPOquery, 'open990g')
+    open990g['header'] = headers['990G']
+    irs990 = elasticquery(HPOquery, 'irs990')
+    irs990['header'] = headers['IRS']
+
+    # for top HPO hit for Phen2Gene
     try:
         session['HPOID']=hpo['result'][0]['_source']['HPO ID']
     except IndexError:
         session['HPOID']=""
-    hpolink = {'result': indexquery(hpo_query_json,index='hpolink',size=100)['hits']['hits']}
-    hpolink['header'] = headers['HPOlink']
-    doid = {'result': indexquery(query_json,index='doid',size=100)['hits']['hits']}
-    doid['header'] = headers['DO']
-    msh = {'result': indexquery(query_json,index='msh',size=100)['hits']['hits']}
-    msh['header'] = headers['MeSH']
-    icd10 = {'result': indexquery(query_json,index='icd10',size=100)['hits']['hits']}
-    icd10['header'] = headers['ICD-10']
-    umls = {'result': indexquery(query_json,index='umls',size=100)['hits']['hits']}
-    umls['header'] = headers['UMLS']
-    ohdsi = {'result': indexquery(query_json,index='ohdsi',size=100)['hits']['hits']}
-    ohdsi['header'] = headers['OHDSI']
-    open990f = {'result': indexquery(query_json,index='open990f',size=100)['hits']['hits']}
-    open990f['header'] = headers['990F']
-    open990g = {'result': indexquery(query_json,index='open990g',size=100)['hits']['hits']}
-    open990g['header'] = headers['990G']
-    irs990 = {'result': indexquery(query_json,index='irs990',size=100)['hits']['hits']}
-    irs990['header'] = headers['IRS']
 
     # only allow internal redirect to results page
     # <wiki link> https://en.wikipedia.org/wiki/Waterhouse%E2%80%93Friderichsen_syndrome
@@ -216,12 +268,14 @@ def results_page(HPOquery):
     cohd['header'] = headers['COHD']
     nihfoa = {'result': API.generate_nihfoa_list(HPOquery)}
     nihfoa['header'] = headers['NIHFOA']
+    nihreporter = {'result': API.generate_nihreporter_list(HPOquery)}
+    nihreporter['header'] = headers['NIHREPORT']
     phen2gene = {'result': API.phen2gene_page(session['HPOID'], patient=False)}
     phen2gene['header'] = headers['P2G']
 
     session['HPOquery'] = HPOquery.replace("_", "+").replace(" ","+")
 
-    return doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, cohd, nihfoa
+    return doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, cohd, nihfoa, nihreporter
 
 def get_results_json():
 
