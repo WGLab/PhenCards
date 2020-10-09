@@ -3,6 +3,9 @@
 {% block content %}
 
 <head>
+    <!--select2 button menus-->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>   
 <style>
 h1 {
   display: inline;
@@ -179,6 +182,31 @@ th {
 <hr>
 </div>
 
+<div class="container medium" id="Literature">
+    <h1><span style="color: #efa50e; "><b>Literature</b></span></h1>
+    <br><br>
+    <tr><th><span style="color: black;"> Using this unique tool, you can search for related literature for your extracted HPO terms with great ease in <a target="_blank" href="https://scholar.google.com">Google Scholar</a>. The default search includes all exact terms separated by ORs.  To increase specificity, remove the ORs (if you remove all ORs in the default notes you will get the paper we cited with the notes). If you want to make it involve less terms, remove them.  You can also add more terms by typing in the box, as well as "ANDs" or "ORs".</span></th></tr>
+    <br><br>
+  <p>
+<!--https://select2.org/tagging-->
+    <select id="hposelect" class="js-example-tags form-control" multiple="multiple" style="width: 100%">
+        {% if d2hjson %}
+            {% for result in d2hjson if not result.negated %}
+                <option selected="selected" value={{result["hpoName"]}}>{{result["hpoName"]}}</option>
+                {% if not loop.last %}
+                    <option selected="selected" value="OR">OR</option>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </select>
+  </p>
+    <button type="button" onclick="searchResult()" class="btn btn-primary"><i class="material-icons" style="font-size: 16px">send</i>Search Google Scholar</button>
+</div>
+
+<div class="container" id="bar">
+<hr>
+</div>
+
 <div class="container medium" id="Citations_n_Licenses">
     <h1><span style="color: #efa50e; "><b>Citations & Licenses</b></span></h1>
     <br><br>
@@ -218,13 +246,11 @@ th {
 {% endblock %}
 
 {% block scripts %}
-<!-- make nice table with multiple pages -->
 <script type="text/javascript">
+    // for highlighting patient notes
 	$(document).ready(function () {
 		var d2hjson = {{ d2hjson | tojson }};
 		var note = {{ note | tojson }};
-		console.log(d2hjson);
-		console.log(note);
 		highlight(note,d2hjson);
 	});
 </script>
@@ -232,6 +258,8 @@ th {
 <script type="text/javascript" src="{{ url_for('static', filename='js/style.js')}}">>
 </script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/patienttables.js')}}">>
+</script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/patientlit.js')}}">>
 </script>
 
 {% endblock %}
