@@ -122,7 +122,7 @@ th {
             {% for disease in linked_diseases %}
                 <tr>
                     <td><a target="_blank" href={{ url ~ disease.split(" ")|join("%20") }}>{{disease}}</a></td>
-                    <td>{{linked_diseases[disease]}}</td>
+                    <td>{{  "%.2f"| format(linked_diseases[disease])}}</td>
                 </tr>
             {% endfor %}
             </tbody>
