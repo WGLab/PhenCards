@@ -155,7 +155,7 @@ th {
             <tbody>
             {% for result in phen2gene %}
                 <tr>
-                    <td><a target="_blank" href={{ url ~ result["Gene"] }}>{{result["Gene"]}}</a></td>
+                    <td><a target="_blank" href={{ url ~ result["Gene"] | lower }}>{{result["Gene"]}}</a></td>
                     <td>{{result["Rank"]}}</td>
                     <td>{{result["Score"]}}</td>
                     <td>{{result["Status"]}}</td>
