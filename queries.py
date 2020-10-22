@@ -121,28 +121,8 @@ def elasticquery(HPOquery,index,esettings="standard"):
                     "match": {
                         "Linked HPO term": {
                             "query": HPOquery,
-                            "fuzziness": "AUTO:0,3",
-                            "prefix_length" : 0,
-                            "max_expansions": 50,
-                            "boost": 1,
-                            "operator": "or",
-                            }
-                        }
-                    },
-                    {
-                    "match": {
-                        "Linked HPO term": {
-                            "query": HPOquery,
                             "fuzziness": 0,
                             "boost": 2,
-                        }
-                        }
-                    },
-                    {
-                    "match_phrase": {
-                        "Linked HPONameExact": {
-                            "query": HPOquery,
-                            "boost": 3,
                         }
                         }
                     },
