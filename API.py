@@ -72,24 +72,27 @@ def cohd_page(concept_id):
 
 def kegg_page(phenname):
     phenname=phenname.replace("_", "+").replace(" ","+")
-    diseases=requests.get('http://rest.kegg.jp/find/disease/'+phenname, verify=False, stream=True)
-    diseases=[x.split("\t") for x in diseases.text.strip().split("\n")]
-    paths = defaultdict(list)
-    for did, dname in diseases:
-        path=requests.get('http://rest.kegg.jp/link/pathway/'+did, verify=False, stream=True)
-        for line in path.text.splitlines():
-            if re.search("hsa", line):
-                paths[line.strip().split("\t")[1]].append(dname)
-    # generate temporary images then os remove using @after_this_request decorator in flask under app route (/results/pathway)
-    dispath = {}
-    print (paths)
-    for i, pid in enumerate(paths):
-        link='https://www.genome.jp/dbget-bin/www_bget?'+pid
-        reqname=requests.get('http://rest.kegg.jp/get/'+pid, verify=False, stream=True)
-        for line in reqname.text.splitlines():
-            if re.search("NAME\s*", line):
-                name=re.split("\w*\s*",line,1)[-1].split("-")[0]
-        dispath[name]=[paths[pid],link]
+    try:
+        diseases=requests.get('http://rest.kegg.jp/find/disease/'+phenname, verify=False, stream=True)
+        diseases=[x.split("\t") for x in diseases.text.strip().split("\n")]
+        paths = defaultdict(list)
+        for did, dname in diseases:
+            path=requests.get('http://rest.kegg.jp/link/pathway/'+did, verify=False, stream=True)
+            for line in path.text.splitlines():
+                if re.search("hsa", line):
+                    paths[line.strip().split("\t")[1]].append(dname)
+        # generate temporary images then os remove using @after_this_request decorator in flask under app route (/results/pathway)
+        dispath = {}
+        print (paths)
+        for i, pid in enumerate(paths):
+            link='https://www.genome.jp/dbget-bin/www_bget?'+pid
+            reqname=requests.get('http://rest.kegg.jp/get/'+pid, verify=False, stream=True)
+            for line in reqname.text.splitlines():
+                if re.search("NAME\s*", line):
+                    name=re.split("\w*\s*",line,1)[-1].split("-")[0]
+            dispath[name]=[paths[pid],link]
+    except:
+        dispath={}
     headers=generate_headers()
     headers={"KEGG": headers['KEGG']}
 
