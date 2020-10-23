@@ -57,6 +57,8 @@ def cohd_page(concept_id):
             results[domain] = sorted(results[domain]['results'], key=lambda k: k['chi_square'], reverse=True)
             for i in results[domain]:
                 i['chi_square'] = str(round(float(i['chi_square']),2))
+                i['adj_p-value'] = str('{:0.3e}'.format(float(i['adj_p-value'])))
+                i['p-value'] = str('{:0.3e}'.format(float(i['p-value'])))
         else:
             results[domain] = []
 
