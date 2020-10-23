@@ -269,14 +269,14 @@ th {
             </tr>
             </thead>
             <tbody>
-            {% for result in hpolink["result"] %}
+            {% for did in hpolink["result"] %}
                 <tr>
-                    <td>{{result["_source"]["NAME"]}}</td>
-                    <td><a target="_blank" href={{ url ~ result["_source"]["Database Name"] ~ ":" ~ result["_source"]["Related Database ID"] }}>{{result["_source"]["Related Database ID"]}}</a></td>
-                    <td>{{result["_source"]["Database Name"]}}</td>
-                    <td>{{result["_source"]["Linked HPO term"]}}</td>
-                    <td>{{result["_source"]["Linked HPO ID"]}}</td>
-                    <td>{{result["_score"]}}</td>
+                    <td>{{hpolink["result"][did]["NAME"]}}</td>
+                    <td><a target="_blank" href={{ url ~ hpolink["result"][did]["Database Name"] ~ ":" ~ hpolink["result"][did]["Related Database ID"] }}>{{hpolink["result"][did]["Related Database ID"]}}</a></td>
+                    <td>{{hpolink["result"][did]["Database Name"]}}</td>
+                    <td>{{hpolink["result"][did]["Linked HPO term"]}}</td>
+                    <td>{{hpolink["result"][did]["Linked HPO ID"]}}</td>
+                    <td>{{hpolink["result"][did]["score"]}}</td>
                 </tr>
             {% endfor %}
             </tbody>
