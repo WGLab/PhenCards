@@ -34,9 +34,10 @@ def phencards():
 
         # use doc2hpo to get HPO ids
         if doc2hpo_check: # runs doc2hpo instead of string match
-            HPO_list, HPO_names, res, note = queries.doc2hpo(doc2hpo_notes)
+            HPO_list, HPO_names, HPO_results, res, note = queries.doc2hpo(doc2hpo_notes)
             session['HPOquery']=HPO_list
             session['HPOnames']=HPO_names
+            session['HPOresults']=HPO_results
             session['parsingJson'] = res
             session['doc2hpo_notes'] = note
             return redirect(url_for('generate_patient_page'))
@@ -60,11 +61,12 @@ def phencards():
 def generate_patient_page():
     HPOquery = session['HPOquery']
     HPO_names = session['HPOnames']
+    HPOresults = session['HPOresults']
     d2hjson = session['parsingJson']
     doc2hpo_notes = session['doc2hpo_notes']
     session['HPOclinical'], phen2gene, headers, linked_diseases = API.patient_page(HPOquery, HPO_names, d2hjson)
     print(HPOquery, file=sys.stderr)
-    return render_template('patient.html', phen2gene=phen2gene, d2hjson=d2hjson, headers=headers, linked_diseases=linked_diseases, note=doc2hpo_notes)
+    return render_template('patient.html', phen2gene=phen2gene, HPOresults=HPOresults, d2hjson=d2hjson, headers=headers, linked_diseases=linked_diseases, note=doc2hpo_notes)
 
 @app.route('/results')
 def generate_results_page():

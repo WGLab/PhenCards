@@ -23,8 +23,9 @@ def connect_to_db(path_to_db):
     return c1, c2
 
 def doc2hpo(doc2hpo_notes):
-    HPO_list = []
-    HPO_names = []
+    HPO_list = set()
+    HPO_names = set()
+    HPO_results = {}
     # default doc2hpo text
     if not doc2hpo_notes:
         doc2hpo_notes=Config.doc2hpo_default
@@ -63,13 +64,14 @@ def doc2hpo(doc2hpo_notes):
         else:
             HPO_set.add(i["hpoId"])
             HPO_nset.add(i["hpoName"])
+            HPO_results[i["hpoId"]]=i["hpoName"]
     # only use non-negated HPO IDs
     for i in HPO_set.difference(negated_HPOs):
-        HPO_list.append(i)
+        HPO_list.add(i)
     for i in HPO_nset.difference(negated_names):
-        HPO_names.append(i)
-
-    return HPO_list, HPO_names, res, doc2hpo_notes
+        HPO_names.add(i)
+    HPO_list, HPO_names = list(HPO_list), list(HPO_names)
+    return HPO_list, HPO_names, HPO_results, res, doc2hpo_notes
 
 def elasticquery(HPOquery,index,esettings="standard"):
     # default query
