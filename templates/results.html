@@ -486,8 +486,8 @@ th {
                     <td>{{result["_source"]["primaryIC"]}}</td>
                     <td><span>{% for name in result["_source"]["sponsors"][:-1] %} {{name}}, {% endfor %} {{result["_source"]["sponsors"][-1]}}</span></td>
                     <td>{{result["_source"]["opendate"]}}</td>
-                    <td>{{result["_source"]["appreceiptdate"].split(".")[0]}}.</td>
                     <td>{{result["_source"]["expdate"]}}</td>
+                    <td>{{result["_source"]["appreceiptdate"].split(".")[0]}}.</td>
                     <td>{{result["_score"]}}</td>
                 </tr>
             {% endfor %}

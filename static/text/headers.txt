@@ -106,8 +106,8 @@ NIHFOA	Document Number	The unique number of the grant announcement.  Could be a 
 NIHFOA	Primary IC	The name of the institute or center that is the primary funder of the FOA.
 NIHFOA	Sponsors	The other participating NIH Organizations of the NIH FOA.
 NIHFOA	Open Date	The date upon which this FOA first opened.
-NIHFOA	Application Date	The dates when one can apply for this FOA.
 NIHFOA	Expiration Date	The last day this FOA is open.
+NIHFOA	Application Date	The dates when one can apply for this FOA.
 NIHFOA	Score	The elasticsearch score for the query term.  The higher this score, the more likely it is what you were looking for.
 NIHREPORT	Title	The name of the project.
 NIHREPORT	Project Number	The unique number of the funded project, can be used to search the project on Federal Reporter and learn more.
