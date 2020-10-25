@@ -187,7 +187,7 @@ def elasticquery(HPOquery,index,esettings="standard"):
             "sort": {"_score": {"order": "desc"}}
         }
 
-    result = {'result': indexquery(query_json,index=index,size=100)['hits']['hits']} # list of results line by line in "_source"
+    result = {'result': indexquery(query_json,index=index,size=500)['hits']['hits']} # list of results line by line in "_source"
 
     return result
     
