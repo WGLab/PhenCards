@@ -55,7 +55,7 @@ $(document).ready(function () {
                 "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
                 "order": order,
                 "responsive": "true",
-                "columnDefs": [{ "width": "15%", "targets": 0 }]
+                "columnDefs": [{ "width": "25%", "targets": 0 }]
             });
         });
 });
