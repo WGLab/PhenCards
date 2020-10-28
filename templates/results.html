@@ -520,9 +520,12 @@ th {
                     <td>{{result["totalCostAmount"]}}</td>
                     {% if result["projectStartDate"] %}
                         <td>{{result["projectStartDate"].split("T")[0]}}</td>
-                        <td>{{result["projectEndDate"].split("T")[0]}}</td>
                     {% else %}              
                         <td>null</td>
+                    {% endif %}              
+                    {% if result["projectEndDate"] %}
+                        <td>{{result["projectEndDate"].split("T")[0]}}</td>
+                    {% else %}              
                         <td>null</td>
                     {% endif %}              
                     <td>{{result["contactPi"]}}</td>
