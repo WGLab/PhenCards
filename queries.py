@@ -42,7 +42,7 @@ def doc2hpo(doc2hpo_notes):
     # if status code of response starts with 2, it is successful, otherwise something is wrong with doc2hpo
     print ("hi", r.status_code, file=sys.stderr)
     if int(str(r.status_code)[:1]) != 2:
-        r = requests.post(url='http://127.0.0.1:8000/doc2hpo/parse/acdat', json=data)
+        r = requests.post(url='https://impact2.dbmi.columbia.edu/doc2hpo/parse/acdat', json=data)
         if int(str(r.status_code)[:1]) != 2:
             doc2hpo_error = "Doc2Hpo service is temporarily unavailable and cannot process clinical notes. Please manually input HPO terms instead."
             flash(doc2hpo_error)
