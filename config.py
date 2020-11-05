@@ -9,4 +9,5 @@ class Config(object):
     doc2hpo_url = "https://doc2hpo.wglab.org/parse/acdat" #"http://impact2.dbmi.columbia.edu/doc2hpo/parse/acdat" # can return to HTTPS when Columbia renews SSL cert and fixes site permanently
     elasticsearch_url = "elasticsearch:9200"
     path_to_headers = os.path.join(dirname, 'static/text/headers.txt')
+    db_name = "/media/database/querycount.db"
 

@@ -4,6 +4,7 @@ chardet>=3.0.4
 Click>=7.0
 elasticsearch>=7.0.4
 flask>=1.1.1
+flask-sqlalchemy>=2.4.4
 flask-Cors>=3.0.8
 flask-WTF==0.14.3
 idna>=2.8

@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
 from flask import Flask, Response, render_template, redirect, url_for, request, jsonify, abort, flash, session, app, send_from_directory
+from sqlalchemy import create_engine, Column, Text, Integer
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.exc import IntegrityError
 import sys
 from datetime import timedelta
 import API
@@ -12,6 +16,20 @@ import os
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+db_name=Config.db_name
+SQLALCHEMY_DATABASE_URL = 'sqlite:///' + db_name
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+db = SessionLocal()
+
+class Query(Base):
+    __tablename__ = 'Queries'
+    term = Column(Text, unique=True, primary_key=True, nullable=False)
+    cnt = Column(Integer, default=0)
+    def __repr__(self):
+        return '<Query %r: %d>' % (self.term, self.cnt)
 
 @app.route('/favicon.ico')
 def favicon():
@@ -50,6 +68,22 @@ def phencards():
                 phen_name = form.typeahead.data
 
         session['HPOquery']=session['HPOclinical']=phen_name
+        ## STORE THE QUERIES HERE IN SQL DB, LOWERCASE
+        Base.metadata.create_all(bind=engine)
+        q = session['HPOquery'].lower()
+        Q = Query(term=q)
+        try:
+            j = len(db.query(Query).filter_by(term=q).all())
+            if j == 0:
+                print ("new entry")
+                db.add(Q)
+            else:
+                db.query(Query).filter_by(term=q).update({Query.cnt: Query.cnt + 1})
+            db.commit()
+        except IntegrityError as e:
+            db.rollback()
+            print ("rollback", e)
+        print (db.query(Query).filter_by(term=q).all())
         return redirect(url_for('generate_results_page'))
     term = request.args.get('term')
     if term:
