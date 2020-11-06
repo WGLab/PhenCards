@@ -42,7 +42,7 @@ def make_session_permanent():
 
 @app.route('/', methods=["GET", "POST"])
 def phencards():
-    phen_name = "cleft palate" # default string
+    phen_name = "craniosynostosis" # default string, make sure to always test with cleft palate or similar, for whitespace interpretation is different on different APIs
     # methods in form class
     form = PhenCardsForm()
     # validate_on_submit() method
