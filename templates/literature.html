@@ -21,7 +21,7 @@
             <tbody>
             {% for id in pubmed %}
                 <tr>
-                    <td><a href={{ ''.join(['https://pubmed.ncbi.nlm.nih.gov/',id]) }}>PMID: {{id}}</a></td>
+                    <td><a target="_blank" href={{ ''.join(['https://pubmed.ncbi.nlm.nih.gov/',id]) }}>PMID: {{id}}</a></td>
                     <td>{{pubmed[id][0]}}</td>
                     <td>{{pubmed[id][1]}}</td>
                 </tr>
