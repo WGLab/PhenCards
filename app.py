@@ -188,6 +188,9 @@ def download_json():
     return Response(results1, mimetype="application/json", # will need to add link to HPO results later
                     headers={"Content-disposition":
                                  "attachment; filename=results.json"})
+@app.route('/tutorial')
+def generate_tutorial_page():
+    return render_template('tutorial.html')
 
 # RESTful API
 @app.route('/api', methods=["GET"])
