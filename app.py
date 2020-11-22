@@ -94,13 +94,13 @@ def phencards():
 @app.route('/patient')
 def generate_patient_page():
     HPOquery = session['HPOquery']
-    HPO_names = session['HPOnames']
+    HPOnames = sorted(session['HPOnames'])
     HPOresults = session['HPOresults']
     d2hjson = session['parsingJson']
     doc2hpo_notes = session['doc2hpo_notes']
-    session['HPOclinical'], phen2gene, headers, linked_diseases = API.patient_page(HPOquery, HPO_names, d2hjson)
+    session['HPOclinical'], phen2gene, headers, linked_diseases = API.patient_page(HPOquery, HPOnames, d2hjson)
     print(HPOquery, file=sys.stderr)
-    return render_template('patient.html', phen2gene=phen2gene, HPOresults=HPOresults, d2hjson=d2hjson, headers=headers, linked_diseases=linked_diseases, note=doc2hpo_notes)
+    return render_template('patient.html', phen2gene=phen2gene, HPOnames=HPOnames, HPOresults=HPOresults, d2hjson=d2hjson, headers=headers, linked_diseases=linked_diseases, note=doc2hpo_notes)
 
 @app.route('/results')
 def generate_results_page():
