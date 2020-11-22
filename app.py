@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
 from flask import Flask, Response, render_template, redirect, url_for, request, jsonify, abort, flash, session, app, send_from_directory
+from sqlalchemy import create_engine, Column, Text, Integer
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.exc import IntegrityError
 import sys
 from datetime import timedelta
 import API
@@ -13,6 +17,20 @@ import os
 app = Flask(__name__)
 app.config.from_object(Config)
 
+db_name=Config.db_name
+SQLALCHEMY_DATABASE_URL = 'sqlite:///' + db_name
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+db = SessionLocal()
+
+class Query(Base):
+    __tablename__ = 'Queries'
+    term = Column(Text, unique=True, primary_key=True, nullable=False)
+    cnt = Column(Integer, default=0)
+    def __repr__(self):
+        return '<Query %r: %d>' % (self.term, self.cnt)
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static/ico'),
@@ -24,7 +42,7 @@ def make_session_permanent():
 
 @app.route('/', methods=["GET", "POST"])
 def phencards():
-    phen_name = "cleft palate" # default string
+    phen_name = "craniosynostosis" # default string, make sure to always test with cleft palate or similar, for whitespace interpretation is different on different APIs
     # methods in form class
     form = PhenCardsForm()
     # validate_on_submit() method
@@ -34,9 +52,10 @@ def phencards():
 
         # use doc2hpo to get HPO ids
         if doc2hpo_check: # runs doc2hpo instead of string match
-            HPO_list, HPO_names, res, note = queries.doc2hpo(doc2hpo_notes)
+            HPO_list, HPO_names, HPO_results, res, note = queries.doc2hpo(doc2hpo_notes)
             session['HPOquery']=HPO_list
             session['HPOnames']=HPO_names
+            session['HPOresults']=HPO_results
             session['parsingJson'] = res
             session['doc2hpo_notes'] = note
             return redirect(url_for('generate_patient_page'))
@@ -49,6 +68,22 @@ def phencards():
                 phen_name = form.typeahead.data
 
         session['HPOquery']=session['HPOclinical']=phen_name
+        ## STORE THE QUERIES HERE IN SQL DB, LOWERCASE
+        Base.metadata.create_all(bind=engine)
+        q = session['HPOquery'].lower()
+        Q = Query(term=q)
+        try:
+            j = len(db.query(Query).filter_by(term=q).all())
+            if j == 0:
+                print ("new entry")
+                db.add(Q)
+            else:
+                db.query(Query).filter_by(term=q).update({Query.cnt: Query.cnt + 1})
+            db.commit()
+        except IntegrityError as e:
+            db.rollback()
+            print ("rollback", e)
+        print (db.query(Query).filter_by(term=q).all())
         return redirect(url_for('generate_results_page'))
     term = request.args.get('term')
     if term:
@@ -59,12 +94,13 @@ def phencards():
 @app.route('/patient')
 def generate_patient_page():
     HPOquery = session['HPOquery']
-    HPO_names = session['HPOnames']
+    HPOnames = sorted(session['HPOnames'])
+    HPOresults = session['HPOresults']
     d2hjson = session['parsingJson']
     doc2hpo_notes = session['doc2hpo_notes']
-    session['HPOclinical'], phen2gene, headers, linked_diseases = API.patient_page(HPOquery, HPO_names, d2hjson)
+    session['HPOclinical'], phen2gene, headers, linked_diseases = API.patient_page(HPOquery, HPOnames, d2hjson)
     print(HPOquery, file=sys.stderr)
-    return render_template('patient.html', phen2gene=phen2gene, d2hjson=d2hjson, headers=headers, linked_diseases=linked_diseases, note=doc2hpo_notes)
+    return render_template('patient.html', phen2gene=phen2gene, HPOnames=HPOnames, HPOresults=HPOresults, d2hjson=d2hjson, headers=headers, linked_diseases=linked_diseases, note=doc2hpo_notes)
 
 @app.route('/results')
 def generate_results_page():
@@ -152,6 +188,9 @@ def download_json():
     return Response(results1, mimetype="application/json", # will need to add link to HPO results later
                     headers={"Content-disposition":
                                  "attachment; filename=results.json"})
+@app.route('/tutorial')
+def generate_tutorial_page():
+    return render_template('tutorial.html')
 
 # RESTful API
 @app.route('/api', methods=["GET"])

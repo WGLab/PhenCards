@@ -23,8 +23,9 @@ def connect_to_db(path_to_db):
     return c1, c2
 
 def doc2hpo(doc2hpo_notes):
-    HPO_list = []
-    HPO_names = []
+    HPO_list = set()
+    HPO_names = set()
+    HPO_results = {}
     # default doc2hpo text
     if not doc2hpo_notes:
         doc2hpo_notes=Config.doc2hpo_default
@@ -41,7 +42,7 @@ def doc2hpo(doc2hpo_notes):
     # if status code of response starts with 2, it is successful, otherwise something is wrong with doc2hpo
     print ("hi", r.status_code, file=sys.stderr)
     if int(str(r.status_code)[:1]) != 2:
-        r = requests.post(url='http://127.0.0.1:8000/doc2hpo/parse/acdat', json=data)
+        r = requests.post(url='https://impact2.dbmi.columbia.edu/doc2hpo/parse/acdat', json=data)
         if int(str(r.status_code)[:1]) != 2:
             doc2hpo_error = "Doc2Hpo service is temporarily unavailable and cannot process clinical notes. Please manually input HPO terms instead."
             flash(doc2hpo_error)
@@ -63,13 +64,14 @@ def doc2hpo(doc2hpo_notes):
         else:
             HPO_set.add(i["hpoId"])
             HPO_nset.add(i["hpoName"])
+            HPO_results[i["hpoId"]]=i["hpoName"]
     # only use non-negated HPO IDs
     for i in HPO_set.difference(negated_HPOs):
-        HPO_list.append(i)
+        HPO_list.add(i)
     for i in HPO_nset.difference(negated_names):
-        HPO_names.append(i)
-
-    return HPO_list, HPO_names, res, doc2hpo_notes
+        HPO_names.add(i)
+    HPO_list, HPO_names = list(HPO_list), list(HPO_names)
+    return HPO_list, HPO_names, HPO_results, res, doc2hpo_notes
 
 def elasticquery(HPOquery,index,esettings="standard"):
     # default query
@@ -121,28 +123,8 @@ def elasticquery(HPOquery,index,esettings="standard"):
                     "match": {
                         "Linked HPO term": {
                             "query": HPOquery,
-                            "fuzziness": "AUTO:0,3",
-                            "prefix_length" : 0,
-                            "max_expansions": 50,
-                            "boost": 1,
-                            "operator": "or",
-                            }
-                        }
-                    },
-                    {
-                    "match": {
-                        "Linked HPO term": {
-                            "query": HPOquery,
                             "fuzziness": 0,
                             "boost": 2,
-                        }
-                        }
-                    },
-                    {
-                    "match_phrase": {
-                        "Linked HPONameExact": {
-                            "query": HPOquery,
-                            "boost": 3,
                         }
                         }
                     },
@@ -195,22 +177,6 @@ def elasticquery(HPOquery,index,esettings="standard"):
                         "Linked HPO term": {
                             "query": HPOquery,
                             "fuzziness": 0,
-                            "boost": 2,
-                        }
-                        }
-                    },
-                    {
-                    "match_phrase": {
-                        "NAMEEXACT": {
-                            "query": HPOquery,
-                            "boost": 3,
-                        }
-                        }
-                    },
-                    {
-                    "match_phrase": {
-                        "Linked HPONameExact": {
-                            "query": HPOquery,
                             "boost": 3,
                         }
                         }
@@ -221,7 +187,7 @@ def elasticquery(HPOquery,index,esettings="standard"):
             "sort": {"_score": {"order": "desc"}}
         }
 
-    result = {'result': indexquery(query_json,index=index,size=100)['hits']['hits']} # list of results line by line in "_source"
+    result = {'result': indexquery(query_json,index=index,size=500)['hits']['hits']} # list of results line by line in "_source"
 
     return result
     
@@ -233,6 +199,19 @@ def results_page(HPOquery):
     hpo = elasticquery(HPOquery, 'hpo')
     hpo['header'] = headers['HPO']
     hpolink = elasticquery(HPOquery, 'hpolink', esettings="hpolink")
+    if hpolink["result"]:
+        diseases = defaultdict(dict)
+        scores = defaultdict(float)
+        for entry in hpolink["result"]:
+            '''
+entry = {'_index': 'hpolink', '_type': '_doc', '_id': '8dws1HQBR4YMZpofFYC7', '_score': 150.43999, '_source': {'Related Database ID': '260150', 'Database Name': 'OMIM', 'NAME': 'PALANT CLEFT PALATE SYNDROME', 'NAMEEXACT': 'PALANT CLEFT PALATE SYNDROME', 'Linked HPO ID': 'HP:0000175', 'Linked HPO term': 'Cleft palate'}}
+            '''
+            did = entry["_source"]["Related Database ID"]
+            if scores[did] < entry["_score"]:
+                diseases[did] = entry["_source"]
+                diseases[did]["score"] = entry["_score"]
+                scores[did] = entry["_score"]
+    hpolink["result"] = diseases
     hpolink['header'] = headers['HPOlink']
     doid = elasticquery(HPOquery, 'doid')
     doid['header'] = headers['DO']

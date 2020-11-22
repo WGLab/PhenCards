@@ -164,13 +164,15 @@
                         "order": [[ 2, "desc" ]],
                         "pageLength": 5,
                         "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
-                        "responsive": true
+                        "responsive": true,
+                        "columnDefs": [{ "width": "25%", "targets": 0 }]
                 });
                 $('#conditions, #procedures, #drugs').DataTable({
                         "order": [[ 3, "desc" ]],
                         "pageLength": 5,
                         "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
-                        "responsive": true
+                        "responsive": true,
+                        "columnDefs": [{ "width": "25%", "targets": 0 }]
                 });
         });
 
