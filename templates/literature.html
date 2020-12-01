@@ -37,12 +37,8 @@
 <!-- make nice table with multiple pages -->
 <script type="text/javascript">
         $(document).ready(function () {
-                $('#pubmed-table').DataTable({
-                        "order": [[ 2, "desc" ]],
-                        "pageLength": 5,
-                        "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
-                        "responsive": true
-                });
+        var mergedDefaults = {...tableDefault, ...{"order": [[2, "desc" ]]}}
+        var table = $("#pubmed-table").DataTable(mergedDefaults);
         });
 
 </script>

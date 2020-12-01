@@ -36,12 +36,8 @@
 <!-- make nice table with multiple pages -->
 <script type="text/javascript">
         $(document).ready(function () {
-                $('#pathway').DataTable({
-                        "bSort": false, // already sorted by Pathway Commons
-                        "pageLength": 5,
-                        "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
-                        "responsive": true
-                });
+        var mergedDefaults = {...tableDefault, ...{"order": []}}
+        var table = $("#pathway").DataTable(mergedDefaults);
         });
 
 </script>

@@ -50,12 +50,7 @@ $(document).ready(function () {
             else {
                 order = [];
             }
-        $(this).DataTable({
-                "pageLength": 5,
-                "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
-                "order": order,
-                "responsive": "true",
-                "columnDefs": [{ "width": "25%", "targets": 0 }]
-            });
+        var mergedDefaults = {...tableDefault, ...{"order": order, "columnDefs": [{ "width": "25%", "targets": 0 }]}}
+        var table = $(this).DataTable(mergedDefaults);
         });
 });

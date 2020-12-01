@@ -107,6 +107,7 @@ def literature_page(HPOquery):
     'db': 'pubmed',
     'term': HPOquery,
     'retmax': '200',
+    'api_key': '1ee2a8a8bf1b1b2b09e8087eb5cf16c95109',
     'sort': 'relevance'}
     rsearch=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi", params=params1)
     def generate_citations(uid):
@@ -137,6 +138,8 @@ def literature_page(HPOquery):
                 print (e,uid,"exc",file=sys.stderr)
                 return 0
         return 0
+    
+    # print(rsearch.url, file=sys.stderr) if needed to debug...most likely NCBI 500 error
 
     root=ET.fromstring(rsearch.text)
     ids={}

@@ -40,12 +40,8 @@
 <!-- make nice table with multiple pages -->
 <script type="text/javascript">
         $(document).ready(function () {
-                $('#umls').DataTable({
-	  		"order": [[ 6, "desc" ]],
-	  		"pageLength": 5,
-	  		"lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
-                        "responsive": true
-                });
+        var mergedDefaults = {...tableDefault, ...{"order": [[6, "desc" ]]}}
+        var table = $("#umls").DataTable(mergedDefaults);
         });
 
 </script>

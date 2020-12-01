@@ -277,12 +277,8 @@
 <!-- make nice table with multiple pages -->
 <script type="text/javascript">
         $(document).ready(function () {
-                $('#synonyms, #drugs, #forms, #weights, #outcomes, #ages, #routes, #drugi, #reactioni, #routei').DataTable({
-                        "bSort": false,
-                        "pageLength": 5,
-                        "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
-                        "responsive": true
-                });
+        var mergedDefaults = {...tableDefault, ...{"order": []}}
+        var table = $("#synonyms, #drugs, #forms, #weights, #outcomes, #ages, #routes, #drugi, #reactioni, #routei").DataTable(mergedDefaults);
         });
 
 </script>

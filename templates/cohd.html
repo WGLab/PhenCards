@@ -160,20 +160,10 @@
 <!-- make nice table with multiple pages -->
 <script type="text/javascript">
         $(document).ready(function () {
-                $('#ancestors').DataTable({
-                        "order": [[ 2, "desc" ]],
-                        "pageLength": 5,
-                        "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
-                        "responsive": true,
-                        "columnDefs": [{ "width": "25%", "targets": 0 }]
-                });
-                $('#conditions, #procedures, #drugs').DataTable({
-                        "order": [[ 3, "desc" ]],
-                        "pageLength": 5,
-                        "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
-                        "responsive": true,
-                        "columnDefs": [{ "width": "25%", "targets": 0 }]
-                });
+        var mergedDefaults = {...tableDefault, ...{"order": [[2, "desc"]], "columnDefs": [{ "width": "25%", "targets": 0 }]}}
+        var table = $("#ancestors").DataTable(mergedDefaults);
+        var mergedDefaults2 = {...tableDefault, ...{"order": [[3, "desc"]], "columnDefs": [{ "width": "25%", "targets": 0 }]}}
+        var table2 = $("#conditions, #procedures, #drugs").DataTable(mergedDefaults2);
         });
 
 </script>
