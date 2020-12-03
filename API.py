@@ -288,12 +288,12 @@ def disease_table(d2hjson):
 
     return results
 
-def umls_auth(user="username", password="wouldntyoulovetoknow"):
-    data = {"licenseCode": "NLM-323530719", # from uts profile
-            "user": user, # from user input
-            "password": password} # from user input
+def umls_auth(ticket):
+    params = {"service": "https://phencards.org/umls", # from uts profile
+            "ticket": ticket} # from user input
+    payload = "&".join("%s=%s" % (k,v) for k,v in params.items()) # prevents URL encoding of "+"
     try:
-        response = requests.post("https://uts-ws.nlm.nih.gov/restful/isValidUMLSUser", data=data)
+        response = requests.get("https://uts-ws.nlm.nih.gov/rest/isValidServiceValidate", params=payload)
         if response.status_code == 200:
             if "true" in response.text:
                 return True

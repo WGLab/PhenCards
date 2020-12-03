@@ -109,16 +109,11 @@ def generate_results_page():
     doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, cohd, nihfoa, nihreporter = queries.results_page(HPOquery)
     return render_template('results.html', doid=doid, msh=msh, icd10=icd10, irs990=irs990, open990f=open990f, open990g=open990g, hpo=hpo, hpolink=hpolink, ohdsi=ohdsi, phen2gene=phen2gene, cohd=cohd, nihfoa=nihfoa, nihreporter=nihreporter)
 
-@app.route('/umlslogin')
-def umls_login():
-    return render_template('umlslogin.html')
-
-@app.route('/umlslogin', methods=["POST"])
+@app.route('/umls')
 def generate_umls_page():
-    user = request.form.get('user')
-    password = request.form.get('password')
-    valid = API.umls_auth(user, password)
-    print (valid)
+    ticket = request.args['ticket']
+    valid = API.umls_auth(ticket)
+    print (valid, file=sys.stderr)
     if valid:
         return render_template('umls.html', umls=umls)
     else:

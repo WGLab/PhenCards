@@ -182,7 +182,7 @@ th {
     <hr class="innerbar">
     <tr><th><span style="color: black; ">To view the <a target="_blank" href="https://www.nlm.nih.gov/research/umls/index.html">UMLS aliases</a><sup><a href="#umls-cite">5</a></sup>, you must authenticate through this link:</span></th></tr>
     <br>
-    <tr><th><span><a target="_blank" href="{{ url_for('umls_login') }}" style="font-size: 25px">UMLS API</a></span></th></tr>
+    <button aria-label="Login to UTS" class="btn btn-success" onclick="window.open('https://uts.nlm.nih.gov/uts/login?service=https://phencards.org/umls')" class="button is-block is-info is-large is-fullwidth">Login to UTS</button>
 </div>
 
 <div class="container" id="bar">
