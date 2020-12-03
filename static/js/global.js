@@ -12,7 +12,7 @@ var buttonCommon = {
             },
         };
 var tableDefault = {
-                dom: "Bfrtip",
+                dom: '<"top">Bfrti<"bottom"lp>',
                 buttons: [
                     $.extend( true, {}, buttonCommon, {
                         extend: 'copyHtml5',
