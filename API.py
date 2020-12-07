@@ -13,6 +13,67 @@ import json
 import ray
 import datetime
 
+# pharos api 
+
+def pharos(HPOquery, query):
+    HPOquery=HPOquery.replace("+"," ")
+    url="https://pharos-api.ncats.io/graphql"
+    query=query % HPOquery
+    r = requests.post(url, json={'query': query})
+    data = json.loads(r.text)["data"]
+
+    return data
+
+
+def pharos_page(HPOquery):
+    facetdata = {}
+    query = """query facetsForTargetsForDisease {
+                  targets(filter: { associatedDisease: "%s" }) {
+                    facets {
+                      facet
+                      dataType
+                      values {
+                        name
+                        value
+                      }
+                    }
+                  }
+                }
+                """
+    data = pharos(HPOquery, query)
+    facets = data["targets"]["facets"]
+    #print(json.dumps(facetdata,indent=2)) 
+    for facet in facets:
+        if facet["facet"] in ["Linked Disease", "Reactome Pathway", "GO Process", "GO Component", "GO Function", "UniProt Disease", "Expression: UniProt Tissue", "Family", "Target Development Level"]:
+                facetdata[facet["facet"]] = facet["values"]
+
+    headers=generate_headers()
+    headers={"PharosFacets": headers['PharosFacets']}
+
+    return facetdata, headers
+
+def pharos_targets(HPOquery):
+    query="""query associatedTargets {
+              targets(filter: { associatedDisease: "%s" }) {
+                targets(top: 1000) {
+                  name
+                  uniprot
+                  sym
+                  diseaseAssociationDetails {
+                    name
+                    dataType
+                    evidence
+                  }
+                }
+              }
+            }
+            """
+    data = pharos(HPOquery, query)
+    targetdata = data["targets"]["targets"]
+    # print(json.dumps(targetdata,indent=2)) 
+
+    return targetdata
+
 # cohd list generator
 def generate_cohd_list(HPOquery):
     HPOquery=HPOquery.replace("+","_") # replace + with _

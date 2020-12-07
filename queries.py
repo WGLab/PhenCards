@@ -251,10 +251,12 @@ entry = {'_index': 'hpolink', '_type': '_doc', '_id': '8dws1HQBR4YMZpofFYC7', '_
     nihreporter['header'] = headers['NIHREPORT']
     phen2gene = {'result': API.phen2gene_page(session['HPOID'], patient=False)}
     phen2gene['header'] = headers['P2G']
+    pharos = {'result': API.pharos_targets(HPOquery)}
+    pharos['header'] = headers['PharosTargets']
 
     session['HPOquery'] = HPOquery.replace("_", "+").replace(" ","+")
 
-    return doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, cohd, nihfoa, nihreporter
+    return doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, pharos, cohd, nihfoa, nihreporter
 
 def get_results_json():
 
