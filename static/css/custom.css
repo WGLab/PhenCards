@@ -1,13 +1,6 @@
-hr {
-    height:2px;
-    border-width:0;
-    color:gray;
-    background-color:gray
-}
-hr.vertical {
-    height:100%; /* you might need some positioning for this to work, see other questions about 100% height */
-    width:0;
-    border:1px solid black;
+hr.major {
+    border: 4px solid #1862a1;
+    border-radius: 2px;
 }
 ::-webkit-scrollbar {
     width: 12px !important;
@@ -35,7 +28,7 @@ hr.vertical {
    background: #1862a1 !important; 
  }
 .innerbar {
-    height:1px;
+    height:3px;
     border-width:0;
     color:white;
     background-color:gray;
@@ -104,11 +97,11 @@ hr.vertical {
 }
 mark.term {
   color: rgba(255,255,255,1);
-  background: green;
+  background: #67a9cf;
 }
 mark.negated {
   color: rgba(255,255,255,1);
-  background: red;
+  background: #ef8a62;
 }
 .box-highlight {
     padding: 5px;
