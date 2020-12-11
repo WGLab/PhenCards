@@ -74,6 +74,81 @@ def pharos_targets(HPOquery):
 
     return targetdata
 
+def pharos_ppis(gene):
+    query="""query interactingProteins {
+              targets(filter: { associatedTarget: "%s" }) {
+                targets(top: 1000) {
+                  name
+                  sym
+                  ppiTargetInteractionDetails {
+                    dataSources: ppitypes
+                    score
+                    p_ni
+                    p_int
+                    p_wrong
+                  }
+                }
+              }
+            }
+            """
+    data = pharos(gene, query)
+    ppis = data["targets"]["targets"]
+    # print(json.dumps(targetdata,indent=2)) 
+
+    return ppis
+
+def pharos_target_details(gene):
+    query="""query targetDetails {
+              target(q: { sym: "%s" }) {
+                name
+                tdl
+                fam
+                sym
+                description
+                novelty
+                expressions(top: 10000) {
+                  type
+                  value
+                  tissue
+                }
+                ligands(top: 1000) {
+                  ligid
+                  name
+                  isdrug
+                  description
+                  activities {
+                    moa
+                    pubs {
+                      pmid
+                    }
+                  }
+                }
+              }
+            }
+            """
+    data = pharos(gene, query)
+    targetinfo = data["target"]
+    details = {}
+    expressions, ligands = [[] for i in range (0,2)]
+    for entry in targetinfo:
+        if entry in ["name", "tdl", "fam", "sym", "description", "novelty"]:
+            details[entry]=targetinfo[entry]
+        elif entry == "expressions":
+            expressions=targetinfo[entry]
+        elif entry == "ligands":
+            ligands=targetinfo[entry]
+            for ligand in ligands:
+                ligand["pubs"] = ",".join([j["pmid"] for i in ligand["activities"] if i["pubs"] for j in i["pubs"]])
+                # ligand["moa"] = ",".join([str(i["moa"]) for i in ligand["activities"]])
+                del ligand["activities"]
+    headers=generate_headers()
+    headers={"PharosTD": headers["PharosTD"], "PharosTE": headers["PharosTE"], "PharosTL": headers["PharosTL"], "PharosTP": headers["PharosTP"]}
+    # print(json.dumps(targetinfo,indent=2)) 
+
+    ppis = pharos_ppis(gene)
+
+    return details, expressions, ligands, ppis, headers
+
 # cohd list generator
 def generate_cohd_list(HPOquery):
     HPOquery=HPOquery.replace("+","_") # replace + with _

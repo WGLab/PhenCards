@@ -1,5 +1,6 @@
 hr.major {
     border: 4px solid #1862a1;
+    background-color: #1862a1;
     border-radius: 2px;
 }
 ::-webkit-scrollbar {

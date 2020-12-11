@@ -120,12 +120,18 @@ def generate_umls_page():
         flash('Invalid credentials')
         return redirect(url_for('generate_results_page'))
 
-# kegg pathway results
+# pharos results
 @app.route('/pharos')
 def generate_pharos_page():
     HPOquery=session['HPOquery']
     facetdata, headers = API.pharos_page(HPOquery)
     return render_template('pharos.html', facetdata=facetdata, headers=headers)
+
+@app.route('/pharostarget')
+def generate_pharos_target_page():
+    target=request.args.get('target')
+    details, expressions, ligands, ppis, headers = API.pharos_target_details(target)
+    return render_template('pharostarget.html', target=target, details=details, expressions=expressions, ligands=ligands, ppis=ppis, headers=headers)
 
 # kegg pathway results
 @app.route('/kegg')

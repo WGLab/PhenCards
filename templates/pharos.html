@@ -6,9 +6,10 @@
 {#<h1>print</h1>#}
 
 <div class="container" >
-    <br><br>
+<h2 style="text-align: center; margin-top: 80px; font-family:'Roboto', sans-serif;"><i class="material-icons" style="vertical-align: bottom; font-size:38px;">assessment</i>Pharos Disease Results</h2>
+<p style="text-align: left;">
     Here are the facets for the phenotype query term from <a href="https://pharos.nih.gov">Pharos</a>. There are a few sets of data here:
-    <ul>
+    <ul style="padding-left: 20px; list-style-position: inside;">
     <li> Linked disease terms from ontology sources
     <li> Development levels of the drug targets related to the term
         <ul>
@@ -22,9 +23,12 @@
     <li> Uniprot diseases linked to the disease search term
     <li> Cell tissue types expressed most in Uniprot tissue data in related targets to the term
     </ul>
-    <div class="container" id="bar">
-    <hr>
-    </div>
+</p>
+</div>
+<div class="container" id="bar">
+    <hr class="major">
+</div>
+<div class="container">
     {% if facetdata %}
         {% for facet in facetdata %}
         <h1><span style="color: #efa50e; "><b>{{facet}}</b></span></h1>
