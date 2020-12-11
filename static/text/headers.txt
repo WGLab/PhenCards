@@ -123,3 +123,29 @@ OpenFDA	Term	The query term result.
 OpenFDA	Count	The number of patients with this adverse/effect/drug.
 PatientDisease	Disease Name	The name of the disease matching the HPO term query and also linked to the HPO term query.
 PatientDisease	Score	The elasticsearch score for the query term.  The higher this score, the more likely it is what you were looking for.
+PharosFacets	Name	The name of the facet (Gene Ontology term, pathway, disease, expression tissue, drug family, or development level).
+PharosFacets	Number of Targets	How many targets for the disease are attributable to the term.
+PharosTargets	Gene Name	The full official gene name of the drug target.
+PharosTargets	Gene Symbol	The HGNC gene symbol of the drug target.
+PharosTargets	UniProt ID	The UniProt identifier of the drug target which can be used to search Pharos or Uniprot for more information.
+PharosTargets	Data Type and Source	Where the data from the drug target came from, and if applicable, the data subtype from that source.
+PharosTargets	Evidence	This could be a few PubMed citations, an author statement, SNPs, personally curated data, or marker/mechanism evidence.
+PharosTD	Name	The full name of the gene.
+PharosTD	HGNC Symbol	The official HUGO Gene Nomenclature Committee symbol for the gene.
+PharosTD	Target Family	The class of protein target (e.g., Transcription factor, Enzyme, etc.).
+PharosTD	Development Level	Tbio is the most common, these have OMIM evidence, GO evidence, or PubMed, Gene RIF, or Antibodypedia annotations. Tdark are basically unstudied and have no information. Tclin have classifications by mode of action, and those with small molecule modulators are Tchem. You can go to the PDF from Nature Reviews Drug Discovery on "Unexplored therapeutic opportunities in the human genome" for more info.
+PharosTD	Novelty	The novelty of the drug target (the extent to which published literature refers to it).
+PharosTE	Type	The source of the expression data.
+PharosTE	Value	The log2 fold change in target expression from control in the relevant cell type.
+PharosTE	Cell/Tissue	The cell line or tissue type in which the target was expressed.
+PharosTL	Unique ID	The LyChI hash ID for the ligand.
+PharosTL	Name	The name of the ligand expressed.
+PharosTL	IsDrug	True or false, is it an established drug?
+PharosTL	Publications	PubMed IDs for publications with the ligand.
+PharosTP	Name	The full name of the interacting protein product.
+PharosTP	HGNC Symbol	The official HUGO Gene Nomenclature Committee symbol for the gene coding the interacting protein.
+PharosTP	Data Sources	The databases from where the PPI data was acquired.
+PharosTP	Interaction Score	The StringDB confidence score for the protein-protein interaction.
+PharosTP	pInt	The probability the protein-protein interaction is real (BioPlex).
+PharosTP	pNI	The probability the protein-protein interaction is non-specific (BioPlex).
+PharosTP	pWrong	The probability the protein-protein interaction is wrong (BioPlex).

@@ -1,0 +1,169 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+
+{#<h1>print</h1>#}
+
+<div class="container" >
+<h2 style="text-align: center; margin-top: 80px; font-family:'Roboto', sans-serif;"><i class="material-icons" style="vertical-align: bottom; font-size:38px;">assessment</i>Pharos Drug Target Results</h2>
+<p style="text-align: left;">
+    Here are the target details for the drug target {{target}} from <a href="https://pharos.nih.gov">Pharos</a>. There are a few sets of data here:
+    <ul style="padding-left: 20px; list-style-position: inside;">
+    <li> Details about the target
+    <li> Expression level of the drug in various tissue/cell types across different databases
+    <li> Ligands for the drug target and their details
+    <li> Protein-protein interactions
+    </ul>
+    A quick note on drug target development level: Tbio is the most common, these have OMIM evidence, GO evidence, or PubMed, Gene RIF, or Antibodypedia annotations. Tdark are basically unstudied and have no information. Tclin have classifications by mode of action, and those with small molecule modulators are Tchem. You can go to the PDF from Nature Reviews Drug Discovery on "Unexplored therapeutic opportunities in the human genome" for <a target="_blank" href="https://media.nature.com/full/nature-cms/uploads/ckeditor/attachments/8200/nrd_druggablegenome.pdf">more information</a>.
+</p>
+</div>
+<div class="container" id="bar">
+    <hr class="major">
+</div>
+<div class="container">
+    {% if details %}
+        <h1><span style="color: #efa50e; "><b>Target Details</b></span></h1>
+        <table id="details" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+                {% for heading in headers["PharosTD"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% if details["description"] %}
+                        <td><a class="hasTooltip">{{details["name"]}}<span>{{details["description"]}}</span></a></td>
+                    {% else %}
+                        <td>{{details["name"]}}</td>
+                    {% endif %}
+                    <td>{{details["sym"]}}</td>
+                    <td>{{details["fam"]}}</td>
+                    <td>{{details["tdl"]}}</td>
+                    <td>{{details["novelty"]}}</td>
+                </tr>
+            </tbody>
+        </table>
+    {% else %}
+        No results for {{target}} in the Pharos database.
+    {% endif %}
+
+</div>
+
+<div class="container" id="bar">
+    <hr class="major">
+</div>
+
+<div class="container">
+    {% if expressions %}
+        <h1><span style="color: #efa50e; "><b>Expression in Different Tissue Types</b></span></h1>
+        <table id="expressions" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+                {% for heading in headers["PharosTE"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in expressions %}
+                <tr>
+                    <td>{{result["type"]}}</td>
+                    <td>{{result["value"]}}</td>
+                    <td>{{result["tissue"]}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for {{target}} expression in the Pharos database.
+    {% endif %}
+
+</div>
+
+<div class="container" id="bar">
+    <hr class="major">
+</div>
+
+<div class="container">
+    {% if ligands %}
+        <h1><span style="color: #efa50e; "><b>Ligands for the Drug Target</b></span></h1>
+        <table id="ligands" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+                {% for heading in headers["PharosTL"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in ligands %}
+                <tr>
+                    <td>{{result["ligid"]}}</td>
+                    {% if result["description"] %}
+                        <td style="word-break: break-word"><a class="hasTooltip">{{result["name"]}}<span>{{result["description"]}}</span></a></td>
+                    {% else %}
+                        <td style="word-break: break-word">{{result["name"]}}</td>
+                    {% endif %}
+                    <td>{{result["isdrug"]}}</td>
+                    <td>{{result["pubs"]}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for {{target}} ligands in the Pharos database.
+    {% endif %}
+
+</div>
+
+<div class="container" id="bar">
+    <hr class="major">
+</div>
+
+<div class="container">
+    {% if ppis %}
+        <h1><span style="color: #efa50e; "><b>Protein-Protein Interactions</b></span></h1>
+        <table id="ppis" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+                {% for heading in headers["PharosTP"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in ppis %}
+                <tr>
+                    <td style="word-break: break-word">{{result["name"]}}</td>
+                    <td>{{result["sym"]}}</td>
+                    <td style="word-break: break-word">{{result["ppiTargetInteractionDetails"]["dataSources"]}}</td>
+                    <td>{{result["ppiTargetInteractionDetails"]["score"]}}</td>
+                    <td>{{result["ppiTargetInteractionDetails"]["p_int"]}}</td>
+                    <td>{{result["ppiTargetInteractionDetails"]["p_ni"]}}</td>
+                    <td>{{result["ppiTargetInteractionDetails"]["p_wrong"]}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for {{target}} PPIs in the Pharos database.
+    {% endif %}
+
+</div>
+<!-- make nice table with multiple pages -->
+<script type="text/javascript">
+        $(document).ready(function () {
+        var mergedDefaults = {...tableDefault, ...{"order": [[1, "desc"]]}}
+        var table = $("#expressions").DataTable(mergedDefaults);
+        var mergedDefaults2 = {...tableDefault, ...{"order": []}}
+        var table2 = $("#details, #ligands").DataTable(mergedDefaults2);
+        var mergedDefaults3 = {...tableDefault, ...{"order": [[3, "desc"]]}}
+        var table3 = $("#ppis").DataTable(mergedDefaults3);
+        });
+
+</script>
+
+{% endblock %}

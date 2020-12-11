@@ -41,13 +41,8 @@
 <!-- make nice table with multiple pages -->
 <script type="text/javascript">
         $(document).ready(function () {
-                $('#clinical-table').DataTable({
-                        "order": [[ 0, "asc" ]],
-                        "pageLength": 5,
-                        "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
-                        "responsive": true
-
-                });
+        var mergedDefaults = {...tableDefault, ...{"order": [[0, "asc"]]}}
+        var table = $("#clinical-table").DataTable(mergedDefaults);
         });
 
 </script>

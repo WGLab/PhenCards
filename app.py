@@ -106,24 +106,32 @@ def generate_patient_page():
 def generate_results_page():
     global umls
     HPOquery=session['HPOquery']
-    doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, cohd, nihfoa, nihreporter = queries.results_page(HPOquery)
-    return render_template('results.html', doid=doid, msh=msh, icd10=icd10, irs990=irs990, open990f=open990f, open990g=open990g, hpo=hpo, hpolink=hpolink, ohdsi=ohdsi, phen2gene=phen2gene, cohd=cohd, nihfoa=nihfoa, nihreporter=nihreporter)
+    doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, pharos, cohd, nihfoa, nihreporter = queries.results_page(HPOquery)
+    return render_template('results.html', doid=doid, msh=msh, icd10=icd10, irs990=irs990, open990f=open990f, open990g=open990g, hpo=hpo, hpolink=hpolink, ohdsi=ohdsi, phen2gene=phen2gene, pharos=pharos, cohd=cohd, nihfoa=nihfoa, nihreporter=nihreporter)
 
-@app.route('/umlslogin')
-def umls_login():
-    return render_template('umlslogin.html')
-
-@app.route('/umlslogin', methods=["POST"])
+@app.route('/umls')
 def generate_umls_page():
-    user = request.form.get('user')
-    password = request.form.get('password')
-    valid = API.umls_auth(user, password)
-    print (valid)
+    ticket = request.args['ticket']
+    valid = API.umls_auth(ticket)
+    print (valid, file=sys.stderr)
     if valid:
         return render_template('umls.html', umls=umls)
     else:
         flash('Invalid credentials')
         return redirect(url_for('generate_results_page'))
+
+# pharos results
+@app.route('/pharos')
+def generate_pharos_page():
+    HPOquery=session['HPOquery']
+    facetdata, headers = API.pharos_page(HPOquery)
+    return render_template('pharos.html', facetdata=facetdata, headers=headers)
+
+@app.route('/pharostarget')
+def generate_pharos_target_page():
+    target=request.args.get('target')
+    details, expressions, ligands, ppis, headers = API.pharos_target_details(target)
+    return render_template('pharostarget.html', target=target, details=details, expressions=expressions, ligands=ligands, ppis=ppis, headers=headers)
 
 # kegg pathway results
 @app.route('/kegg')

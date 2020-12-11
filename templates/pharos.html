@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+
+{#<h1>print</h1>#}
+
+<div class="container" >
+<h2 style="text-align: center; margin-top: 80px; font-family:'Roboto', sans-serif;"><i class="material-icons" style="vertical-align: bottom; font-size:38px;">assessment</i>Pharos Disease Results</h2>
+<p style="text-align: left;">
+    Here are the facets for the phenotype query term from <a href="https://pharos.nih.gov">Pharos</a>. There are a few sets of data here:
+    <ul style="padding-left: 20px; list-style-position: inside;">
+    <li> Linked disease terms from ontology sources
+    <li> Development levels of the drug targets related to the term
+        <ul>
+            <li> Tbio is the most common, these have OMIM evidence, GO evidence, or PubMed, Gene RIF, or Antibodypedia annotations. Tdark are basically unstudied and have no information. Tclin have classifications by mode of action, and those with small molecule modulators are Tchem. You can go to the PDF from Nature Reviews Drug Discovery on "Unexplored therapeutic opportunities in the human genome" for <a target="_blank" href="https://media.nature.com/full/nature-cms/uploads/ckeditor/attachments/8200/nrd_druggablegenome.pdf">more information</a>.
+        </ul>
+    <li> Families/classes of drug targets related to the term
+    <li> Reactome pathways linked to the term
+    <li> Gene Ontology Processes in targets related to the term
+    <li> Gene Ontology Components in targets related to the term
+    <li> Gene Ontology Functions in targets related to the term
+    <li> Uniprot diseases linked to the disease search term
+    <li> Cell tissue types expressed most in Uniprot tissue data in related targets to the term
+    </ul>
+</p>
+</div>
+<div class="container" id="bar">
+    <hr class="major">
+</div>
+<div class="container">
+    {% if facetdata %}
+        {% for facet in facetdata %}
+        <h1><span style="color: #efa50e; "><b>{{facet}}</b></span></h1>
+        <table id="{{facet.replace(" ","_").replace(":","_")}}" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+                {% for heading in headers["PharosFacets"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for values in facetdata[facet] %}
+                <tr>
+                    <td>{{values["name"]}}</td>
+                    <td>{{values["value"]}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <hr class="innerbar">
+        {% endfor %}
+    {% else %}
+        No results for the search term in the Pharos database.
+    {% endif %}
+
+</div>
+
+<!-- make nice table with multiple pages -->
+<script type="text/javascript">
+        $(document).ready(function() {
+            var facetdata = {{facetdata | safe}}
+            console.log(facetdata)
+            var mergedDefaults = {...tableDefault, ...{"order": [[1, "desc"]]}}
+            for ([f,values] of Object.entries(facetdata)){
+                f=f.split(" ").join("_").split(":").join("_");
+                var table = $("#"+f).DataTable(mergedDefaults);
+            }
+        });
+
+</script>
+
+{% endblock %}

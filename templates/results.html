@@ -57,7 +57,7 @@ th {
 <div class="container" id="bar">
 <h2 style="text-align: center; margin-top: 80px; font-family:'Roboto', sans-serif;"><i class="material-icons" style="vertical-align: bottom; font-size:38px;">assessment</i>Search Results</h2>
 <p style="text-align: center;">These are the database matches for your phenotype term query. There will be explanations in each section. Note that you can hover over text with a dotted underline <a class="hasTooltip">to learn more about it<span>For example, like this!</span></a>.<br>The navbar at the top will track where you are and jump between sections so you can always go back to your point of interest.  If you'd like to go back and try a different query, just click the PhenCards logo at the top.
-<hr>
+<hr class="major">
 </div>
 
 <div class="container medium" id="Aliases">
@@ -182,11 +182,11 @@ th {
     <hr class="innerbar">
     <tr><th><span style="color: black; ">To view the <a target="_blank" href="https://www.nlm.nih.gov/research/umls/index.html">UMLS aliases</a><sup><a href="#umls-cite">5</a></sup>, you must authenticate through this link:</span></th></tr>
     <br>
-    <tr><th><span><a target="_blank" href="{{ url_for('umls_login') }}" style="font-size: 25px">UMLS API</a></span></th></tr>
+    <button aria-label="Access UMLS" class="btn btn-success" onclick="window.open('https://uts.nlm.nih.gov/uts/login?service=https://phencards.org/umls')" class="button is-block is-info is-large is-fullwidth">Access UMLS</button>
 </div>
 
 <div class="container" id="bar">
-<hr>
+<hr class="major">
 </div>
 
 <div class="container medium" id="Related_Terms">
@@ -220,17 +220,23 @@ th {
     {% else %}
         No results for the search term in COHD.
     {% endif %}
+    <hr class="innerbar">
+    <tr><th><span style="color: black; ">This page will provide all of the different facets related to a disease from <a target="_blank" href="https://pharos.nih.gov">Pharos</a><sup><a href="#pharos-cite">7</a></sup>, you can click on the links to learn more about the MeSH terms:</span></th></tr>
+    <br>
+    <a target="_blank" id="nav-pharos" href="{{ url_for('generate_pharos_page') }}" style="font-size: 25px">
+        Pharos<sup><a href="#pharos-cite">7</a></sup>
+    </a>
 
 </div>
 
 <div class="container" id="bar">
-<hr>
+<hr class="major">
 </div>
 
 <div class="container medium" id="Diseases">
     <h1><span style="color: #efa50e; "><b>Diseases</b></span></h1>
     <br><br>
-    <tr><th><span style="color: black; ">Here are the diseases from the <a target="_blank" href="https://disease-ontology.org">Disease Ontology (DO) database</a><sup><a href="#doid-cite">7</a></sup>, you can click on the result to explore more about the phenotype names:</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the diseases from the <a target="_blank" href="https://disease-ontology.org">Disease Ontology (DO) database</a><sup><a href="#doid-cite">8</a></sup>, you can click on the result to explore more about the phenotype names:</span></th></tr>
     <br><br>
     {% if doid %}
         {% set url = "https://disease-ontology.org/term/" %}
@@ -288,13 +294,13 @@ th {
 <br>
 
 <div class="container" id="bar">
-<hr>
+<hr class="major">
 </div>
 
 <div class="container medium" id="Genes">
     <h1><span style="color: #efa50e; "><b>Genes</b></span></h1>
     <br><br>
-    <tr><th><span style="color: black; ">Here are the related genes referenced from <a target="_blank" href="https://phen2gene.wglab.org">the Phen2Gene web application</a><sup><a href="#p2g-cite">8</a></sup>. The gene symbol links out to MedlinePlus, courtesy of the National Library of Medicine.</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the related genes referenced from <a target="_blank" href="https://phen2gene.wglab.org">the Phen2Gene web application</a><sup><a href="#p2g-cite">9</a></sup>. The gene symbol links out to MedlinePlus, courtesy of the National Library of Medicine.</span></th></tr>
 <br><br>
 {# gene list return 04/26/2020 #}
     {% if phen2gene %}
@@ -321,27 +327,54 @@ th {
     {% else %}
         No results for the first ranked HPO term in Phen2Gene.
     {% endif %}
+    <hr class="innerbar">
+    <tr><th><span style="color: black; ">Here are the drug targets (genes) from the <a target="_blank" href="https://pharos.nih.gov/api">Pharos database</a><sup><a href="#pharos-cite">7</a></sup>. If you click on the gene symbol, you will go to a page that summarizes Pharos information related to the drug target, linked from DrugCentral and other resources, such as ligands and ligand information, or log2 fold change expression data by tissue and cell type.  The Uniprot ID link will take you to Pharos directly, so you can explore the data further there.</span></th></tr>
+    {% if pharos %}
+        {% set url = "https://pharos.nih.gov/targets/" %}
+        <table id="pharos" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+                {% for heading in pharos["header"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in pharos["result"] %}
+                <tr>
+                    <td>{{result["name"]}}</td>
+                    <td><a target="_blank" href={{ url_for('generate_pharos_target_page', target=result["sym"]) }}>{{result["sym"]}}</a></td>
+                    <td><a target="_blank" href={{ url ~ result["uniprot"] }}>{{result["uniprot"]}}</a></td>
+                    <td style="word-break: break-word"><span>{% for res in result["diseaseAssociationDetails"][:-1] %} {{res["dataType"]}},<br> {% endfor %} {{result["diseaseAssociationDetails"][-1]["dataType"]}}</span>
+                    <td style="word-break: break-word"><span>{% for res in result["diseaseAssociationDetails"][:-1] %} {{res["evidence"]}},<br> {% endfor %} {{result["diseaseAssociationDetails"][-1]["evidence"]}}</span>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the term in Pharos.
+    {% endif %}
 </div>
 
 <div class="container" id="bar">
-<hr>
+<hr class="major">
 </div>
 <div class="container medium" id="Pathway">
     <h1><span style="color: #efa50e; "><b>Pathway</b></span></h1>
     <br><br>
     <div class="grid-container">
     <div class="grid-item" style="border-left: none"><a target="_blank" id="nav-tocris" href="{{ url_for('generate_pcommons_page') }}" style="font-size: 25px">
-        Pathway Commons<sup><a href="#pcommons-cite">9</a></sup>
+        Pathway Commons<sup><a href="#pcommons-cite">10</a></sup>
     </a></div>
     <div class="grid-item"><a target="_blank" id="nav-apexbio" href="{{ url_for('generate_kegg_page') }}" style="font-size: 25px">
-        KEGG<sup><a href="#pcommons-cite">9</a></sup>
+        KEGG<sup><a href="#pcommons-cite">10</a></sup>
     </a></div>
     </div>
 
 </div>
 
 <div class="container" id="bar">
-<hr>
+<hr class="major">
 </div>
 
 <div class="container medium" id="Drugs">
@@ -349,7 +382,7 @@ th {
     <br><br>
     <div class="grid-container">
     <div class="grid-item" style="border-left: none"><a target="_blank" id="nav-wikidata" href="{{ url_for('generate_openfda_page') }}" style="font-size: 25px">
-        openFDA<sup><a href="#fda-cite">10</a></sup>
+        openFDA<sup><a href="#fda-cite">11</a></sup>
     </a></div>
     <div class="grid-item"><a target="_blank" id="nav-tocris" href="{{ url_for('generate_tocris_page') }}" style="font-size: 25px">
         Tocris
@@ -361,26 +394,26 @@ th {
 </div>
 
 <div class="container" id="bar">
-<hr>
+<hr class="major">
 </div>
 
 <div class="container medium" id="Literature">
     <h1><span style="color: #efa50e; "><b>Literature</b></span></h1>
     <br><br>
     <a target="_blank" id="nav-literature" href="{{ url_for('generate_literature_page') }}" style="font-size: 25px">
-        Pubmed<sup><a href="#pubmed-cite">11</a></sup>
+        Pubmed<sup><a href="#pubmed-cite">12</a></sup>
     </a>
 
 </div>
 
 <div class="container" id="bar">
-<hr>
+<hr class="major">
 </div>
 
 <div class="container medium" id="Foundations_n_Grants">
     <h1><span style="color: #efa50e; "><b>Foundations & Grants</b></span></h1>
     <br><br>
-    <tr><th><span style="color: black; ">Here are the nonprofits (990s) for this search term from the 2019 <a target="_blank" href="https://docs.opendata.aws/irs-990/readme.html">IRS AWS database</a><sup><a href="#irs-cite">12</a></sup>, you can click on the links to reach the public XMLs with more details:</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the nonprofits (990s) for this search term from the 2019 <a target="_blank" href="https://docs.opendata.aws/irs-990/readme.html">IRS AWS database</a><sup><a href="#irs-cite">13</a></sup>, you can click on the links to reach the public XMLs with more details:</span></th></tr>
     <br><br>
     {% if irs990 %}
         {% set url = "https://s3.amazonaws.com/irs-form-990/" %}
@@ -408,7 +441,7 @@ th {
         No results for the search term in IRS 990 AWS DB.
     {% endif %}
     <hr class="innerbar">
-    <tr><th><span style="color: black; ">Here are the nonprofits (990s) for this search term from the 2019 <a target="_blank" href="https://www.open990.org/catalog/">Open990 foundations database</a><sup><a href="#open990-cite">13</a></sup>, you can click on the links, if applicable, to reach the foundations' websites:</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the nonprofits (990s) for this search term from the 2019 <a target="_blank" href="https://www.open990.org/catalog/">Open990 foundations database</a><sup><a href="#open990-cite">14</a></sup>, you can click on the links, if applicable, to reach the foundations' websites:</span></th></tr>
     <br><br>
     {% if open990f %}
         <table id="open990f" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
@@ -437,7 +470,7 @@ th {
         No results for the search term in Open990 Foundations DB.
     {% endif %}
     <hr class="innerbar">
-    <tr><th><span style="color: black; ">Here are the grants and grantees given by nonprofits (990s) for this search term from the 2019 <a target="_blank" href="https://www.open990.org/catalog/">Open990 grants database</a><sup><a href="#open990-cite">13</a></sup>:</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the grants and grantees given by nonprofits (990s) for this search term from the 2019 <a target="_blank" href="https://www.open990.org/catalog/">Open990 grants database</a><sup><a href="#open990-cite">14</a></sup>:</span></th></tr>
     <br><br>
     {% if open990g %}
         <table id="open990g" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
@@ -497,7 +530,7 @@ th {
         No results for the search term in the NIH active FOA database.
     {% endif %}
     <hr class="innerbar">
-    <tr><th><span style="color: black; ">Here are the open, active scientific projects on <a target="_blank" href="https://federalreporter.nih.gov">Federal Reporter</a><sup><a href="#nihfoa-cite">15</a></sup> from all US government national funding agencies, for the search term. You can click on the links to reach the public project information with more details. Missing "None" or "null" values are due to missing values in the NIH API.</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the open, active scientific projects on <a target="_blank" href="https://federalreporter.nih.gov">Federal Reporter</a><sup><a href="#reporter-cite">16</a></sup> from all US government national funding agencies, for the search term. You can click on the links to reach the public project information with more details. Missing "None" or "null" values are due to missing values in the NIH API.</span></th></tr>
     <br><br>
     {% if nihreporter %}
         {% set url = "https://projectreporter.nih.gov/project_info_description.cfm?projectnumber=" %}
@@ -540,19 +573,19 @@ th {
 </div>
 
 <div class="container" id="bar">
-<hr>
+<hr class="major">
 </div>
 
 <div class="container medium" id="Clinical_Trials">
     <h1><span style="color: #efa50e; "><b>Clinical Trials</b></span></h1>
     <br><br>
     <a target="_blank" id="nav-clinical" href={{ url_for('generate_clinical_page') }} style="font-size: 25px">
-        ClinicalTrials.gov</a><sup><a href="#clinical-cite">16</a></sup>
+        ClinicalTrials.gov</a><sup><a href="#clinical-cite">17</a></sup>
 
 </div>
 
 <div class="container" id="bar">
-<hr>
+<hr class="major">
 </div>
 
 <div class="container medium" id="Citations_n_Licenses">
@@ -564,6 +597,7 @@ th {
     <li id="mesh-cite">The Medical Subject Headings (MeSH) resource.  Further information: <a target="_blank" href="https://www.ncbi.nlm.nih.gov/books/NBK3827/#pubmedhelp.MeSH_Terms_MH">Pubmed Help</a>.<u>Citation</u>: ROGERS FB. Medical subject headings. Bull Med Libr Assoc. 1963;51(1):114-116.</li>
     <li id="umls-cite">The Unified Medical Language System (UMLS) resource. This cannot be accessed except through the official NLM authentication API or downloaded via Metathesaurus currently. <u>Citation</u>: Bodenreider O. The Unified Medical Language System (UMLS): integrating biomedical terminology. Nucleic Acids Res. 2004 Jan 1;32(Database issue):D267-70. doi: 10.1093/nar/gkh061. PubMed PMID: 14681409; PubMed Central PMCID: PMC308795.</li>
     <li id="cohd-cite">The Columbia Open Health Data (COHD) resource. This is freely available under the <a target="_blank" href="http://www.apache.org/licenses/LICENSE-2.0.html">APACHE 2.0 License</a>. <u>Citation</u>: Ta, Casey N.; Dumontier, Michel; Hripcsak, George; P. Tatonetti, Nicholas; Weng, Chunhua (2018): Columbia Open Health Data, a database of EHR prevalence and co-occurrence of conditions, drugs, and procedures. figshare. Collection. https://doi.org/10.6084/m9.figshare.c.4151252.v1</li>
+    <li id="pharos-cite">The Pharos database is the user interface for obtaining drug target, gene ontology, expression and pathway data for diseases, and ligand/PPI data for drug targets. This is public domain courtesy of NCATS.  Sheils, T., Mathias, S. et al, "TCRD and Pharos 2021: mining the human proteome for disease biology", Nucl. Acids Res., 2021. DOI: 10.1093/nar/gkaa993</li>
     <li id="doid-cite">The Disease Ontology (DO) database. This is public domain (CC0 1.0 license). <u>Citation</u>: Schriml, L. M., Arze, C., Nadendla, S., Chang, Y. W., Mazaitis, M., Felix, V., Feng, G., & Kibbe, W. A. (2012). Disease Ontology: a backbone for disease semantic integration. Nucleic acids research, 40(Database issue), D940–D946. https://doi.org/10.1093/nar/gkr972.</li>
     <li id="p2g-cite">Phen2Gene and the H2GKB resources. This is <a target="_blank" href="https://github.com/WGLab/Phen2Gene/blob/master/LICENSE">MIT license</a>. <u>Citation</u>: Zhao M., Havrilla J. M., Fang L., Chen Y., Peng J., Liu C., Wu C., Sarmady M., Botas P., Isla J., Lyon G., Weng C., Wang K. (2020). Phen2Gene: Rapid Phenotype-Driven Gene Prioritization for Rare Diseases. NAR Genomics and Bioinformatics, 2(2), lqaa032. doi:10.1093/nargab/lqaa032.</li>
     <li id="pcommons-cite">Pathway Commons resource. This is <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0 license</a>. <u>Citation</u>: Cerami, E. G., Gross, B. E., Demir, E., Rodchenkov, I., Babur, O., Anwar, N., Schultz, N., Bader, G. D., & Sander, C. (2011). Pathway Commons, a web resource for biological pathway data. Nucleic acids research, 39(Database issue), D685–D690. https://doi.org/10.1093/nar/gkq1039.</li>
@@ -571,8 +605,8 @@ th {
     <li id="pubmed-cite">The PubMed database. This is public domain. <u>Citation</u>: Sayers E. The E-utilities In-Depth: Parameters, Syntax and More. 2009 May 29 [Updated 2018 Oct 24]. In: Entrez Programming Utilities Help [Internet]. Bethesda (MD): National Center for Biotechnology Information (US); 2010-. Available from: https://www.ncbi.nlm.nih.gov/books/NBK25499/.</li>
     <li id="irs-cite">The IRS 990 AWS resource.  This is <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0 license</a>. This can be freely used and is available courtesy of the Internal Revenue Service.
     <li id="open990-cite">The Open990 resource.  This is <a target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/legalcode">CC NC BY 4.0 license</a>.  This data cannot be used commercially.
-    <li id="reporter-cite">The Federal Reporter. This displays publicly funded grants and is thus public domain courtesy of several branches of government, including the NSF and NIH.</li>
     <li id="nihfoa-cite">The grant and funding information from the NIH. This comes from the Office of Extramural Research (OER) at NIH and is public domain. </li>
+    <li id="reporter-cite">The Federal Reporter. This displays publicly funded grants and is thus public domain courtesy of several branches of government, including the NSF and NIH.</li>
     <li id="clinical-cite">ClinicalTrials.gov. This is public domain, courtesy of the U.S. National Library of Medicine.</li>
     </ol>
 </div>

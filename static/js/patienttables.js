@@ -19,11 +19,8 @@ $(document).ready(function () {
             else {
                 order = [];
             }
-        $(this).DataTable({
-                "pageLength": 5,
-                "lengthMenu": [[5, 20, 50, -1], [5, 20, 50, "All"]],
-                "order": order,
-                responsive: true
-            });
-        });
+        var mergedDefaults = {...tableDefault, ...{"order":order}}
+        var table = $(this).DataTable(mergedDefaults);
+                
+    });
 });

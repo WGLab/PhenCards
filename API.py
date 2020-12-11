@@ -13,6 +13,142 @@ import json
 import ray
 import datetime
 
+# pharos api 
+
+def pharos(HPOquery, query):
+    HPOquery=HPOquery.replace("+"," ")
+    url="https://pharos-api.ncats.io/graphql"
+    query=query % HPOquery
+    r = requests.post(url, json={'query': query})
+    data = json.loads(r.text)["data"]
+
+    return data
+
+
+def pharos_page(HPOquery):
+    facetdata = {}
+    query = """query facetsForTargetsForDisease {
+                  targets(filter: { associatedDisease: "%s" }) {
+                    facets {
+                      facet
+                      dataType
+                      values {
+                        name
+                        value
+                      }
+                    }
+                  }
+                }
+                """
+    data = pharos(HPOquery, query)
+    facets = data["targets"]["facets"]
+    #print(json.dumps(facetdata,indent=2)) 
+    for facet in facets:
+        if facet["facet"] in ["Linked Disease", "Reactome Pathway", "GO Process", "GO Component", "GO Function", "UniProt Disease", "Expression: UniProt Tissue", "Family", "Target Development Level"]:
+                facetdata[facet["facet"]] = facet["values"]
+
+    headers=generate_headers()
+    headers={"PharosFacets": headers['PharosFacets']}
+
+    return facetdata, headers
+
+def pharos_targets(HPOquery):
+    query="""query associatedTargets {
+              targets(filter: { associatedDisease: "%s" }) {
+                targets(top: 1000) {
+                  name
+                  uniprot
+                  sym
+                  diseaseAssociationDetails {
+                    name
+                    dataType
+                    evidence
+                  }
+                }
+              }
+            }
+            """
+    data = pharos(HPOquery, query)
+    targetdata = data["targets"]["targets"]
+    # print(json.dumps(targetdata,indent=2)) 
+
+    return targetdata
+
+def pharos_ppis(gene):
+    query="""query interactingProteins {
+              targets(filter: { associatedTarget: "%s" }) {
+                targets(top: 1000) {
+                  name
+                  sym
+                  ppiTargetInteractionDetails {
+                    dataSources: ppitypes
+                    score
+                    p_ni
+                    p_int
+                    p_wrong
+                  }
+                }
+              }
+            }
+            """
+    data = pharos(gene, query)
+    ppis = data["targets"]["targets"]
+    # print(json.dumps(targetdata,indent=2)) 
+
+    return ppis
+
+def pharos_target_details(gene):
+    query="""query targetDetails {
+              target(q: { sym: "%s" }) {
+                name
+                tdl
+                fam
+                sym
+                description
+                novelty
+                expressions(top: 10000) {
+                  type
+                  value
+                  tissue
+                }
+                ligands(top: 1000) {
+                  ligid
+                  name
+                  isdrug
+                  description
+                  activities {
+                    moa
+                    pubs {
+                      pmid
+                    }
+                  }
+                }
+              }
+            }
+            """
+    data = pharos(gene, query)
+    targetinfo = data["target"]
+    details = {}
+    expressions, ligands = [[] for i in range (0,2)]
+    for entry in targetinfo:
+        if entry in ["name", "tdl", "fam", "sym", "description", "novelty"]:
+            details[entry]=targetinfo[entry]
+        elif entry == "expressions":
+            expressions=targetinfo[entry]
+        elif entry == "ligands":
+            ligands=targetinfo[entry]
+            for ligand in ligands:
+                ligand["pubs"] = ",".join([j["pmid"] for i in ligand["activities"] if i["pubs"] for j in i["pubs"]])
+                # ligand["moa"] = ",".join([str(i["moa"]) for i in ligand["activities"]])
+                del ligand["activities"]
+    headers=generate_headers()
+    headers={"PharosTD": headers["PharosTD"], "PharosTE": headers["PharosTE"], "PharosTL": headers["PharosTL"], "PharosTP": headers["PharosTP"]}
+    # print(json.dumps(targetinfo,indent=2)) 
+
+    ppis = pharos_ppis(gene)
+
+    return details, expressions, ligands, ppis, headers
+
 # cohd list generator
 def generate_cohd_list(HPOquery):
     HPOquery=HPOquery.replace("+","_") # replace + with _
@@ -107,6 +243,7 @@ def literature_page(HPOquery):
     'db': 'pubmed',
     'term': HPOquery,
     'retmax': '200',
+    'api_key': '1ee2a8a8bf1b1b2b09e8087eb5cf16c95109',
     'sort': 'relevance'}
     rsearch=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi", params=params1)
     def generate_citations(uid):
@@ -137,6 +274,8 @@ def literature_page(HPOquery):
                 print (e,uid,"exc",file=sys.stderr)
                 return 0
         return 0
+    
+    # print(rsearch.url, file=sys.stderr) if needed to debug...most likely NCBI 500 error
 
     root=ET.fromstring(rsearch.text)
     ids={}
@@ -285,12 +424,12 @@ def disease_table(d2hjson):
 
     return results
 
-def umls_auth(user="username", password="wouldntyoulovetoknow"):
-    data = {"licenseCode": "NLM-323530719", # from uts profile
-            "user": user, # from user input
-            "password": password} # from user input
+def umls_auth(ticket):
+    params = {"service": "https://phencards.org/umls", # from uts profile
+            "ticket": ticket} # from user input
+    payload = "&".join("%s=%s" % (k,v) for k,v in params.items()) # prevents URL encoding of "+"
     try:
-        response = requests.post("https://uts-ws.nlm.nih.gov/restful/isValidUMLSUser", data=data)
+        response = requests.get("https://uts-ws.nlm.nih.gov/rest/isValidServiceValidate", params=payload)
         if response.status_code == 200:
             if "true" in response.text:
                 return True
