@@ -149,3 +149,5 @@ PharosTP	Interaction Score	The StringDB confidence score for the protein-protein
 PharosTP	pInt	The probability the protein-protein interaction is real (BioPlex).
 PharosTP	pNI	The probability the protein-protein interaction is non-specific (BioPlex).
 PharosTP	pWrong	The probability the protein-protein interaction is wrong (BioPlex).
+D2E	Institution Name	The name of the academic medical institution where you can find experts who may specialize in your phenotype term.
+D2E	Number of Experts	The number of experts at the institution may specialize in your phenotype term.

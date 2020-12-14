@@ -40,6 +40,7 @@ $(document).ready(function () {
                 sort = "desc";
                 break;
             case "pharos":
+            case "d2e":
             case "nihreporter":
                 col = "";
                 sort = "";

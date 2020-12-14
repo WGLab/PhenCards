@@ -402,6 +402,40 @@ def phen2gene_page(HPOquery, patient=False):
 
     return GeneAPI_JSON
 
+def direct2experts(HPOquery):
+    experts={}
+    params1={
+    'request': 'getsites',
+    }
+    rsearch=requests.get("http://direct2experts.org/DirectService.asp", params=params1)
+    # print(rsearch.url, file=sys.stderr) if needed to debug...most likely 404 or timeout error
+    def generate_numbers(url, HPOquery):
+        numexp=0
+        searchurl="null"
+        try:
+            rsearch=requests.get(url+HPOquery, timeout=1.5)
+            if rsearch.status_code == 200:
+                root=ET.fromstring(rsearch.text)
+                numexp=root.find("count").text
+                searchurl=root.find("search-results-URL").text
+        except requests.exceptions.Timeout:
+            print ("timedout", url)
+        except requests.exceptions.ConnectionError:
+            print ("connection refused", url)
+        return numexp, searchurl 
+
+    root=ET.fromstring(rsearch.text)
+    for site in root.iter("site-description"):
+        name = site.find("name").text
+        query = site.find("aggregate-query").text
+        numexp, searchurl = generate_numbers(query, HPOquery)
+        # print (numexp, searchurl)
+        if searchurl == "null":
+            continue
+        experts[name]=[numexp, searchurl]
+
+    return experts
+
 def patient_page(HPOquery, HPO_names, d2hjson):
     HPOclinical = "+OR+".join([s.replace(" ", "+") for s in HPO_names])
     phen2gene_table = phen2gene_page(HPOquery,patient=True)

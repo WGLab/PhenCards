@@ -45,7 +45,7 @@ th {
         <ul class="navbar-nav mr-auto small">
           <li class="nav-item"><a class="page-scroll scroll" href="#Drugs">Drugs</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Literature">Literature</a></li>
-          <li class="nav-item"><a class="page-scroll scroll" href="#Foundations_n_Grants">Foundations & Grants</a></li>
+          <li class="nav-item"><a class="page-scroll scroll" href="#Support_n_Collaboration">Support & Collaboration</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Clinical_Trials">Clinical Trials</a></li>
           <li class="nav-item"><a class="page-scroll scroll" href="#Citations_n_Licenses">Citations & Licenses</a></li>
         </ul>
@@ -410,8 +410,8 @@ th {
 <hr class="major">
 </div>
 
-<div class="container medium" id="Foundations_n_Grants">
-    <h1><span style="color: #efa50e; "><b>Foundations & Grants</b></span></h1>
+<div class="container medium" id="Support_n_Collaboration">
+    <h1><span style="color: #efa50e; "><b>Support & Collaboration</b></span></h1>
     <br><br>
     <tr><th><span style="color: black; ">Here are the nonprofits (990s) for this search term from the 2019 <a target="_blank" href="https://docs.opendata.aws/irs-990/readme.html">IRS AWS database</a><sup><a href="#irs-cite">13</a></sup>, you can click on the links to reach the public XMLs with more details:</span></th></tr>
     <br><br>
@@ -570,6 +570,30 @@ th {
     {% else %}
         No results for the search term in the Federal Reporter database (or API may be down).
     {% endif %}
+    <hr class="innerbar">
+    <tr><th><span style="color: black; ">These are experts in various medical institutions that are likely to specialize directly in your phenotype from <a target="_blank" href="http://direct2experts.org">Direct2Experts</a><sup><a href="#d2e-cite">17</a></sup>. You can click on the "Number of Experts" links to reach each respective academic medical institutions results pages that are in this network. You can find MDs, PhDs, BS, MS and more specialized in your phenotypic search term.</span></th></tr>
+    <br><br>
+    {% if d2e %}
+        <table id="d2e" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+                {% for heading in d2e["header"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for name, values in d2e["result"].items() %}
+                <tr>
+                    <td>{{name}}</td>
+                    <td><a target="_blank" href={{values[1]}}>{{values[0]}}</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the search term in the Direct2Experts network.
+    {% endif %}
 </div>
 
 <div class="container" id="bar">
@@ -580,7 +604,7 @@ th {
     <h1><span style="color: #efa50e; "><b>Clinical Trials</b></span></h1>
     <br><br>
     <a target="_blank" id="nav-clinical" href={{ url_for('generate_clinical_page') }} style="font-size: 25px">
-        ClinicalTrials.gov</a><sup><a href="#clinical-cite">17</a></sup>
+        ClinicalTrials.gov</a><sup><a href="#clinical-cite">18</a></sup>
 
 </div>
 
@@ -607,6 +631,7 @@ th {
     <li id="open990-cite">The Open990 resource.  This is <a target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/legalcode">CC NC BY 4.0 license</a>.  This data cannot be used commercially.
     <li id="nihfoa-cite">The grant and funding information from the NIH. This comes from the Office of Extramural Research (OER) at NIH and is public domain. </li>
     <li id="reporter-cite">The Federal Reporter. This displays publicly funded grants and is thus public domain courtesy of several branches of government, including the NSF and NIH.</li>
+    <li id="d2e-cite">Direct2Experts. The network is designed to be "open and accessible to anyone." <u>Citation</u>:Weber GM, Barnett W, Conlon M, Eichmann D, Kibbe W, Falk-Krzesinski H, Halaas M, Johnson L, Meeks E, Mitchell D, Schleyer T, Stallings S, Warden M, Kahlon M; Direct2Experts Collaboration. Direct2Experts: a pilot national network to demonstrate interoperability among research-networking platforms. J Am Med Inform Assoc. 2011 Dec;18 Suppl 1(Suppl 1):i157-60. doi: 10.1136/amiajnl-2011-000200. Epub 2011 Oct 28. PMID: 22037890; PMCID: PMC3241163.</li>
     <li id="clinical-cite">ClinicalTrials.gov. This is public domain, courtesy of the U.S. National Library of Medicine.</li>
     </ol>
 </div>
