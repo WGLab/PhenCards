@@ -1,8 +1,9 @@
 $(document).ready(function () {
+    names = ["#hpolink","#cohd","#msh","#doid","#phen2gene","#ohdsi","#open990g","#open990f","#irs990","#hpo","#nihfoa","#icd10","#pharos","#nihreporter"];
     var col;
     var sort;
-    $('table').each(function() {
-        switch ($(this).attr('id')) {
+    $.each(names, function(index, value) {
+        switch ($(value).attr('id')) {
             case "hpolink":
                 col = 5;
                 sort = "desc";
@@ -40,7 +41,6 @@ $(document).ready(function () {
                 sort = "desc";
                 break;
             case "pharos":
-            case "d2e":
             case "nihreporter":
                 col = "";
                 sort = "";
@@ -53,6 +53,6 @@ $(document).ready(function () {
                 order = [];
             }
         var mergedDefaults = {...tableDefault, ...{"order": order, "columnDefs": [{ "width": "25%", "targets": 0 }]}}
-        var table = $(this).DataTable(mergedDefaults);
+        var table = $(value).DataTable(mergedDefaults);
         });
 });

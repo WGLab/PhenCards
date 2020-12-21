@@ -433,8 +433,11 @@ def direct2experts(HPOquery):
         if searchurl == "null":
             continue
         experts[name]=[numexp, searchurl]
-
-    return experts
+    
+    headers = generate_headers()
+    d2e = {'result': experts}
+    d2e['header'] = headers['D2E']
+    return d2e
 
 def patient_page(HPOquery, HPO_names, d2hjson):
     HPOclinical = "+OR+".join([s.replace(" ", "+") for s in HPO_names])

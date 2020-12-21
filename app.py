@@ -106,8 +106,8 @@ def generate_patient_page():
 def generate_results_page():
     global umls
     HPOquery=session['HPOquery']
-    doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, pharos, cohd, nihfoa, nihreporter, d2e = queries.results_page(HPOquery)
-    return render_template('results.html', doid=doid, msh=msh, icd10=icd10, irs990=irs990, open990f=open990f, open990g=open990g, hpo=hpo, hpolink=hpolink, ohdsi=ohdsi, phen2gene=phen2gene, pharos=pharos, cohd=cohd, nihfoa=nihfoa, nihreporter=nihreporter, d2e=d2e)
+    doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, pharos, cohd, nihfoa, nihreporter = queries.results_page(HPOquery)
+    return render_template('results.html', doid=doid, msh=msh, icd10=icd10, irs990=irs990, open990f=open990f, open990g=open990g, hpo=hpo, hpolink=hpolink, ohdsi=ohdsi, phen2gene=phen2gene, pharos=pharos, cohd=cohd, nihfoa=nihfoa, nihreporter=nihreporter)
 
 @app.route('/umls')
 def generate_umls_page():
@@ -201,6 +201,13 @@ def generate_tutorial_page():
     return render_template('tutorial.html')
 
 # RESTful API
+@app.route('/d2e', methods=["GET"])
+def generate_d2e():
+    HPOquery = request.args.get('query')
+    print(HPOquery, file=sys.stderr)
+    d2e = API.direct2experts(HPOquery)
+    return d2e
+
 @app.route('/api', methods=["GET"])
 def apiroute():
     response = queries.get_results_json()  

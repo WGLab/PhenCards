@@ -253,12 +253,10 @@ entry = {'_index': 'hpolink', '_type': '_doc', '_id': '8dws1HQBR4YMZpofFYC7', '_
     phen2gene['header'] = headers['P2G']
     pharos = {'result': API.pharos_targets(HPOquery)}
     pharos['header'] = headers['PharosTargets']
-    d2e = {'result': API.direct2experts(HPOquery)}
-    d2e['header'] = headers['D2E']
 
     session['HPOquery'] = HPOquery.replace("_", "+").replace(" ","+")
 
-    return doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, pharos, cohd, nihfoa, nihreporter, d2e
+    return doid, msh, icd10, irs990, open990f, open990g, umls, hpo, hpolink, ohdsi, phen2gene, pharos, cohd, nihfoa, nihreporter
 
 def get_results_json():
 
