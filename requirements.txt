@@ -20,3 +20,5 @@ Werkzeug==0.16.1
 WTForms>=2.2.1
 sqlalchemy>=1.3.9
 flask_redis>=0.4.0
+psycopg2-binary>=2.8.6
+pandas>=1.0.5

@@ -226,6 +226,17 @@ def get_autosuggest():
     results = indexquery(query_json, index = 'autosuggest')
     return jsonify(results)
 
+@app.route('/api/v1/resources/drugcentral/query', methods=['GET'])
+def api_drugcentral_drugs():
+    HPOquery = request.args.get('query')
+    version, dfs = API.DrugCentral(HPOquery)
+    return jsonify(version, dfs)
+
+@app.route('/api/v1/resources/drugcentral/ddi', methods=['GET'])
+def api_drugcentral_ddi():
+    drugname = request.args.get('name')
+    ddis = API.getDrugDDIs(drugname)
+    return jsonify(ddis)
 
 if __name__ == '__main__':
     app.jinja_env.auto_reload = True

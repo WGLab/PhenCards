@@ -12,6 +12,109 @@ from collections import defaultdict
 import json
 import ray
 import datetime
+import concurrent.futures
+import pandas
+from pandas.io.sql import read_sql_query
+import psycopg2, psycopg2.extras
+
+# drugcentral remote postgresql db
+
+def postgresConnect(dbhost="unmtid-dbs.net", dbport="5433", dbname="drugcentral", dbusr="drugman", dbpw="dosage"):
+    """Connect to db; specify default cursor type DictCursor."""
+    dsn = ("host='%s' port='%s' dbname='%s' user='%s' password='%s'"%(dbhost, dbport, dbname, dbusr, dbpw))
+    dbcon = psycopg2.connect(dsn)
+    dbcon.cursor_factory = psycopg2.extras.DictCursor
+    return dbcon
+
+def dbVersion(dbcon, dbschema="public"):
+    sql = f"SELECT * FROM {dbschema}.dbversion"
+    cur = dbcon.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur.execute(sql)
+    ver = cur.fetchall()[0]
+    version = "Version: "+str(ver[0])+"; Datetime: "+ver[1].strftime("%m/%d/%Y, %H:%M:%S")
+    return version
+
+def listTables(dbcon, dbschema="public"):
+    '''Listing the tables.'''
+    sql = (f"SELECT table_name FROM information_schema.tables WHERE table_schema = '{dbschema}'")
+    df = read_sql_query(sql, dbcon)
+    return df
+
+def listColumns(dbcon, dbschema="public"):
+    df=None;
+    sql1 = (f"SELECT table_name FROM information_schema.tables WHERE table_schema = '{dbschema}'")
+    df1 = read_sql_query(sql1, dbcon)
+    for tname in df1.table_name:
+        df=None
+        sql2 = (f"SELECT column_name,data_type FROM information_schema.columns WHERE table_schema = '{dbschema}' AND table_name = '{tname}'")
+        df_this = read_sql_query(sql2, dbcon)
+        df_this["schema"] = dbschema
+        df_this["table"] = tname
+        df = df_this if df is None else pandas.concat([df, df_this])
+        df = df[["schema", "table", "column_name", "data_type"]]
+    return df
+
+def getDrugData(dict):
+    dbcon=dict["dbcon"]; query=dict["query"]; column=dict["column"]; tname=dict["tname"]
+    HPOquery=query.replace("_"," ").replace("+"," ")
+    sql2 = f"SELECT * FROM {tname} WHERE {column} ILIKE '%{HPOquery}%'"
+    cur = dbcon.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur.execute(sql2)
+    data = cur.fetchall()
+    for dictrow in data:
+        if dictrow:
+            print(dictrow)
+    df = read_sql_query(sql2, dbcon)
+    return df.dropna().astype({'id': 'int32'}).astype({'id': 'str'})
+
+def getDrugInfo(dbcon):
+    sql2 = (f"SELECT id, name FROM synonyms WHERE preferred_name = 1.0")
+    df = read_sql_query(sql2, dbcon)
+    return df.dropna().astype({'id': 'int32'}).astype({'id': 'str'})
+
+def getDrugDDIs(drugname):
+    dbcon = postgresConnect()
+    ddis = getDrugData({"dbcon":dbcon, "query":drugname, "column":"drug_class1", "tname":"ddi"})
+    return ddis.to_dict()
+
+def DrugCentral(HPOquery):
+    dbcon = postgresConnect()
+    # with pandas.option_context('display.max_rows', None, 'display.max_columns', None):
+        # print (getDrugInfo(dbcon))
+    df2 = getDrugInfo(dbcon)
+    version = dbVersion(dbcon)
+    # listTables(dbcon, fout=output)
+    # listColumns(dbcon, fout=output)
+    # DDIs
+    #(getDrugData, {"dbcon":dbcon, "query":"carbamazepine", "column":"drug_class1", "tname":"ddi"}),
+    dfs = {}
+    dicts = [
+            (getDrugData, {"dbcon":dbcon, "query":HPOquery, "column":"meddra_name", "tname":"faers_male"}),
+            (getDrugData, {"dbcon":dbcon, "query":HPOquery, "column":"meddra_name", "tname":"faers_female"}),
+            (getDrugData, {"dbcon":dbcon, "query":HPOquery, "column":"concept_name", "tname":"omop_relationship"}),
+            ]
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+        future_to_data = {executor.submit(func, dict): dict for func, dict in dicts}
+        for future in concurrent.futures.as_completed(future_to_data):
+            data = future_to_data[future]
+            print(data['tname'])
+            try:
+                df = future.result()
+                if df.empty:
+                    continue
+                dfs[data['tname']] = df
+                dfs[data['tname']]['name'] = df2['id'].map(df2.set_index('id')['name'])
+                dfs[data['tname']] = dfs[data['tname']].to_dict()
+            except Exception as exc:
+                print('%r generated an exception: %s' % (data, exc))
+    # getDrugData(dbcon=dbcon, query="craniosynostosis", column="meddra_name", tname="faers", fout=output)
+    # # OMOP
+    # getDrugData(dbcon=dbcon, query="craniosynostosis", column="concept_name", tname="omop_relationship", fout=output)
+    # # INFO on drug, get ID from above...
+    # getDrugInfo(dbcon=dbcon, query="489", column="id", tname="synonyms", fout=output)
+    # # DDIs on drug, get name from above...
+    # getDrugData(dbcon=dbcon, query="carbamazepine", column="drug_class1", tname="ddi", fout=output)
+    return version, dfs
 
 # pharos api 
 
@@ -407,8 +510,15 @@ def direct2experts(HPOquery):
     params1={
     'request': 'getsites',
     }
-    rsearch=requests.get("http://direct2experts.org/DirectService.asp", params=params1)
-    # print(rsearch.url, file=sys.stderr) if needed to debug...most likely 404 or timeout error
+    try:
+        rsearch=requests.get("http://direct2experts.org/DirectService.asp", params=params1)
+        # print(rsearch.url, file=sys.stderr) if needed to debug...most likely 404 or timeout error
+    except requests.exceptions.Timeout:
+        print ("timedout d2e")
+        return "timedout d2e"
+    except requests.exceptions.ConnectionError:
+        print ("connection refused d2e")
+        return "connection refused d2e"
     def generate_numbers(url, HPOquery):
         numexp=0
         searchurl="null"

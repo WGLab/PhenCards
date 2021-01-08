@@ -647,6 +647,32 @@ th {
 {% block scripts %}
 <!-- make nice table with multiple pages -->
 <script type="text/javascript">
+var drugs = $.ajax({
+  type : 'GET',
+  url : "https://phencards-dev.wglab.org/api/v1/resources/drugcentral/query",
+  data : {'query': "{{session['HPOquery']}}"},
+  dataType: 'json',
+  success: function (textStatus, status) {
+        console.log(textStatus);
+        console.log(status);
+  },
+  error: function(xhr, textStatus, error) {
+        console.log(xhr.responseText);
+        console.log(xhr.statusText);
+        console.log(textStatus);
+        console.log(error);
+  }
+}).done(function(data){
+        var version = data[0]
+        var drugdata = data[1]
+        $.each(drugdata, function(i, item) {
+            console.log(i)
+            $.each(item, function(j, subitem) {
+                console.log(j)
+                console.log(item[j])
+            });
+        });
+});
 var d2e = $.ajax({
   type : 'GET',
   url : "{{url_for('generate_d2e')}}",
