@@ -58,19 +58,45 @@ def getDrugData(dict):
     dbcon=dict["dbcon"]; query=dict["query"]; column=dict["column"]; tname=dict["tname"]
     HPOquery=query.replace("_"," ").replace("+"," ")
     sql2 = f"SELECT * FROM {tname} WHERE {column} ILIKE '%{HPOquery}%'"
-    cur = dbcon.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    """
+    # faers header:
+    "id", 
+    "struct_id", 
+    "meddra_name", 
+    "meddra_code", 
+    "level", 
+    "llr", 
+    "llr_threshold", 
+    "drug_ae", 
+    "drug_no_ae", 
+    "no_drug_ae", 
+    "no_drug_no_ae", 
+    "name" (added by me)
+    # drug use header (omop):
+    id      struct_id       concept_id      relationship_name       concept_name    umls_cui        snomed_full_name        cui_semantic_type       snomed_conceptid
+    """
+    cur = dbcon.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cur.execute(sql2)
     data = cur.fetchall()
+    df = []
     for dictrow in data:
         if dictrow:
-            print(dictrow)
-    df = read_sql_query(sql2, dbcon)
-    return df.dropna().astype({'id': 'int32'}).astype({'id': 'str'})
+            dictrow.pop('id', None); dictrow.pop('meddra_code', None) # for FAERS
+            dictrow.pop('snomed_full_name', None); dictrow.pop('cui_semantic_type', None); dictrow.pop('snomed_conceptid', None) # for SNOMED/OMOP
+            df.append(dictrow)
+    return df
 
 def getDrugInfo(dbcon):
     sql2 = (f"SELECT id, name FROM synonyms WHERE preferred_name = 1.0")
+    cur = dbcon.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur.execute(sql2)
+    data = cur.fetchall()
+    drugnames = {}
+    for dictrow in data:
+        if dictrow:
+            drugnames[dictrow[0]]=dictrow[1] # set id key, name value
     df = read_sql_query(sql2, dbcon)
-    return df.dropna().astype({'id': 'int32'}).astype({'id': 'str'})
+    return drugnames
 
 def getDrugDDIs(drugname):
     dbcon = postgresConnect()
@@ -79,14 +105,10 @@ def getDrugDDIs(drugname):
 
 def DrugCentral(HPOquery):
     dbcon = postgresConnect()
-    # with pandas.option_context('display.max_rows', None, 'display.max_columns', None):
-        # print (getDrugInfo(dbcon))
     df2 = getDrugInfo(dbcon)
     version = dbVersion(dbcon)
     # listTables(dbcon, fout=output)
     # listColumns(dbcon, fout=output)
-    # DDIs
-    #(getDrugData, {"dbcon":dbcon, "query":"carbamazepine", "column":"drug_class1", "tname":"ddi"}),
     dfs = {}
     dicts = [
             (getDrugData, {"dbcon":dbcon, "query":HPOquery, "column":"meddra_name", "tname":"faers_male"}),
@@ -100,11 +122,9 @@ def DrugCentral(HPOquery):
             print(data['tname'])
             try:
                 df = future.result()
-                if df.empty:
+                if not df:
                     continue
-                dfs[data['tname']] = df
-                dfs[data['tname']]['name'] = df2['id'].map(df2.set_index('id')['name'])
-                dfs[data['tname']] = dfs[data['tname']].to_dict()
+                dfs[data['tname']] = [list(row.values()) + [df2[row['struct_id']]] for row in df]
             except Exception as exc:
                 print('%r generated an exception: %s' % (data, exc))
     # getDrugData(dbcon=dbcon, query="craniosynostosis", column="meddra_name", tname="faers", fout=output)
@@ -144,12 +164,14 @@ def pharos_page(HPOquery):
                 }
                 """
     data = pharos(HPOquery, query)
-    facets = data["targets"]["facets"]
-    #print(json.dumps(facetdata,indent=2)) 
-    for facet in facets:
-        if facet["facet"] in ["Linked Disease", "Reactome Pathway", "GO Process", "GO Component", "GO Function", "UniProt Disease", "Expression: UniProt Tissue", "Family", "Target Development Level"]:
-                facetdata[facet["facet"]] = facet["values"]
-
+    try:
+        facets = data["targets"]["facets"]
+        #print(json.dumps(facetdata,indent=2)) 
+        for facet in facets:
+            if facet["facet"] in ["Linked Disease", "Reactome Pathway", "GO Process", "GO Component", "GO Function", "UniProt Disease", "Expression: UniProt Tissue", "Family", "Target Development Level"]:
+                    facetdata[facet["facet"]] = facet["values"]
+    except:
+        facets = {}
     headers=generate_headers()
     headers={"PharosFacets": headers['PharosFacets']}
 
@@ -172,7 +194,10 @@ def pharos_targets(HPOquery):
             }
             """
     data = pharos(HPOquery, query)
-    targetdata = data["targets"]["targets"]
+    try:
+        targetdata = data["targets"]["targets"]
+    except:
+        targetdata = {}
     # print(json.dumps(targetdata,indent=2)) 
 
     return targetdata
@@ -195,9 +220,11 @@ def pharos_ppis(gene):
             }
             """
     data = pharos(gene, query)
-    ppis = data["targets"]["targets"]
+    try:
+        ppis = data["targets"]["targets"]
     # print(json.dumps(targetdata,indent=2)) 
-
+    except:
+        ppis = {}
     return ppis
 
 def pharos_target_details(gene):
@@ -230,20 +257,23 @@ def pharos_target_details(gene):
             }
             """
     data = pharos(gene, query)
-    targetinfo = data["target"]
-    details = {}
-    expressions, ligands = [[] for i in range (0,2)]
-    for entry in targetinfo:
-        if entry in ["name", "tdl", "fam", "sym", "description", "novelty"]:
-            details[entry]=targetinfo[entry]
-        elif entry == "expressions":
-            expressions=targetinfo[entry]
-        elif entry == "ligands":
-            ligands=targetinfo[entry]
-            for ligand in ligands:
-                ligand["pubs"] = ",".join([j["pmid"] for i in ligand["activities"] if i["pubs"] for j in i["pubs"]])
-                # ligand["moa"] = ",".join([str(i["moa"]) for i in ligand["activities"]])
-                del ligand["activities"]
+    try:
+        targetinfo = data["target"]
+        details = {}
+        expressions, ligands = [[] for i in range (0,2)]
+        for entry in targetinfo:
+            if entry in ["name", "tdl", "fam", "sym", "description", "novelty"]:
+                details[entry]=targetinfo[entry]
+            elif entry == "expressions":
+                expressions=targetinfo[entry]
+            elif entry == "ligands":
+                ligands=targetinfo[entry]
+                for ligand in ligands:
+                    ligand["pubs"] = ",".join([j["pmid"] for i in ligand["activities"] if i["pubs"] for j in i["pubs"]])
+                    # ligand["moa"] = ",".join([str(i["moa"]) for i in ligand["activities"]])
+                    del ligand["activities"]
+    except:
+        details, expressions, ligands = {}, {}, {}
     headers=generate_headers()
     headers={"PharosTD": headers["PharosTD"], "PharosTE": headers["PharosTE"], "PharosTL": headers["PharosTL"], "PharosTP": headers["PharosTP"]}
     # print(json.dumps(targetinfo,indent=2)) 

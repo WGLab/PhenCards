@@ -151,3 +151,29 @@ PharosTP	pNI	The probability the protein-protein interaction is non-specific (Bi
 PharosTP	pWrong	The probability the protein-protein interaction is wrong (BioPlex).
 D2E	Institution Name	The name of the academic medical institution where you can find experts who may specialize in your phenotype term.
 D2E	Number of Experts	The number of experts at the institution may specialize in your phenotype term.
+faers_female	Drug ID	The drug id in DrugCentral.
+faers_female	MedDRA adverse event term	The condition or phenotype term caused by the drug.
+faers_female	MedDRA level	MedDRA has five levels of hierarchy. The highest, and broadest, level is System Organ Class (SOC), then High-Level Group Terms (HLGT), High-Level Terms (HLT), Preferred Terms (PT) and finally Lowest Level Terms (LLT).
+faers_female	Likelihood ratio	This uses the Maximum Likelihood Ratio (MLR) statistic from Huang et al 2012 described above.  Assumes Poisson distribution.
+faers_female	Likelihood ratio threshold	This is the lowest value for which the p-value for the MLR statistic is <0.05.
+faers_female	Patients w drug w adverse event	This is the number of patients who took the drug and had the adverse event (phenotype), used to calculate MLR.
+faers_female	Patients w drug w/o adverse event	This is the number of patients who took the drug and did not have the adverse event (phenotype), used to calculate MLR.
+faers_female	Patients w/o drug w adverse event	This is the number of patients who did not take the drug and had the adverse event (phenotype), used to calculate MLR.
+faers_female	Patients w/o drug w/o adverse event	This is the number of patients who did not take the drug and did not have the adverse event (phenotype), used to calculate MLR.
+faers_female	Drug Name	The most common name of the drug in DrugCentral.
+faers_male	Drug ID	The drug id in DrugCentral.
+faers_male	MedDRA adverse event term	The condition or phenotype term caused by the drug.
+faers_male	MedDRA level	MedDRA has five levels of hierarchy. The highest, and broadest, level is System Organ Class (SOC), then High-Level Group Terms (HLGT), High-Level Terms (HLT), Preferred Terms (PT) and finally Lowest Level Terms (LLT).
+faers_male	Likelihood ratio	This uses the Maximum Likelihood Ratio (MLR) statistic from Huang et al 2012 described above.  Assumes Poisson distribution.
+faers_male	Likelihood ratio threshold	This is the lowest value for which the p-value for the MLR statistic is <0.05.
+faers_male	Patients w drug w adverse event	This is the number of patients who took the drug and had the adverse event (phenotype), used to calculate MLR.
+faers_male	Patients w drug w/o adverse event	This is the number of patients who took the drug and had the adverse event (phenotype), used to calculate MLR.
+faers_male	Patients w/o drug w adverse event	This is the number of patients who did not take the drug and had the adverse event (phenotype), used to calculate MLR.
+faers_male	Patients w/o drug w/o adverse event	This is the number of patients who did not take the drug and did not have the adverse event (phenotype), used to calculate MLR.
+faers_male	Drug Name	The most common name of the drug in DrugCentral.
+omop_relationship	Drug ID	The drug id in DrugCentral.
+omop_relationship	OMOP Concept ID	The OMOP unique concept ID.
+omop_relationship	Relation	What relationship the drug has to the phenotype term. Indication (for use), contraindication (not recommended), off-label use
+omop_relationship	Disease	The condition or phenotype term related to the drug.
+omop_relationship	UMLS CUI	The unique concept identifier in UMLS.
+omop_relationship	Drug Name	The most common name of the drug in DrugCentral.
