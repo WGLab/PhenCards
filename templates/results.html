@@ -665,12 +665,12 @@ th {
 <script type="text/javascript">
 var header = $.ajax({
   type : 'GET',
-  url : "https://phencards-dev.wglab.org/api/v1/resources/headers?table=DCFAERSFemale",
+  url : "https://phencards.org/api/v1/resources/headers",
   dataType: 'json',
   success: function (headers){
 var drugs = $.ajax({
   type : 'GET',
-  url : "https://phencards-dev.wglab.org/api/v1/resources/drugcentral/query",
+  url : "https://phencards.org/api/v1/resources/drugcentral/query",
   data : {'query': "{{session['HPOquery']}}"},
   dataType: 'json',
   success: function (textStatus, status) {
