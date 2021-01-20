@@ -12,6 +12,129 @@ from collections import defaultdict
 import json
 import ray
 import datetime
+import concurrent.futures
+import pandas
+from pandas.io.sql import read_sql_query
+import psycopg2, psycopg2.extras
+
+# drugcentral remote postgresql db
+
+def postgresConnect(dbhost="unmtid-dbs.net", dbport="5433", dbname="drugcentral", dbusr="drugman", dbpw="dosage"):
+    """Connect to db; specify default cursor type DictCursor."""
+    dsn = ("host='%s' port='%s' dbname='%s' user='%s' password='%s'"%(dbhost, dbport, dbname, dbusr, dbpw))
+    dbcon = psycopg2.connect(dsn)
+    dbcon.cursor_factory = psycopg2.extras.DictCursor
+    return dbcon
+
+def dbVersion(dbcon, dbschema="public"):
+    sql = f"SELECT * FROM {dbschema}.dbversion"
+    cur = dbcon.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur.execute(sql)
+    ver = cur.fetchall()[0]
+    version = "Version: "+str(ver[0])+"; Datetime: "+ver[1].strftime("%m/%d/%Y, %H:%M:%S")
+    return version
+
+def listTables(dbcon, dbschema="public"):
+    '''Listing the tables.'''
+    sql = (f"SELECT table_name FROM information_schema.tables WHERE table_schema = '{dbschema}'")
+    df = read_sql_query(sql, dbcon)
+    return df
+
+def listColumns(dbcon, dbschema="public"):
+    df=None;
+    sql1 = (f"SELECT table_name FROM information_schema.tables WHERE table_schema = '{dbschema}'")
+    df1 = read_sql_query(sql1, dbcon)
+    for tname in df1.table_name:
+        df=None
+        sql2 = (f"SELECT column_name,data_type FROM information_schema.columns WHERE table_schema = '{dbschema}' AND table_name = '{tname}'")
+        df_this = read_sql_query(sql2, dbcon)
+        df_this["schema"] = dbschema
+        df_this["table"] = tname
+        df = df_this if df is None else pandas.concat([df, df_this])
+        df = df[["schema", "table", "column_name", "data_type"]]
+    return df
+
+def getDrugData(dict):
+    dbcon=dict["dbcon"]; query=dict["query"]; column=dict["column"]; tname=dict["tname"]
+    HPOquery=query.replace("_"," ").replace("+"," ")
+    sql2 = f"SELECT * FROM {tname} WHERE {column} ILIKE '%{HPOquery}%'"
+    """
+    # faers header:
+    "id", 
+    "struct_id", 
+    "meddra_name", 
+    "meddra_code", 
+    "level", 
+    "llr", 
+    "llr_threshold", 
+    "drug_ae", 
+    "drug_no_ae", 
+    "no_drug_ae", 
+    "no_drug_no_ae", 
+    "name" (added by me)
+    # drug use header (omop):
+    id      struct_id       concept_id      relationship_name       concept_name    umls_cui        snomed_full_name        cui_semantic_type       snomed_conceptid
+    """
+    cur = dbcon.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute(sql2)
+    data = cur.fetchall()
+    df = []
+    for dictrow in data:
+        if dictrow:
+            dictrow.pop('id', None); dictrow.pop('meddra_code', None) # for FAERS
+            dictrow.pop('snomed_full_name', None); dictrow.pop('cui_semantic_type', None); dictrow.pop('snomed_conceptid', None) # for SNOMED/OMOP
+            df.append(dictrow)
+    return df
+
+def getDrugInfo(dbcon):
+    sql2 = (f"SELECT id, name FROM synonyms WHERE preferred_name = 1.0")
+    cur = dbcon.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cur.execute(sql2)
+    data = cur.fetchall()
+    drugnames = {}
+    for dictrow in data:
+        if dictrow:
+            drugnames[dictrow[0]]=dictrow[1] # set id key, name value
+    df = read_sql_query(sql2, dbcon)
+    return drugnames
+
+def getDrugDDIs(drugname):
+    dbcon = postgresConnect()
+    ddis = getDrugData({"dbcon":dbcon, "query":drugname, "column":"drug_class1", "tname":"ddi"})
+    return ddis.to_dict()
+
+def DrugCentral(HPOquery):
+    dbcon = postgresConnect()
+    df2 = getDrugInfo(dbcon)
+    version = dbVersion(dbcon)
+    # listTables(dbcon, fout=output)
+    # listColumns(dbcon, fout=output)
+    dfs = {}
+    dicts = [
+            (getDrugData, {"dbcon":dbcon, "query":HPOquery, "column":"meddra_name", "tname":"faers_male"}),
+            (getDrugData, {"dbcon":dbcon, "query":HPOquery, "column":"meddra_name", "tname":"faers_female"}),
+            (getDrugData, {"dbcon":dbcon, "query":HPOquery, "column":"concept_name", "tname":"omop_relationship"}),
+            ]
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+        future_to_data = {executor.submit(func, dict): dict for func, dict in dicts}
+        for future in concurrent.futures.as_completed(future_to_data):
+            data = future_to_data[future]
+            print(data['tname'])
+            try:
+                df = future.result()
+                if not df:
+                    continue
+                dfs[data['tname']] = [list(row.values()) + [df2[row['struct_id']]] for row in df]
+            except Exception as exc:
+                print('%r generated an exception: %s' % (data, exc))
+    # getDrugData(dbcon=dbcon, query="craniosynostosis", column="meddra_name", tname="faers", fout=output)
+    # # OMOP
+    # getDrugData(dbcon=dbcon, query="craniosynostosis", column="concept_name", tname="omop_relationship", fout=output)
+    # # INFO on drug, get ID from above...
+    # getDrugInfo(dbcon=dbcon, query="489", column="id", tname="synonyms", fout=output)
+    # # DDIs on drug, get name from above...
+    # getDrugData(dbcon=dbcon, query="carbamazepine", column="drug_class1", tname="ddi", fout=output)
+    return version, dfs
 
 # pharos api 
 
@@ -41,12 +164,14 @@ def pharos_page(HPOquery):
                 }
                 """
     data = pharos(HPOquery, query)
-    facets = data["targets"]["facets"]
-    #print(json.dumps(facetdata,indent=2)) 
-    for facet in facets:
-        if facet["facet"] in ["Linked Disease", "Reactome Pathway", "GO Process", "GO Component", "GO Function", "UniProt Disease", "Expression: UniProt Tissue", "Family", "Target Development Level"]:
-                facetdata[facet["facet"]] = facet["values"]
-
+    try:
+        facets = data["targets"]["facets"]
+        #print(json.dumps(facetdata,indent=2)) 
+        for facet in facets:
+            if facet["facet"] in ["Linked Disease", "Reactome Pathway", "GO Process", "GO Component", "GO Function", "UniProt Disease", "Expression: UniProt Tissue", "Family", "Target Development Level"]:
+                    facetdata[facet["facet"]] = facet["values"]
+    except:
+        facets = {}
     headers=generate_headers()
     headers={"PharosFacets": headers['PharosFacets']}
 
@@ -69,7 +194,10 @@ def pharos_targets(HPOquery):
             }
             """
     data = pharos(HPOquery, query)
-    targetdata = data["targets"]["targets"]
+    try:
+        targetdata = data["targets"]["targets"]
+    except:
+        targetdata = {}
     # print(json.dumps(targetdata,indent=2)) 
 
     return targetdata
@@ -92,9 +220,11 @@ def pharos_ppis(gene):
             }
             """
     data = pharos(gene, query)
-    ppis = data["targets"]["targets"]
+    try:
+        ppis = data["targets"]["targets"]
     # print(json.dumps(targetdata,indent=2)) 
-
+    except:
+        ppis = {}
     return ppis
 
 def pharos_target_details(gene):
@@ -127,20 +257,23 @@ def pharos_target_details(gene):
             }
             """
     data = pharos(gene, query)
-    targetinfo = data["target"]
-    details = {}
-    expressions, ligands = [[] for i in range (0,2)]
-    for entry in targetinfo:
-        if entry in ["name", "tdl", "fam", "sym", "description", "novelty"]:
-            details[entry]=targetinfo[entry]
-        elif entry == "expressions":
-            expressions=targetinfo[entry]
-        elif entry == "ligands":
-            ligands=targetinfo[entry]
-            for ligand in ligands:
-                ligand["pubs"] = ",".join([j["pmid"] for i in ligand["activities"] if i["pubs"] for j in i["pubs"]])
-                # ligand["moa"] = ",".join([str(i["moa"]) for i in ligand["activities"]])
-                del ligand["activities"]
+    try:
+        targetinfo = data["target"]
+        details = {}
+        expressions, ligands = [[] for i in range (0,2)]
+        for entry in targetinfo:
+            if entry in ["name", "tdl", "fam", "sym", "description", "novelty"]:
+                details[entry]=targetinfo[entry]
+            elif entry == "expressions":
+                expressions=targetinfo[entry]
+            elif entry == "ligands":
+                ligands=targetinfo[entry]
+                for ligand in ligands:
+                    ligand["pubs"] = ",".join([j["pmid"] for i in ligand["activities"] if i["pubs"] for j in i["pubs"]])
+                    # ligand["moa"] = ",".join([str(i["moa"]) for i in ligand["activities"]])
+                    del ligand["activities"]
+    except:
+        details, expressions, ligands = {}, {}, {}
     headers=generate_headers()
     headers={"PharosTD": headers["PharosTD"], "PharosTE": headers["PharosTE"], "PharosTL": headers["PharosTL"], "PharosTP": headers["PharosTP"]}
     # print(json.dumps(targetinfo,indent=2)) 
@@ -401,6 +534,50 @@ def phen2gene_page(HPOquery, patient=False):
         print (e)
 
     return GeneAPI_JSON
+
+def direct2experts(HPOquery):
+    experts={}
+    params1={
+    'request': 'getsites',
+    }
+    try:
+        rsearch=requests.get("http://direct2experts.org/DirectService.asp", params=params1)
+        # print(rsearch.url, file=sys.stderr) if needed to debug...most likely 404 or timeout error
+    except requests.exceptions.Timeout:
+        print ("timedout d2e")
+        return "timedout d2e"
+    except requests.exceptions.ConnectionError:
+        print ("connection refused d2e")
+        return "connection refused d2e"
+    def generate_numbers(url, HPOquery):
+        numexp=0
+        searchurl="null"
+        try:
+            rsearch=requests.get(url+HPOquery, timeout=1.5)
+            if rsearch.status_code == 200:
+                root=ET.fromstring(rsearch.text)
+                numexp=root.find("count").text
+                searchurl=root.find("search-results-URL").text
+        except requests.exceptions.Timeout:
+            print ("timedout", url)
+        except requests.exceptions.ConnectionError:
+            print ("connection refused", url)
+        return numexp, searchurl 
+
+    root=ET.fromstring(rsearch.text)
+    for site in root.iter("site-description"):
+        name = site.find("name").text
+        query = site.find("aggregate-query").text
+        numexp, searchurl = generate_numbers(query, HPOquery)
+        # print (numexp, searchurl)
+        if searchurl == "null":
+            continue
+        experts[name]=[numexp, searchurl]
+    
+    headers = generate_headers()
+    d2e = {'result': experts}
+    d2e['header'] = headers['D2E']
+    return d2e
 
 def patient_page(HPOquery, HPO_names, d2hjson):
     HPOclinical = "+OR+".join([s.replace(" ", "+") for s in HPO_names])

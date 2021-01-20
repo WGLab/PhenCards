@@ -12,6 +12,7 @@ import queries
 from forms import PhenCardsForm
 from config import Config
 from lib.esQuery import indexquery
+from lib.style import generate_headers
 import os
 
 app = Flask(__name__)
@@ -201,6 +202,13 @@ def generate_tutorial_page():
     return render_template('tutorial.html')
 
 # RESTful API
+@app.route('/d2e', methods=["GET"])
+def generate_d2e():
+    HPOquery = request.args.get('query')
+    print(HPOquery, file=sys.stderr)
+    d2e = API.direct2experts(HPOquery)
+    return d2e
+
 @app.route('/api', methods=["GET"])
 def apiroute():
     response = queries.get_results_json()  
@@ -219,6 +227,24 @@ def get_autosuggest():
     results = indexquery(query_json, index = 'autosuggest')
     return jsonify(results)
 
+@app.route('/api/v1/resources/drugcentral/query', methods=['GET'])
+def api_drugcentral_drugs():
+    HPOquery = request.args.get('query')
+    version, dfs = API.DrugCentral(HPOquery)
+    return jsonify(version, dfs)
+
+@app.route('/api/v1/resources/drugcentral/ddi', methods=['GET'])
+def api_drugcentral_ddi():
+    drugname = request.args.get('name')
+    ddis = API.getDrugDDIs(drugname)
+    return jsonify(ddis)
+
+@app.route('/api/v1/resources/headers', methods=['GET'])
+def api_headers():
+    #table = request.args.get('table')
+    headers = generate_headers()
+    #headers = headers[table]
+    return jsonify(headers)
 
 if __name__ == '__main__':
     app.jinja_env.auto_reload = True
