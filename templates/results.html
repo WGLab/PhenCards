@@ -345,8 +345,13 @@ th {
                     <td>{{result["name"]}}</td>
                     <td><a target="_blank" href={{ url_for('generate_pharos_target_page', target=result["sym"]) }}>{{result["sym"]}}</a></td>
                     <td><a target="_blank" href={{ url ~ result["uniprot"] }}>{{result["uniprot"]}}</a></td>
-                    <td style="word-break: break-word"><span>{% for res in result["diseaseAssociationDetails"][:-1] %} {{res["dataType"]}},<br> {% endfor %} {{result["diseaseAssociationDetails"][-1]["dataType"]}}</span>
-                    <td style="word-break: break-word"><span>{% for res in result["diseaseAssociationDetails"][:-1] %} {{res["evidence"]}},<br> {% endfor %} {{result["diseaseAssociationDetails"][-1]["evidence"]}}</span>
+                    {% if result["diseaseAssociationDetails"] %}
+                        <td style="word-break: break-word"><span>{% for res in result["diseaseAssociationDetails"][:-1] %} {{res["dataType"]}},<br> {% endfor %} {{result["diseaseAssociationDetails"][-1]["dataType"]}}</span></td>
+                        <td style="word-break: break-word"><span>{% for res in result["diseaseAssociationDetails"][:-1] %} {{res["evidence"]}},<br> {% endfor %} {{result["diseaseAssociationDetails"][-1]["evidence"]}}</span></td>
+                    {% else %}              
+                        <td>null</td>
+                        <td>null</td>
+                    {% endif %}              
                 </tr>
             {% endfor %}
             </tbody>
