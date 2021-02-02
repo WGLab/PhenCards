@@ -291,7 +291,10 @@ def generate_cohd_list(HPOquery):
     'domain': "Condition", # can use "Drug" for drugs
     'min_count': 1
     }
-    rsearch=requests.get("http://cohd.io/api/omop/findConceptIDs", params=params)
+    try:
+        rsearch=requests.get("http://cohd.io/api/omop/findConceptIDs", params=params, timeout=10)
+    except requests.exceptions.Timeout: # if the resource is timing out after 10 sec, not worth the load.
+        return []
     if rsearch.status_code == requests.status_codes.codes.OK:
         results = rsearch.json()
         results=sorted(results['results'], key=lambda k: k['concept_count'], reverse=True)
@@ -306,7 +309,13 @@ def cohd_page(concept_id):
         'concept_id': concept_id,
         'dataset_id': 4, # lifetime non-hierarchical is 2, 4 is temporal beta
     }
-    rsearch=requests.get("http://cohd.io/api/omop/conceptAncestors", params=params)
+    headers=generate_headers()
+    headers={"COHDC": headers['COHDC'], "COHDA": headers['COHDA']}
+    try:
+        rsearch=requests.get("http://cohd.io/api/omop/conceptAncestors", params=params)
+    except requests.exceptions.Timeout:
+        ancestors, conditions, drugs, procedures = [], [], [], []
+        return ancestors, conditions, drugs, procedures, headers
     if rsearch.status_code == requests.status_codes.codes.OK:
         results = rsearch.json()
         ancestors = sorted(results['results'], key=lambda k: k['concept_count'], reverse=True)
@@ -335,8 +344,6 @@ def cohd_page(concept_id):
     conditions = results['Condition']
     drugs = results['Drug']
     procedures = results['Procedure']
-    headers=generate_headers()
-    headers={"COHDC": headers['COHDC'], "COHDA": headers['COHDA']}
     return ancestors, conditions, drugs, procedures, headers
 
 # kegg page generator
@@ -372,13 +379,19 @@ def kegg_page(phenname):
 # pubmed page generator
 def literature_page(HPOquery):
     pubmed={}
+    headers=generate_headers()
+    headers={"Pubmed": headers['Pubmed']}
     params1={
     'db': 'pubmed',
     'term': HPOquery,
     'retmax': '200',
     'api_key': '1ee2a8a8bf1b1b2b09e8087eb5cf16c95109',
     'sort': 'relevance'}
-    rsearch=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi", params=params1)
+    try:
+        rsearch=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi", params=params1, timeout=45)
+    except requests.exceptions.Timeout:
+        pubmed = {}
+        return pubmed, headers
     def generate_citations(uid):
         params2={
         'retmode': "json",
@@ -455,8 +468,6 @@ def literature_page(HPOquery):
         if title:
             publication = title + " " + authors + ". " + journal + " " + pubdate + volume + issue + pages + ". " + doi
         pubmed[id1]=[publication,top25[id1]]
-    headers=generate_headers()
-    headers={"Pubmed": headers['Pubmed']}
     return pubmed, headers
 
 # tocris drugs page generator
@@ -657,7 +668,10 @@ def generate_nihfoa_list(HPOquery):
     'type': "active",
     }
     # need to add https://grants.nih.gov/grants/guide/pa-files/results['filename']
-    rsearch=requests.get("https://search.grants.nih.gov/guide/api/data", params=params)
+    try:
+        rsearch=requests.get("https://search.grants.nih.gov/guide/api/data", params=params, timeout=30)
+    except requests.exceptions.Timeout:
+        return []
     if rsearch.status_code == requests.status_codes.codes.OK:
         results = rsearch.json()['data']['hits']['hits']
         #print(results[0]["_source"].keys()) # we want 'title', 'docnum', 'primaryIC', 'sponsors', 'opendate', 'appreceiptdate', 'expdate' 'filename'
@@ -676,7 +690,10 @@ def generate_nihreporter_list(HPOquery):
     }
     payload = "&".join("%s=%s" % (k,v) for k,v in params.items())
     # https://api.federalreporter.nih.gov/v1/projects/search?query=text:cleft+palate$fy:2015,2016,2017,2018,2019,2020&searchMode=Smart
-    rsearch=requests.get("https://api.federalreporter.nih.gov/v1/projects/search", params=payload)
+    try:
+        rsearch=requests.get("https://api.federalreporter.nih.gov/v1/projects/search", params=payload, timeout=30)
+    except requests.exceptions.Timeout:
+        return []
     if rsearch.status_code == requests.status_codes.codes.OK:
         results = rsearch.json()['items']
         #print(results[0].keys())
@@ -813,7 +830,10 @@ def routes_for_indication(HPOquery):
 
 def openfda_query(params):
     payload = "&".join("%s=%s" % (k,v) for k,v in params.items())
-    rsearch=requests.get("https://api.fda.gov/drug/event.json", params=payload)
+    try:
+        rsearch=requests.get("https://api.fda.gov/drug/event.json", params=payload, timeout=30)
+    except requests.exceptions.Timeout:
+        results = []
     print(rsearch.url)
     if rsearch.status_code == requests.status_codes.codes.OK:
         results = rsearch.json()['results']
