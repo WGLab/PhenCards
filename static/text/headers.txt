@@ -83,7 +83,7 @@ HPOPatient	HPO Term	The full name of the Human Phenotype Ontology term matching 
 COHDC	Concept 2 ID	The unique ID of the OHDSI term related to the search term through co-occurrence in the COHD database.  Corresponds to one OHDSI term.
 COHDC	Concept 2 Domain	The OHDSI domain for the related term, a condition, drug, or procedure.
 COHDC	Concept 2 Name	This is the name of the OHDSI term in the Columbia Open Health Data database related to the search term through co-occurrence in patient notes. The term is unique because COHD only uses filtered SNOMED terms as the patient data comes from Columbia University Medical Center, at least for the time being.  This data is up-to-date constantly as it comes directly from the API.
-COHDC	Chi-Square value	This value is calculated using a 2x2 contigency table with four values: The number of patients with the first term and the second term, the number of patients without the first term but with the second term, the number of patients who have the first term but not the second term, and the number of patients that don't have the either term (which is a very large number, usually).  The samples must be random, and the observations independent of one another, which they mostly are.  The one disadvantage of this calculation is it is artificially inflated by the fourth number.
+COHDC	Chi-Square value	This value is calculated using a 2x2 contingency table with four values: The number of patients with the first term and the second term, the number of patients without the first term but with the second term, the number of patients who have the first term but not the second term, and the number of patients that don't have either term (often a very large number).  The samples must be random, and the observations independent of one another, which they mostly are.  The one disadvantage of this calculation is it is artificially inflated by the fourth number.
 COHDC	p-value	This is the p-value or probability value of the chi-square test mentioned on the left.  The likelihood that these results occurred by random chance, assuming the null hypothesis is correct.
 COHDC	Adjusted p-value	This is the Bonferroni corrected p-value based on the number of chi-square concept comparisons that are currently possible in COHD, which is ~56.8 million comparisons (5.6848043e7 exactly).
 COHDC	Concept 1 ID	The unique ID of your original search term in OHDSI, in the COHD database.  Corresponds to one OHDSI term.
@@ -127,7 +127,7 @@ PharosFacets	Name	The name of the facet (Gene Ontology term, pathway, disease, e
 PharosFacets	Number of Targets	How many targets for the disease are attributable to the term.
 PharosTargets	Gene Name	The full official gene name of the drug target.
 PharosTargets	Gene Symbol	The HGNC gene symbol of the drug target.
-PharosTargets	UniProt ID	The UniProt identifier of the drug target which can be used to search Pharos or Uniprot for more information.
+PharosTargets	UniProt ID	The UniProt identifier of the drug target which can be used to search Pharos or UniProt for more information.
 PharosTargets	Data Type and Source	Where the data from the drug target came from, and if applicable, the data subtype from that source.
 PharosTargets	Evidence	This could be a few PubMed citations, an author statement, SNPs, personally curated data, or marker/mechanism evidence.
 PharosTD	Name	The full name of the gene.

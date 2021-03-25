@@ -9,7 +9,7 @@ services:
             - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
         environment:
             - bootstrap.memory_lock=true
-            - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+            - "ES_JAVA_OPTS=-Xms750m -Xmx750m"
             - discovery.type=single-node
         ports: # Expose Elasticsearch ports
             - "9300:9300"
