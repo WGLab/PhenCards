@@ -1,4 +1,6 @@
 # PhenCards
+![zenodo](https://zenodo.org/badge/238013852.svg)
+
 This is the repository for the code used to make [PhenCards.org](https://phencards.org)
 
 (C) Wang Lab 2020-2021
