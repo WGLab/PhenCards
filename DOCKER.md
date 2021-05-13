@@ -1,23 +1,3 @@
-# Droplet setup for Kai and Jim only
-
-The information below is for documentation purposes only. Users do not need to use it, since the server set up and docker set up are already done.
-
-To create DigitalOcean Droplet: Create a droplet in NYC region 3, with 2G mem and 50G storage with CentOS 7.8, no other configuration, then install docker exactly as in https://docs.docker.com/engine/install/centos/. (For CentOS 8, the instruction does not work if using yum, and install from source file instead)
-
-After installing, make sure to do this postinstall step to add the docker group and individual users to the group.  https://docs.docker.com/engine/install/linux-postinstall/ (e.g. `sudo usermod -aG docker dongx4`). This is to allow dongx4 to run docker.
-
-A user can start the docker service and enable linger with:
-```
-loginctl enable-linger $USER
-systemctl --user start docker
-```
-or admin can with
-```
-systemctl start docker
-```
-
---------------------
-
 # Build PhenCards or site of choice in docker
 
 PLEASE READ HOW TO CLEAN UP YOUR DOCKER IMAGES AT THE BOTTOM OF THIS FILE AFTER DOING ALL OF THIS.
@@ -45,7 +25,7 @@ docker build -t phencards --network=host .
 If you want to build an image with a more specific tag use:
 `docker build -t phencards:test --network=host .`
 
-To save the image to a TAR file to transfer to the main server `142.93.205.155`:
+To save the image to a TAR file to transfer to the main server:
 
 ```
 docker save --output phencards.tar phencards
@@ -78,7 +58,7 @@ This will mount the folder in the droplet where we've stored the database `/medi
 
 It should be at:
 
-`http://142.93.205.155:5003`
+`http://servername:5003`
 
 If you want to run an image with a specific tag use:
 `docker run -d -p 5001:5000 phencards:test`.
