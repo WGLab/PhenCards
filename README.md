@@ -1,7 +1,7 @@
 # PhenCards
-Zenodo for Code: ![zenodo](https://zenodo.org/badge/238013852.svg)
+Zenodo for Code: [![DOI](https://zenodo.org/badge/238013852.svg)](https://zenodo.org/badge/latestdoi/238013852)
 
-Zenodo for Data: ![zenodo](https://zenodo.org/badge/DOI/10.5281/zenodo.4755959.svg)
+Zenodo for Data: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4755959.svg)](https://doi.org/10.5281/zenodo.4755959)
 
 This is the repository for the code used to make [PhenCards.org](https://phencards.org)
 
