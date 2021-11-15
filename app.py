@@ -171,6 +171,12 @@ def generate_literature_page():
     pubmed, headers = API.literature_page(HPOquery)
     return render_template('literature.html',pubmed=pubmed, headers=headers)
 
+@app.route('/protocol')
+def generate_protocol_page():
+    HPOquery=session['HPOquery']
+    proto, headers = API.protocol_page(HPOquery)
+    return render_template('protocol.html', proto=proto, headers=headers)
+
 # return independent page for tocris drugs information
 @app.route('/tocris')
 def generate_tocris_page():

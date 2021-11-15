@@ -376,6 +376,52 @@ def kegg_page(phenname):
 
     return dispath, headers
 
+def protocol_page(HPOquery):
+    proto=[]
+    headers=generate_headers()
+    headers={"PhenX": headers['PhenX']}
+    params={
+    'searchTerm': HPOquery,
+    'searchtype': 'smartsearch'}
+    try:
+        rsearch=requests.get("https://www.phenxtoolkit.org/search/results?", params=params, timeout=45)
+    except requests.exceptions.Timeout:
+        return proto, headers
+    
+    # print(rsearch.url, file=sys.stderr) if needed to debug...most likely 500 error
+    soup = BeautifulSoup(rsearch.text, 'html.parser')
+    for div in soup.find_all('div', {'class': 'col-lg-9 col-sm-12'}):
+        for row in div.find_all('tr'):
+            link = ""
+            name = ""
+            domainname = ""
+            domainlink = ""
+            origin = ""
+            result = {}
+            try:
+                # print("initial link")
+                link = "https://www.phenxtoolkit.org" + row.a.get("href")
+                name = row.a.text
+                # print(link, name)
+                # print("domain")
+                domainname = row.contents[-2].text
+                domainlink = "https://www.phenxtoolkit.org" + row.contents[-2].a.get("href")
+            except:
+                pass
+            for text in row.find_all('small'):
+                # print("origin")
+                origin = text.contents[0].strip()
+                # print(origin)
+            result["domainname"]=domainname
+            result["domainlink"]=domainlink
+            result["origin"]=origin
+            result["link"]=link
+            result["name"]=name
+            if any(v is not "" for v in (link, name, domainname, domainlink, origin)):
+                proto.append(result)
+
+    return proto, headers
+
 # pubmed page generator
 def literature_page(HPOquery):
     pubmed={}
