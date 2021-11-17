@@ -177,3 +177,6 @@ omop_relationship	Relation	What relationship the drug has to the phenotype term.
 omop_relationship	Disease	The condition or phenotype term related to the drug.
 omop_relationship	UMLS CUI	The unique concept identifier in UMLS.
 omop_relationship	Drug Name	The most common name of the drug in DrugCentral.
+PhenX	Protocol	The name of the protocol for diagnosing or treating the phenotype.
+PhenX	Origin	The origin of the protocol, who created it.
+PhenX	Domain	The domain or collection in PhenX the protocol is classified under.

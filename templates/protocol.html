@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+
+{#<h1>print</h1>#}
+
+<div class="container" >
+    <br>
+    <tr><th><span style="color: black; ">Here are the disease diagnosis and treatment protocols matching the phenotype search from <a target="_blank" href="https://www.phenxtoolkit.org/">PhenX Toolkit</a>, based on your query.</span></th></tr>
+    <br><br>
+    {% if proto %}
+        <table id="proto-table" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
+            <thead>
+            <tr>
+                {% for heading in headers["PhenX"] %}
+                    <td><a class="hasTooltip">{{heading["term"]}}<span>{{heading["definition"]}}</span></a></td>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for entry in proto %}
+                <tr>
+                    <td><a target="_blank" href={{ entry["link"] }}>{{entry["name"]}}</a></td>
+                    <td>{{entry["origin"]}}</td>
+                    <td><a target="_blank" href={{ entry["domainlink"] }}>{{entry["domainname"]}}</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No results for the search term.
+    {% endif %}
+
+</div>
+
+<!-- make nice table with multiple pages -->
+<script type="text/javascript">
+        $(document).ready(function () {
+        var mergedDefaults = {...tableDefault, ...{"order": []}}
+        var table = $("#proto-table").DataTable(mergedDefaults);
+        });
+
+</script>
+
+{% endblock %}
+                  
