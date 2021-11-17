@@ -199,9 +199,9 @@ def results_page(HPOquery):
     hpo = elasticquery(HPOquery, 'hpo')
     hpo['header'] = headers['HPO']
     hpolink = elasticquery(HPOquery, 'hpolink', esettings="hpolink")
+    diseases = defaultdict(dict)
+    scores = defaultdict(float)
     if hpolink["result"]:
-        diseases = defaultdict(dict)
-        scores = defaultdict(float)
         for entry in hpolink["result"]:
             '''
 entry = {'_index': 'hpolink', '_type': '_doc', '_id': '8dws1HQBR4YMZpofFYC7', '_score': 150.43999, '_source': {'Related Database ID': '260150', 'Database Name': 'OMIM', 'NAME': 'PALANT CLEFT PALATE SYNDROME', 'NAMEEXACT': 'PALANT CLEFT PALATE SYNDROME', 'Linked HPO ID': 'HP:0000175', 'Linked HPO term': 'Cleft palate'}}
