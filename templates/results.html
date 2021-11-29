@@ -626,18 +626,105 @@ th {
 <div class="container medium" id="Images">
     <h1><span style="color: #efa50e; "><b>Images</b></span></h1>
     <br><br>
-    <tr><th><span style="color: black; ">Here are images databases for pathology, cardiology, radiology and more, primarily courtesy of NEOMED Library<sup><a href="#neomed-cite">21</a></sup>. Some of them are searchable using the PhenCards term query, but many are unsearchable, and will require manual searching.  Nonetheless they have been compiled for user benefit in one place.</span></th></tr>
+    <tr><th><span style="color: black; ">Here are image databases for pathology, dermatology, cardiology, radiology, emergency medicine, health education, and more, primarily courtesy of NEOMED Library<sup><a href="#neomed-cite">21</a></sup>. Some of them are searchable using the PhenCards term query, but many are unsearchable, and will require manual searching.  Nonetheless they have been compiled for user benefit in one place.</span></th></tr>
     <br><br>
     <hr class="innerbar">
+    <tr><th><span style="color: black; ">These sites are already searched by PhenCards query, no work is needed by the user.</span></th></tr>
+    <br>
     <div class="grid-container">
     <div class="grid-item" style="border-left: none"><a target="_blank" href="#Images" rel="noopener noreferrer" id="nav-hemato" onclick="window.open('https://imagebank.hematology.org/searchresult\\#?cludoquery={{ session['HPOquery'] }}', '_blank');" style="font-size: 25px">
         ASH Image Bank
     </a></div>
-    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="https://www.webpathology.com/index.asp" style="font-size: 25px">
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="https://gcse.search.utah.edu/index.php?q={{ session['HPOquery'] }}&site=Look-only-in-ecg-website" style="font-size: 25px">
+        ECG Learning Center
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="https://collections.lib.utah.edu/search?q={{ session['HPOquery'] }}&fd=title_t%2Cdescription_t%2Csubject_t%2Ccollection_t&facet_setname_s=ehsl_heal" style="font-size: 25px">
+        Health Education Assets Library (HEAL)
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="https://visuals.nci.nih.gov/searchaction.cfm?q={{ session['HPOquery'] }}" style="font-size: 25px">
+        NCI Visuals Online
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="https://medpix.nlm.nih.gov/search?allen=true&allt=true&alli=true&query={{ session['HPOquery'] }}" style="font-size: 25px">
+        MedPix
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="https://radiopaedia.org/search?lang=us&q={{ session['HPOquery'] }}&scope=cases" style="font-size: 25px">
+        Radiopaedia
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="https://www.radiologymasterclass.co.uk/search?q={{ session['HPOquery'] }}&submit=" style="font-size: 25px">
+        Radiology Masterclass
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="https://search.uiowa.edu/?q={{ session['HPOquery'] }}&btnG=Search+EyeRounds&site=default_collection&client=default_frontend&output=xml_no_dtd&proxystylesheet=default_frontend&sitesearch=webeye.ophth.uiowa.edu%2Feyeforum" style="font-size: 25px">
+        EyeRounds.org
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="http://kellogg.umich.edu/theeyeshaveit/search.html?q={{ session['HPOquery'] }}" style="font-size: 25px">
+        The Eyes Have It (UMich)
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="https://westjem.com/?s={{ session['HPOquery'] }}" style="font-size: 25px">
+        Western Journal of Emergency Medicine
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="https://wellcomecollection.org/images?query={{ session['HPOquery'] }}" style="font-size: 25px">
+        Wellcome Collection
+    </a></div>
+    </div>
+    <hr class="innerbar">
+    <tr><th><span style="color: black; ">These sites are searchable by manual user query but cannot have queries parsed and routed by PhenCards.</span></th></tr>
+    <br>
+    <div class="grid-container">
+    <div class="grid-item" style="border-left: none"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="https://www.webpathology.com/index.asp" style="font-size: 25px">
         WebPathology
     </a></div>
-    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-chestatlas" href="http://chestatlas.com/cover.htm" style="font-size: 25px">
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="https://www.dermis.net/dermisroot/en/home/index.htm" style="font-size: 25px">
+        Dermatology Information System (DermIS)
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="http://www.globalskinatlas.com/index.cfm" style="font-size: 25px">
+        Global Skin Atlas
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="https://openneuro.org/search" style="font-size: 25px">
+        OpenNeuro
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="https://peir.path.uab.edu/library/" style="font-size: 25px">
+        Pathology Education Informational Resource (PEIR)
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="https://dmdd.org.uk/" style="font-size: 25px">
+        Deciphering the Mechanisms of Developmental Disorders (DMDD)
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="http://www.ghorayeb.com/Pictures.html" style="font-size: 25px">
+        Otolaryngology Houston
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="https://cogancollection.nei.nih.gov/" style="font-size: 25px">
+        David G. Cogan Ophthalmic Pathology Collection
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-webpath" href="https://medpics.ucsd.edu/index.cfm?curpage=search" style="font-size: 25px">
+        UCSD MedPics 
+    </a></div>
+    </div>
+    <hr class="innerbar">
+    <tr><th><span style="color: black; ">These sites contain useful images and knowledge, but are not queryable, or we are not permitted to do anything other than link to them. These will require manual effort to obtain useful data.</span></th></tr>
+    <br>
+    <div class="grid-container">
+    <div class="grid-item" style="border-left: none"><a target="_blank" rel="noopener noreferrer" id="nav-chestatlas" href="http://chestatlas.com/cover.htm" style="font-size: 25px">
         Harry's Chest Atlas
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-chestatlas" href="https://ecglibrary.com/ecghome.php" style="font-size: 25px">
+        ECGlibrary.com
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-chestatlas" href="http://www.pf.chiba-u.ac.jp/english/gallery.html" style="font-size: 25px">
+        Pathogenic Fungus and Actinomycetes Gallery
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-chestatlas" href="https://web.archive.org/web/20170206082130/http://hardinmd.lib.uiowa.edu/" style="font-size: 25px">
+        Hardin MD
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-chestatlas" href="https://www.endoscopy-campus.com/en/galleries/" style="font-size: 25px">
+        Endoscopy Campus
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-chestatlas" href="http://www.learningradiology.com/toc/tocsubsection/tocimages.htm" style="font-size: 25px">
+        Learning Radiology
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-chestatlas" href="https://www.cdc.gov/dpdx/az.html" style="font-size: 25px">
+        CDC Parasite Image Library (DPDx)
+    </a></div>
+    <div class="grid-item"><a target="_blank" rel="noopener noreferrer" id="nav-chestatlas" href="https://www.flickr.com/photos/euthman/sets/72057594114099781/with/284183160/" style="font-size: 25px">
+        Ed Uthman's Pathology Flickr Set
     </a></div>
     </div>
 
