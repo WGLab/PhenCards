@@ -22,7 +22,7 @@
             {% for path in dispath %}
                 <tr>
                     <td>{{"\n".join(dispath[path][0])}}</td>
-                    <td><a target="_blank" href={{dispath[path][1]}}>{{path}}</a></td>
+                    <td><a target="_blank" rel="noopener noreferrer" href={{dispath[path][1]}}>{{path}}</a></td>
                 </tr>
             {% endfor %}
             </tbody>

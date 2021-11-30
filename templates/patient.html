@@ -88,8 +88,8 @@ th {
             <tbody>
             {% for result in HPOresults %}
                 <tr>
-                    <td><a target="_blank" href={{ url ~ result }}>{{result}}</a></td>
-                    <td> <a target="_blank" href={{ url_for('phencards', term=HPOresults[result]) }}>{{HPOresults[result]}}</td>
+                    <td><a target="_blank" rel="noopener noreferrer" href={{ url ~ result }}>{{result}}</a></td>
+                    <td> <a target="_blank" rel="noopener noreferrer" href={{ url_for('phencards', term=HPOresults[result]) }}>{{HPOresults[result]}}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -121,7 +121,7 @@ th {
             <tbody>
             {% for disease in linked_diseases %}
                 <tr>
-                    <td><a target="_blank" href={{ url ~ disease.split(" ")|join("%20") }}>{{disease}}</a></td>
+                    <td><a target="_blank" rel="noopener noreferrer" href={{ url ~ disease.split(" ")|join("%20") }}>{{disease}}</a></td>
                     <td>{{  "%.2f"| format(linked_diseases[disease])}}</td>
                 </tr>
             {% endfor %}
@@ -139,7 +139,7 @@ th {
 <div class="container medium" id="Genes">
     <h1><span style="color: #efa50e; "><b>Genes</b></span></h1>
     <br><br>
-    <tr><th><span style="color: black; ">Here are the related genes referenced from <a target="_blank" href="https://phen2gene.wglab.org">the Phen2Gene web application</a><sup><a href="#p2g-cite">3</a></sup>. The gene symbol links out to MedlinePlus, courtesy of the National Library of Medicine.</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the related genes referenced from <a target="_blank" rel="noopener noreferrer" href="https://phen2gene.wglab.org">the Phen2Gene web application</a><sup><a href="#p2g-cite">3</a></sup>. The gene symbol links out to MedlinePlus, courtesy of the National Library of Medicine.</span></th></tr>
 <br>
 {# gene list return 04/26/2020 #}
     {% if phen2gene %}
@@ -155,7 +155,7 @@ th {
             <tbody>
             {% for result in phen2gene %}
                 <tr>
-                    <td><a target="_blank" href={{ url ~ result["Gene"] | lower }}>{{result["Gene"]}}</a></td>
+                    <td><a target="_blank" rel="noopener noreferrer" href={{ url ~ result["Gene"] | lower }}>{{result["Gene"]}}</a></td>
                     <td>{{result["Rank"]}}</td>
                     <td>{{result["Score"]}}</td>
                     <td>{{result["Status"]}}</td>
@@ -175,7 +175,7 @@ th {
 <div class="container medium" id="Clinical_Trials">
     <h1><span style="color: #efa50e; "><b>Clinical Trials</b></span></h1>
     <br><br>
-    <a target="_blank" id="nav-clinical" href="{{ url_for('generate_clinical_page') }}" style="font-size: 25px">ClinicalTrials.gov</a><sup><a href="#clinical-cite">3</a></sup>
+    <a target="_blank" rel="noopener noreferrer" id="nav-clinical" href="{{ url_for('generate_clinical_page') }}" style="font-size: 25px">ClinicalTrials.gov</a><sup><a href="#clinical-cite">3</a></sup>
 </div>
 
 <div class="container" id="bar">
@@ -185,7 +185,7 @@ th {
 <div class="container medium" id="Literature">
     <h1><span style="color: #efa50e; "><b>Literature</b></span></h1>
     <br><br>
-    <tr><th><span style="color: black;"> Using this unique tool, you can search for related literature for your extracted HPO terms with great ease in <a target="_blank" href="https://scholar.google.com">Google Scholar</a>. The default search includes all the exact terms separated by ORs.  To increase specificity, remove the ORs (if you remove the ORs and use just the first 3 default terms you will get the paper we cited for the clinical notes). You can remove terms with Backspace, move the cursor left and right with the arrow keys, and add duplicate terms. </span></th></tr>
+    <tr><th><span style="color: black;"> Using this unique tool, you can search for related literature for your extracted HPO terms with great ease in <a target="_blank" rel="noopener noreferrer" href="https://scholar.google.com">Google Scholar</a>. The default search includes all the exact terms separated by ORs.  To increase specificity, remove the ORs (if you remove the ORs and use just the first 3 default terms you will get the paper we cited for the clinical notes). You can remove terms with Backspace, move the cursor left and right with the arrow keys, and add duplicate terms. </span></th></tr>
     <br><br>
   <p>
     {% set tags = HPOnames|join(",OR,") %}
@@ -202,9 +202,9 @@ th {
     <h1><span style="color: #efa50e; "><b>Citations & Licenses</b></span></h1>
     <br><br>
     <ol style="list-style-type: numeric">
-    <li id="doc2hpo-cite">Doc2HPO natural language processing resource. This is <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0 license</a>. <u>Citation</u>: Liu C., Peres Kury F. S., Li Z., Ta C., Wang K., & Weng C. (2019). Doc2Hpo: a web application for efficient and accurate HPO concept curation. Nucleic Acids Research, 47(W1), W566–W570. doi:10.1093/nar/gkz386.</li>
-    <li id="hpo-cite">This service/product is using the Human Phenotype Ontology (hpo-obo@2020-08-11). Find out more at <a target="_blank" href="http://www.human-phenotype-ontology.org">the HPO website</a>. <u>Citation</u>: Sebastian Köhler, Leigh Carmody, Nicole Vasilevsky, Julius O B Jacobsen, et al. Expansion of the Human Phenotype Ontology (HPO) knowledge base and resources. Nucleic Acids Research. (2018) doi: 10.1093/nar/gky1105.  <img class="img-hpo" src="/static/img/hpo-logo-white.png" alt="HPO-logo" filter=invert(100%) height="50" width="150"></li>
-    <li id="p2g-cite">Phen2Gene and the H2GKB resources. This is <a target="_blank" href="https://github.com/WGLab/Phen2Gene/blob/master/LICENSE">MIT license</a>. <u>Citation</u>: Zhao M., Havrilla J. M., Fang L., Chen Y., Peng J., Liu C., Wu C., Sarmady M., Botas P., Isla J., Lyon G., Weng C., Wang K. (2020). Phen2Gene: Rapid Phenotype-Driven Gene Prioritization for Rare Diseases. NAR Genomics and Bioinformatics, 2(2), lqaa032. doi:10.1093/nargab/lqaa032.</li>
+    <li id="doc2hpo-cite">Doc2HPO natural language processing resource. This is <a target="_blank" rel="noopener noreferrer" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0 license</a>. <u>Citation</u>: Liu C., Peres Kury F. S., Li Z., Ta C., Wang K., & Weng C. (2019). Doc2Hpo: a web application for efficient and accurate HPO concept curation. Nucleic Acids Research, 47(W1), W566–W570. doi:10.1093/nar/gkz386.</li>
+    <li id="hpo-cite">This service/product is using the Human Phenotype Ontology (hpo-obo@2020-08-11). Find out more at <a target="_blank" rel="noopener noreferrer" href="http://www.human-phenotype-ontology.org">the HPO website</a>. <u>Citation</u>: Sebastian Köhler, Leigh Carmody, Nicole Vasilevsky, Julius O B Jacobsen, et al. Expansion of the Human Phenotype Ontology (HPO) knowledge base and resources. Nucleic Acids Research. (2018) doi: 10.1093/nar/gky1105.  <img class="img-hpo" src="/static/img/hpo-logo-white.png" alt="HPO-logo" filter=invert(100%) height="50" width="150"></li>
+    <li id="p2g-cite">Phen2Gene and the H2GKB resources. This is <a target="_blank" rel="noopener noreferrer" href="https://github.com/WGLab/Phen2Gene/blob/master/LICENSE">MIT license</a>. <u>Citation</u>: Zhao M., Havrilla J. M., Fang L., Chen Y., Peng J., Liu C., Wu C., Sarmady M., Botas P., Isla J., Lyon G., Weng C., Wang K. (2020). Phen2Gene: Rapid Phenotype-Driven Gene Prioritization for Rare Diseases. NAR Genomics and Bioinformatics, 2(2), lqaa032. doi:10.1093/nargab/lqaa032.</li>
     <li id="clinical-cite">ClinicalTrials.gov. This is public domain, courtesy of the U.S. National Library of Medicine.</li>
     <li id="pubmed-cite">The PubMed database. This is public domain. <u>Citation</u>: Sayers E. The E-utilities In-Depth: Parameters, Syntax and More. 2009 May 29 [Updated 2018 Oct 24]. In: Entrez Programming Utilities Help [Internet]. Bethesda (MD): National Center for Biotechnology Information (US); 2010-. Available from: https://www.ncbi.nlm.nih.gov/books/NBK25499/.</li>
     </ol>

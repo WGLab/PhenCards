@@ -7,7 +7,7 @@
 
 <div class="container" >
     <br>
-    <tr><th><span style="color: black; ">Here are the top 25 PubMed results based on citations in PubMed, after a 200 article snapshot from <a target="_blank" href="https://pubmed.ncbi.nlm.nih.gov/help/#best-match-algorithm">Best Match algorithm sort using MeSH terms</a>, based on this query.  This takes a little while (~30 sec) because NCBI limits query rate.</span></th></tr>
+    <tr><th><span style="color: black; ">Here are the top 25 PubMed results based on citations in PubMed, after a 200 article snapshot from <a target="_blank" rel="noopener noreferrer" href="https://pubmed.ncbi.nlm.nih.gov/help/#best-match-algorithm">Best Match algorithm sort using MeSH terms</a>, based on this query.  This takes a little while (~30 sec) because NCBI limits query rate.</span></th></tr>
     <br><br>
     {% if pubmed %}
         <table id="pubmed-table" style="white-space: pre-line" class="table table-striped table-bordered table-sm">
@@ -21,7 +21,7 @@
             <tbody>
             {% for id in pubmed %}
                 <tr>
-                    <td><a target="_blank" href={{ ''.join(['https://pubmed.ncbi.nlm.nih.gov/',id]) }}>PMID: {{id}}</a></td>
+                    <td><a target="_blank" rel="noopener noreferrer" href={{ ''.join(['https://pubmed.ncbi.nlm.nih.gov/',id]) }}>PMID: {{id}}</a></td>
                     <td>{{pubmed[id][0]}}</td>
                     <td>{{pubmed[id][1]}}</td>
                 </tr>
