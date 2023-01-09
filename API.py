@@ -293,6 +293,8 @@ def generate_cohd_list(HPOquery):
     }
     try:
         rsearch=requests.get("http://cohd.io/api/omop/findConceptIDs", params=params, timeout=10)
+    except requests.exceptions.ConnectionError:
+        return []
     except requests.exceptions.Timeout: # if the resource is timing out after 10 sec, not worth the load.
         return []
     if rsearch.status_code == requests.status_codes.codes.OK:
@@ -385,6 +387,8 @@ def protocol_page(HPOquery):
     'searchtype': 'smartsearch'}
     try:
         rsearch=requests.get("https://www.phenxtoolkit.org/search/results?", params=params, timeout=45)
+    except requests.exceptions.ConnectionError:
+        return [], headers
     except requests.exceptions.Timeout:
         return proto, headers
     
@@ -435,6 +439,8 @@ def literature_page(HPOquery):
     'sort': 'relevance'}
     try:
         rsearch=requests.get("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi", params=params1, timeout=45)
+    except requests.exceptions.ConnectionError:
+        return {}, headers
     except requests.exceptions.Timeout:
         pubmed = {}
         return pubmed, headers
@@ -716,6 +722,8 @@ def generate_nihfoa_list(HPOquery):
     # need to add https://grants.nih.gov/grants/guide/pa-files/results['filename']
     try:
         rsearch=requests.get("https://search.grants.nih.gov/guide/api/data", params=params, timeout=30)
+    except requests.exceptions.ConnectionError:
+        return []
     except requests.exceptions.Timeout:
         return []
     if rsearch.status_code == requests.status_codes.codes.OK:
@@ -738,6 +746,8 @@ def generate_nihreporter_list(HPOquery):
     # https://api.federalreporter.nih.gov/v1/projects/search?query=text:cleft+palate$fy:2015,2016,2017,2018,2019,2020&searchMode=Smart
     try:
         rsearch=requests.get("https://api.federalreporter.nih.gov/v1/projects/search", params=payload, timeout=30)
+    except requests.exceptions.ConnectionError:
+        return []
     except requests.exceptions.Timeout:
         return []
     if rsearch.status_code == requests.status_codes.codes.OK:
@@ -878,6 +888,8 @@ def openfda_query(params):
     payload = "&".join("%s=%s" % (k,v) for k,v in params.items())
     try:
         rsearch=requests.get("https://api.fda.gov/drug/event.json", params=payload, timeout=30)
+    except requests.exceptions.ConnectionError:
+        return []
     except requests.exceptions.Timeout:
         results = []
     print(rsearch.url)
