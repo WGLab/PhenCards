@@ -1,4 +1,4 @@
-from flask import session, request, Response, abort
+from flask import session, request, Response, abort, flash
 import sqlite3
 from collections import defaultdict
 from json2html import json2html
