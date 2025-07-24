@@ -1,6 +1,6 @@
 from elasticsearch import Elasticsearch
 from typing import List
-from flask import Markup
+from markupsafe import Markup
 from config import Config
 
 def indexquery(query_json,index='autosuggest', size=10):

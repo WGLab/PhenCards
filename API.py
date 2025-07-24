@@ -421,7 +421,7 @@ def protocol_page(HPOquery):
             result["origin"]=origin
             result["link"]=link
             result["name"]=name
-            if any(v is not "" for v in (link, name, domainname, domainlink, origin)):
+            if any(v != "" for v in (link, name, domainname, domainlink, origin)):
                 proto.append(result)
 
     return proto, headers
