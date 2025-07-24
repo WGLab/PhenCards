@@ -3,6 +3,7 @@ certifi>=2019.9.11
 chardet>=3.0.4
 Click>=7.0
 elasticsearch==7.11.0
+numpy<2.0.0
 flask>=2.2.3
 flask-sqlalchemy>=3.0.3
 flask-Cors>=3.0.8

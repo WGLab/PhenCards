@@ -25,6 +25,7 @@ services:
             - FLASK_DEBUG=1
             - NODE_ENV=local
             - ES_HOST=elasticsearch
+        user: "1002:1002"
         volumes: # Attach local book data directory
             - /media/database:/media/database
             - .:/code
@@ -45,6 +46,7 @@ services:
             - FLASK_DEBUG=1
             - NODE_ENV=local
             - ES_HOST=elasticsearch
+        user: "1002:1002"
         volumes: # Attach local book data directory
             - /media/database:/media/database
         depends_on:
